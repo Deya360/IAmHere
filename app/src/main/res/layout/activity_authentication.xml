@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout android:id="@+id/layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="15dp">
+
+            <LinearLayout
+                android:id="@+id/auth_headerLy"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginTop="15dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/auth_titleTv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+
+                    android:textColor="@android:color/black"
+                    android:textSize="28sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/bree_serif"
+
+                    tools:text="Authentication" />
+
+                <TextView
+                    android:id="@+id/auth_subtitleTv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+
+                    android:text="You will need to create a password for your account."
+                    android:textColor="#94000000"
+                    android:textSize="21sp"
+                    android:fontFamily="@font/bree_serif" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/auth_inputLy"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginTop="15dp"
+                android:layout_below="@id/auth_headerLy"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/auth_phone_numberTv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:padding="5dp"
+                    android:gravity="center_vertical"
+
+                    android:textColor="#94000000"
+                    android:textSize="21sp"
+                    android:fontFamily="@font/bree_serif"
+
+                    android:drawableStart="@drawable/ic_phone_black_24dp"
+                    android:drawablePadding="6dp"
+
+                    tools:text="+7 (900) 123 45-67" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/auth_passwordLy"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="10dp"
+                    app:hintTextAppearance="@style/text_input_layout_hint_appearance"
+                    app:errorTextAppearance="@style/text_input_layout_error_appearance"
+                    app:passwordToggleEnabled="true">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/auth_passwordEt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+
+                        android:hint="Password"
+                        android:textColor="@android:color/black"
+                        android:textSize="22sp"
+                        android:inputType="textPassword"
+                        android:importantForAutofill="no" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:id="@+id/auth_instructionsTv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="20dp"
+
+                    android:text="The password must be at least 8 characters long and contain upper and lower case letters and at least one number."
+                    android:textColor="#94000000"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/roboto_slab"
+
+                    android:drawableStart="@drawable/ic_info_outline_light_black_40dp"
+                    android:drawablePadding="10dp"/>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/auth_password_againLy"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    app:hintTextAppearance="@style/text_input_layout_hint_appearance"
+                    app:errorTextAppearance="@style/text_input_layout_error_appearance"
+                    app:passwordToggleEnabled="true">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/auth_password_againEt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+
+                        android:hint="Repeat password"
+                        android:textColor="@android:color/black"
+                        android:textSize="22sp"
+                        android:inputType="textPassword"
+                        android:importantForAutofill="no"/>
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/auth_continueBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/auth_inputLy"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="25dp"
+                android:padding="20dp"
+
+                tools:text="Log In"
+                android:textSize="18sp"
+
+                style="@style/Widget.AppCompat.Button.Colored"/>
+
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

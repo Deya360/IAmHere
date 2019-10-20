@@ -1,11 +1,53 @@
 <resources>
 
-    <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="AppThemeManager" parent="AppTheme">
+        <item name="colorPrimary">@color/colorAdminPrimary</item>
+        <item name="colorPrimaryDark">@color/colorAdminPrimaryDark</item>
+        <item name="colorAccent">@color/colorGeneralAccent</item>
+    </style>
+
+    <style name="AppThemeHost" parent="AppTheme">
+        <item name="colorPrimary">@color/colorHostPrimary</item>
+        <item name="colorPrimaryDark">@color/colorHostPrimaryDark</item>
+        <item name="colorAccent">@color/colorGeneralAccent</item>
+    </style>
+    <style name="AppThemeParticipator" parent="AppTheme">
+        <item name="colorPrimary">@color/colorAttendeePrimary</item>
+        <item name="colorPrimaryDark">@color/colorAttendeePrimaryDark</item>
+        <item name="colorAccent">@color/colorGeneralAccent</item>
+    </style>
+
+
+    <style name="NoActionBarLight" parent="@style/Theme.AppCompat.Light.NoActionBar">
+        <item name="colorAccent">@color/colorGeneralAccent</item>
+    </style>
+
+    <style name="NoActionBarDark" parent="@style/Theme.AppCompat.NoActionBar">
+        <item name="colorAccent">@color/colorGeneralAccent</item>
+    </style>
+
+    <style name="TransparentStatusNavigationBar" parent="NoActionBarDark">
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+
+    <style name="TransparentStatusBar" parent="NoActionBarLight">
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
+
+    <style name="text_input_layout_error_appearance" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@android:color/holo_red_dark</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="text_input_layout_hint_appearance" parent="@android:style/TextAppearance">
+        <item name="android:textSize">14sp</item>
+    </style>
 </resources>

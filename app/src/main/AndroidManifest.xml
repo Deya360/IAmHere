@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.sse.iamhere">
 
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
         android:allowBackup="true"
@@ -11,13 +11,43 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".SplashActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/TransparentStatusNavigationBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".VerificationActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/NoActionBarLight"
+            android:windowSoftInputMode="adjustPan" />
+
+        <activity
+            android:name=".AuthenticationActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/NoActionBarLight"
+            android:windowSoftInputMode="adjustPan"/>
+
+        <activity
+            android:name=".SetupActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/NoActionBarLight"
+            android:windowSoftInputMode="adjustPan"/>
+
+        <activity
+            android:name=".OnboardActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/TransparentStatusBar" />
+        <activity android:name=".MainActivity" />
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
     </application>
 
 </manifest>

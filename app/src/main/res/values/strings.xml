@@ -1,3 +1,16 @@
 <resources>
-    <string name="app_name">IAmHere</string>
+    <string name="app_name">I Am Here</string>
+
+    <string name="splash_get_started_label">Get Started</string>
+
+    <string name="onboard_admin_label">Manager</string>
+    <string name="onboard_admin_desc_label">Create sessions, assign hosts, assemble groups and invite participators.</string>
+    <string name="onboard_host_label">Host</string>
+    <string name="onboard_host_desc_label">Hold sessions, track attendance and keep in touch with your attendees.</string>
+    <string name="onboard_attendee_label">Attendee</string>
+    <string name="onboard_attendee_desc_label">Мark your presence and track attendance, discover new sessions and stay updated with your current ones.</string>
+    <string name="onboard_done_label">Finish</string>
+    <string name="verifi_title_label">Phone Verification</string>
+    <string name="verifi_description_label">A verification code will be sent to your phone number</string>
+
 </resources>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/splash_mainLy"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    android:background="@drawable/splash_background">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+
+        android:layout_gravity="center"
+        android:gravity="center" >
+
+        <ImageView
+            android:id="@+id/splash_logo_textIv"
+            android:layout_width="190dp"
+            android:layout_height="190dp"
+            android:layout_gravity="center_horizontal"
+
+            android:src="@drawable/logo_text"
+            android:alpha="0"
+            tools:alpha="1" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="210dp"
+
+        android:layout_gravity="center">
+
+        <Button
+            android:id="@+id/splash_continueBtn"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+
+            android:text="@string/splash_get_started_label"
+            android:scaleX="0"
+            android:scaleY="0"
+            tools:scaleX="1"
+            tools:scaleY="1"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="125dp"
+
+        android:layout_gravity="bottom">
+
+        <TextView
+            android:id="@+id/splash_connectionTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:padding="10dp"
+
+            android:text="Couldn't connect to the Internet"
+            android:fontFamily="sans-serif-condensed"
+            android:textSize="17sp"
+            android:textColor="@android:color/white"
+
+            android:background="@drawable/back_rounded_rect"
+            android:alpha="0"
+            tools:alpha="1"/>
+
+        <Button
+            android:id="@+id/splash_retryBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/splash_connectionTv"
+            android:layout_marginTop="25dp"
+            android:layout_centerHorizontal="true"
+
+            android:text="Retry"
+            android:scaleX="0"
+            android:scaleY="0"
+            tools:scaleX="1"
+            tools:scaleY="1"/>
+
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/splash_logoIv"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="40dp"
+
+        android:src="@drawable/logo_pin"
+        tools:visibility="visible" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

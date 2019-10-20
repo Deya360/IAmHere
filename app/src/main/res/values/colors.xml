@@ -3,4 +3,26 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+
+
+    <color name="colorGeneralAccent">#FF5722</color>
+
+    <color name="colorAdminPrimary">#607d8b</color>
+    <color name="colorAdminPrimaryDark">#34515e</color>
+    <color name="colorAdminPrimaryLight">#8eacbb</color>
+
+    <color name="colorHostPrimary">#00acc1</color>
+    <color name="colorHostPrimaryDark">#007c91</color>
+    <color name="colorHostPrimaryLight">#5ddef4</color>
+
+    <color name="colorAttendeePrimary">#7cb342</color>
+    <color name="colorAttendeePrimaryDark">#4b830d</color>
+    <color name="colorAttendeePrimaryLight">#aee571</color>
+
+
+    <color name="colorSplashBackground">#E6E7E9</color>
+    <color name="colorSplashBackgroundDark">#CFCCCC</color>
+
+    <color name="temp">#A1000000</color>
+
 </resources>
