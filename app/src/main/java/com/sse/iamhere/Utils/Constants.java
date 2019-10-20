@@ -14,8 +14,13 @@ public class Constants {
     public static final String IS_AUTHORIZED = "IS_AUTHORIZED";
     public static final String ACCOUNT_ID = "ACCOUNT_ID";
 
+    // Verification
+    public static final int OTP_TIMEOUT = 60*2;
 
-    // Server
-    public static final String FNS_API_BASE_URL = "";
+    // Verification - error codes
+    public static class VerifiEC {
+        public static final int VERIFICATION_FAILED = 0;
+        public static final int SIGNIN_FAILED = 1;
+    }
 
 }

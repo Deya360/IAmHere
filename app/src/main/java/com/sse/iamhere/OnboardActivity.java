@@ -1,7 +1,6 @@
 package com.sse.iamhere;
 
 import android.os.Bundle;
-import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 

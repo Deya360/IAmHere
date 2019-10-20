@@ -24,7 +24,8 @@
 
             android:src="@drawable/logo_text"
             android:alpha="0"
-            tools:alpha="1" />
+            tools:alpha="1"
+            tools:ignore="ContentDescription" />
 
     </RelativeLayout>
 
@@ -63,7 +64,7 @@
             android:layout_centerHorizontal="true"
             android:padding="10dp"
 
-            android:text="Couldn't connect to the Internet"
+            android:text="@string/splash_connectionTv_label"
             android:fontFamily="sans-serif-condensed"
             android:textSize="17sp"
             android:textColor="@android:color/white"
@@ -80,7 +81,7 @@
             android:layout_marginTop="25dp"
             android:layout_centerHorizontal="true"
 
-            android:text="Retry"
+            android:text="@string/splash_retryBtn_label"
             android:scaleX="0"
             android:scaleY="0"
             tools:scaleX="1"
@@ -96,6 +97,7 @@
         android:layout_marginBottom="40dp"
 
         android:src="@drawable/logo_pin"
-        tools:visibility="visible" />
+        tools:visibility="visible"
+        tools:ignore="ContentDescription" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

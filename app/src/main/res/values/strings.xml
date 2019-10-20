@@ -2,6 +2,9 @@
     <string name="app_name">I Am Here</string>
 
     <string name="splash_get_started_label">Get Started</string>
+    <string name="splash_connectionTv_label">Couldn\'t connect to the Internet</string>
+    <string name="splash_retryBtn_label">Retry</string>
+
 
     <string name="onboard_admin_label">Manager</string>
     <string name="onboard_admin_desc_label">Create sessions, assign hosts, assemble groups and invite participators.</string>
@@ -10,7 +13,41 @@
     <string name="onboard_attendee_label">Attendee</string>
     <string name="onboard_attendee_desc_label">Мark your presence and track attendance, discover new sessions and stay updated with your current ones.</string>
     <string name="onboard_done_label">Finish</string>
+
+
     <string name="verifi_title_label">Phone Verification</string>
     <string name="verifi_description_label">A verification code will be sent to your phone number</string>
+    <string name="verifi_code_otpEt_hint">Verification Code</string>
+    <string name="verifi_code_otp_expiredTv_label">Verification code expired</string>
+    <string name="verifi_code_autocompleteTv_label">Verification completed automatically</string>
+    <string name="verifi_code_continueBtn_label">Continue</string>
+
+    <string name="verifi_phone_phoneEt_label">Phone Number</string>
+    <string name="verifi_phone_continueBtn_label">Continue</string>
+    <string name="verifi_phone_resendBtn_label_inactive_prefix">NO CODE? (</string>
+    <string name="verifi_phone_resendBtn_label_inactive_suffix">s)</string>
+    <string name="verifi_phone_resendBtn_label_active">RESEND CODE</string>
+
+    <string name="verifi_on_otp_sent">Verification code was sent to </string>
+    <string name="verifi_on_error">An error occurred while verifying your phone number</string>
+
+
+    <string name="auth_passwordEt_hint">Password</string>
+    <string name="auth_instructionsTv_label">The password must be at least 8 characters long and contain upper and lower case letters and at least one number.</string>
+    <string name="auth_password_againEt_label">Repeat password</string>
+
+    <string name="auth_titleTv_registration_label">Registration</string>
+    <string name="auth_subtitleTv_registration_label">You will need to create a password for your account.</string>
+    <string name="auth_continueBtn_registration_label">Register</string>
+
+    <string name="auth_titleTv_login_label">Login</string>
+    <string name="auth_subtitleTv_login_label">Welcome back!, enter your password to continue.</string>
+    <string name="auth_continueBtn_login_label">Login</string>
+
+    <string name="auth_validation_empty">This can\'t be empty</string>
+    <string name="auth_validation_invalid">Invalid password</string>
+    <string name="auth_validation_mismatch">Passwords don\'t match</string>
+    <string name="auth_wrong">Wrong Password!</string>
+    <string name="auth_bad_input">Fields filled incorrectly</string>
 
 </resources>

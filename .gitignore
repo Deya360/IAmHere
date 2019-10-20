@@ -55,3 +55,6 @@ google-services.json
 
 # Version control
 vcs.xml
+
+# Server constants
+ServerConstants.java

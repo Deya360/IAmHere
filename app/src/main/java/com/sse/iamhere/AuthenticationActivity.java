@@ -7,13 +7,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.google.android.gms.auth.api.Auth;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -33,7 +31,6 @@ import io.reactivex.schedulers.Schedulers;
 
 import static com.sse.iamhere.Utils.Constants.ACCOUNT_ID;
 import static com.sse.iamhere.Utils.Constants.IS_AUTHORIZED;
-import static com.sse.iamhere.Utils.Constants.IS_FIRST_TIME;
 
 public class AuthenticationActivity extends AppCompatActivity {
     private String phone;
@@ -78,17 +75,17 @@ public class AuthenticationActivity extends AppCompatActivity {
         passwordEt.requestFocus();
 
         if (isRegister) {
-            titleTv.setText("Registration");
-            subtitleTv.setText("You will need to create a password for your account.");
-            continueBtn.setText("Register");
+            titleTv.setText(getString(R.string.auth_titleTv_registration_label));
+            subtitleTv.setText(getString(R.string.auth_subtitleTv_registration_label));
+            continueBtn.setText(getString(R.string.auth_continueBtn_registration_label));
 
             passwordEt.setOnFocusChangeListener((v, hasFocus) -> {
                 if (!hasFocus) {
-                    if (TextUtils.isEmpty(passwordEt.getText().toString())) {
-                        passwordLy.setError("This can't be empty");
+                    if (passwordEt.getText()==null || TextUtils.isEmpty(passwordEt.getText().toString())) {
+                        passwordLy.setError(getString(R.string.auth_validation_empty));
 
                     } else if (!isValidPassword(passwordEt.getText().toString())) {
-                        passwordLy.setError("Invalid password");
+                        passwordLy.setError(getString(R.string.auth_validation_invalid));
                         instructionsTv.setVisibility(View.VISIBLE);
 
                     } else {
@@ -106,11 +103,11 @@ public class AuthenticationActivity extends AppCompatActivity {
             TextInputEditText passwordAgainEt = findViewById(R.id.auth_password_againEt);
             passwordAgainEt.setOnFocusChangeListener((v, hasFocus) -> {
                 if (!hasFocus) {
-                    if (TextUtils.isEmpty(passwordAgainEt.getText().toString())) {
-                        passwordAgainLy.setError("This can't be empty");
+                    if (passwordAgainEt.getText()==null || TextUtils.isEmpty(passwordAgainEt.getText().toString())) {
+                        passwordAgainLy.setError(getString(R.string.auth_validation_empty));
 
-                    } else if (!passwordEt.getText().toString().equals(passwordAgainEt.getText().toString())) {
-                        passwordAgainLy.setError("Passwords don't match");
+                    } else if (passwordEt.getText()==null || !passwordEt.getText().toString().equals(passwordAgainEt.getText().toString())) {
+                        passwordAgainLy.setError(getString(R.string.auth_validation_mismatch));
 
                     } else {
                         passwordAgainLy.setError(null);
@@ -146,25 +143,25 @@ public class AuthenticationActivity extends AppCompatActivity {
 
                             @Override
                             public void onError(Throwable e) {
-                                //Todo: error
                             }
                         });
 
                 } else {
-                    //TODO: add snackbar/toast
+                    Snackbar.make(findViewById(android.R.id.content),
+                            getString(R.string.auth_bad_input), Snackbar.LENGTH_SHORT).show();
                 }
             });
 
         } else { // Log in
-            titleTv.setText("Log in");
-            subtitleTv.setText("Welcome back!, enter your password to continue.");
-            continueBtn.setText("Log In");
+            titleTv.setText(getString(R.string.auth_titleTv_login_label));
+            subtitleTv.setText(getString(R.string.auth_subtitleTv_login_label));
+            continueBtn.setText(getString(R.string.auth_continueBtn_login_label));
             instructionsTv.setVisibility(View.GONE);
 
             passwordEt.setOnFocusChangeListener((v, hasFocus) -> {
                 if (!hasFocus) {
-                    if (TextUtils.isEmpty(passwordEt.getText().toString())) {
-                        passwordLy.setError("This can't be empty");
+                    if (passwordEt.getText()==null || TextUtils.isEmpty(passwordEt.getText().toString())) {
+                        passwordLy.setError(getString(R.string.auth_validation_empty));
 
                     } else {
                         passwordLy.setError(null);
@@ -175,7 +172,6 @@ public class AuthenticationActivity extends AppCompatActivity {
             continueBtn.setOnClickListener(v -> {
                 passwordEt.clearFocus();
                 if (passwordLy.getError()==null) {
-//                    Toast.makeText(AuthenticationActivity.this, "Sending Login REST Request", Toast.LENGTH_LONG).show();
                     AccountViewModel accountViewModel = ViewModelProviders.of(AuthenticationActivity.this)
                             .get(AccountViewModel.class);
 
@@ -193,7 +189,7 @@ public class AuthenticationActivity extends AppCompatActivity {
 
                                     } else {
                                         Snackbar.make(findViewById(android.R.id.content),
-                                                "Wrong Password!", Snackbar.LENGTH_LONG).show();
+                                                getString(R.string.auth_wrong), Snackbar.LENGTH_LONG).show();
                                     }
                                 }
 
@@ -204,7 +200,8 @@ public class AuthenticationActivity extends AppCompatActivity {
                             });
 
                 } else {
-                    //TODO: add snackbar/toast
+                    Snackbar.make(findViewById(android.R.id.content),
+                            getString(R.string.auth_bad_input), Snackbar.LENGTH_SHORT).show();
                 }
             });
         }

@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
 
-            android:hint="Verification Code"
+            android:hint="@string/verifi_code_otpEt_hint"
             android:textColor="@android:color/black"
             android:textSize="22sp"
             android:inputType="number"
@@ -26,6 +26,25 @@
             android:importantForAutofill="no" />
 
     </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/verifi_code_otp_expiredTv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:padding="5dp"
+        android:gravity="center_vertical"
+
+        android:text="@string/verifi_code_otp_expiredTv_label"
+        android:textColor="#94000000"
+        android:textSize="19sp"
+        android:fontFamily="@font/bree_serif"
+
+        android:drawableStart="@drawable/ic_expired_black_24dp"
+        android:drawablePadding="6dp"
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
     <TextView
         android:id="@+id/verifi_code_autocompleteTv"
@@ -36,7 +55,7 @@
         android:padding="5dp"
         android:gravity="center_vertical"
 
-        android:text="Verification completed automatically"
+        android:text="@string/verifi_code_autocompleteTv_label"
         android:textColor="#94000000"
         android:textSize="21sp"
         android:fontFamily="@font/bree_serif"
@@ -48,6 +67,23 @@
         tools:visibility="visible"/>
 
     <Button
+        android:id="@+id/verifi_code_resendBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:padding="12dp"
+        android:layout_gravity="end"
+
+        android:textAllCaps="false"
+        android:textSize="15sp"
+
+        android:enabled="false"
+        android:visibility="gone"
+        tools:visibility="visible"
+        tools:text="No Code? (120s)"
+        style="@style/Widget.AppCompat.Button.Colored"/>
+
+    <Button
         android:id="@+id/verifi_code_continueBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -55,7 +91,7 @@
         android:padding="12dp"
         android:layout_gravity="end"
 
-        android:text="Continue"
+        android:text="@string/verifi_code_continueBtn_label"
         android:textSize="15sp"
 
         android:enabled="false"

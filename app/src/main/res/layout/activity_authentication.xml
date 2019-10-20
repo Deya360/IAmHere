@@ -36,7 +36,7 @@
                     android:textStyle="bold"
                     android:fontFamily="@font/bree_serif"
 
-                    tools:text="Authentication" />
+                    tools:text="Registration" />
 
                 <TextView
                     android:id="@+id/auth_subtitleTv"
@@ -44,10 +44,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="5dp"
 
-                    android:text="You will need to create a password for your account."
                     android:textColor="#94000000"
                     android:textSize="21sp"
-                    android:fontFamily="@font/bree_serif" />
+                    android:fontFamily="@font/bree_serif"
+                    tools:text="You will need to create a password for your account." />
 
             </LinearLayout>
 
@@ -92,7 +92,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
 
-                        android:hint="Password"
+                        android:hint="@string/auth_passwordEt_hint"
                         android:textColor="@android:color/black"
                         android:textSize="22sp"
                         android:inputType="textPassword"
@@ -107,7 +107,7 @@
                     android:paddingTop="10dp"
                     android:paddingBottom="20dp"
 
-                    android:text="The password must be at least 8 characters long and contain upper and lower case letters and at least one number."
+                    android:text="@string/auth_instructionsTv_label"
                     android:textColor="#94000000"
                     android:textSize="16sp"
                     android:fontFamily="@font/roboto_slab"
@@ -130,7 +130,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
 
-                        android:hint="Repeat password"
+                        android:hint="@string/auth_password_againEt_label"
                         android:textColor="@android:color/black"
                         android:textSize="22sp"
                         android:inputType="textPassword"

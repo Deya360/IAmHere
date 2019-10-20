@@ -2,7 +2,6 @@ package com.sse.iamhere;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.View;
 import android.widget.TextView;
 
@@ -11,10 +10,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.sse.iamhere.Adapters.VerificationAdapter;
+import com.sse.iamhere.Utils.Constants;
 import com.sse.iamhere.Views.NoSwipeViewPager;
 
 public class VerificationActivity extends AppCompatActivity {
-    private Handler timeoutCounter = new Handler();
     private int verificationStage = 0;
 
     private String phone;
@@ -39,42 +38,7 @@ public class VerificationActivity extends AppCompatActivity {
             phone = savedInstanceState.getString("phone","");
             verificationAdapter.setPhone(phone);
             if (!phone.isEmpty()) showPhoneTv();
-//            viewPager.setCurrentItem(verificationStage);
         }
-
-
-
-//        sendCodeBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                //TOD: add phone number validity check
-//                verifyPhone(authenticationPhoneEt.getText().toString());
-//                sendCodeBtn.setVisibility(View.GONE);
-//
-//            }
-//        });
-
-//        signInBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                PhoneAuthCredential credential =
-//                        PhoneAuthProvider.getCredential(authenticationPhoneEt.getText().toString(),
-//                                verificationCodeEt.getText().toString());
-//                signInWithPhoneAuthCredential(credential);
-//            }
-//        });
-
-//        signOutBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                signOutUser();
-//            }
-//        });
-
-
-
-//        String android_id = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-//        Log.d("android_id", android_id);
     }
 
     private void initViewPager() {
@@ -96,7 +60,7 @@ public class VerificationActivity extends AppCompatActivity {
             @Override
             public void onVerificationCodeSent(String phoneFormatted) {
                 Snackbar.make(findViewById(android.R.id.content),
-                        "Verification code sent to " + phoneFormatted, Snackbar.LENGTH_LONG).show();
+                        getString(R.string.verifi_on_otp_sent) + phoneFormatted, Snackbar.LENGTH_LONG).show();
             }
 
             @Override
@@ -104,6 +68,16 @@ public class VerificationActivity extends AppCompatActivity {
                 startAuthActivity(isRegister, phoneFormatted, phone);
             }
 
+            @Override
+            public void onError(int errorCode) {
+                    switch (errorCode) {
+                        case Constants.VerifiEC.VERIFICATION_FAILED:
+                        case Constants.VerifiEC.SIGNIN_FAILED:
+                            Snackbar.make(findViewById(android.R.id.content),
+                                    getString(R.string.verifi_on_error), Snackbar.LENGTH_LONG).show();
+                            break;
+                    }
+            }
 
         });
         viewPager.setAdapter(verificationAdapter);
