@@ -1,43 +1,60 @@
 package com.sse.iamhere;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProviders;
 
+import com.dd.processbutton.iml.ActionProcessButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.sse.iamhere.Data.Entitites.Account;
-import com.sse.iamhere.Data.VM.AccountViewModel;
-import com.sse.iamhere.Utils.PreferencesUtil;
+import com.sse.iamhere.Server.RequestCallback;
+import com.sse.iamhere.Server.RequestManager;
+import com.sse.iamhere.Utils.Constants;
+import com.sse.iamhere.Views.OnSingleClickListener;
 
-import java.util.List;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.observers.DisposableSingleObserver;
-import io.reactivex.schedulers.Schedulers;
-
-import static com.sse.iamhere.Utils.Constants.ACCOUNT_ID;
-import static com.sse.iamhere.Utils.Constants.IS_AUTHORIZED;
+import static com.sse.iamhere.Utils.Constants.DEBUG_MODE;
+import static com.sse.iamhere.Utils.Constants.RQM_EC.LOGIN_BAD_PHONE;
+import static com.sse.iamhere.Utils.Constants.RQM_EC.LOGIN_BAD_ROLE;
+import static com.sse.iamhere.Utils.Constants.RQM_EC.LOGIN_UNKNOWN;
+import static com.sse.iamhere.Utils.Constants.RQM_EC.LOGIN_USER_NOT_FOUND;
+import static com.sse.iamhere.Utils.Constants.RQM_EC.REGISTRATION_UNKNOWN;
+import static com.sse.iamhere.Utils.Constants.RQM_EC.REGISTRATION_USER_EXISTS;
+import static com.sse.iamhere.Utils.Constants.RQM_EC.TOKEN_STORE_FAIL;
+import static com.sse.iamhere.Utils.Constants.TOKEN_NONE;
+import static com.sse.iamhere.Utils.ServerConstants.DEBUG_PHONE;
 
 public class AuthenticationActivity extends AppCompatActivity {
     private String phone;
     private String phoneFormatted;
-    private boolean isRegister = false;
+    private boolean isRegistered = true;
+
+    private boolean isProcessing = false;
+
+    private ActionProcessButton continueBtn;
+    private TextInputEditText passwordEt;
+    private Spinner roleSp;
 
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +63,7 @@ public class AuthenticationActivity extends AppCompatActivity {
         if (savedInstanceState!=null) {
             phone = savedInstanceState.getString("phone");
             phoneFormatted = savedInstanceState.getString("phoneFormatted");
-            isRegister = savedInstanceState.getBoolean("isRegister");
+            isRegistered = savedInstanceState.getBoolean("isRegistered");
 
         } else {
             Bundle extras = getIntent().getExtras();
@@ -56,7 +73,7 @@ public class AuthenticationActivity extends AppCompatActivity {
             }
 
             phone = extras.getString("phone");
-            isRegister = extras.getBoolean("isRegister");
+            isRegistered = extras.getBoolean("isRegistered");
             phoneFormatted = extras.getString("phoneFormatted");
         }
 
@@ -67,24 +84,38 @@ public class AuthenticationActivity extends AppCompatActivity {
         TextView titleTv = findViewById(R.id.auth_titleTv);
         TextView subtitleTv = findViewById(R.id.auth_subtitleTv);
 
-        Button continueBtn = findViewById(R.id.auth_continueBtn);
+        continueBtn = findViewById(R.id.auth_continueBtn);
         TextView instructionsTv = findViewById(R.id.auth_instructionsTv);
 
         TextInputLayout passwordLy = findViewById(R.id.auth_passwordLy);
-        TextInputEditText passwordEt = findViewById(R.id.auth_passwordEt);
+        passwordEt = findViewById(R.id.auth_passwordEt);
         passwordEt.requestFocus();
 
-        if (isRegister) {
+        roleSp = findViewById(R.id.auth_roleSp);
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,
+                new ArrayList<String>() {{
+                    add(getString(R.string.auth_roleSp_label));
+                    add(getString(R.string.onboard_manager_label));
+                    add(getString(R.string.onboard_host_label));
+                    add(getString(R.string.onboard_attendee_label));
+                }});
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        roleSp.setAdapter(dataAdapter);
+        roleSp.setSelection(0);
+
+        if (!isRegistered) {
             titleTv.setText(getString(R.string.auth_titleTv_registration_label));
             subtitleTv.setText(getString(R.string.auth_subtitleTv_registration_label));
-            continueBtn.setText(getString(R.string.auth_continueBtn_registration_label));
+            continueBtn.setText(getString(R.string.auth_continueBtn_registration_label_normal));
+            continueBtn.setLoadingText(getString(R.string.auth_continueBtn_registration_label_progress));
+            continueBtn.setCompleteText(getString(R.string.auth_continueBtn_registration_label_complete));
 
             passwordEt.setOnFocusChangeListener((v, hasFocus) -> {
                 if (!hasFocus) {
-                    if (passwordEt.getText()==null || TextUtils.isEmpty(passwordEt.getText().toString())) {
+                    if (TextUtils.isEmpty(text(passwordEt.getText()))) {
                         passwordLy.setError(getString(R.string.auth_validation_empty));
 
-                    } else if (!isValidPassword(passwordEt.getText().toString())) {
+                    } else if (!isValidPassword(text(passwordEt.getText()))) {
                         passwordLy.setError(getString(R.string.auth_validation_invalid));
                         instructionsTv.setVisibility(View.VISIBLE);
 
@@ -103,10 +134,10 @@ public class AuthenticationActivity extends AppCompatActivity {
             TextInputEditText passwordAgainEt = findViewById(R.id.auth_password_againEt);
             passwordAgainEt.setOnFocusChangeListener((v, hasFocus) -> {
                 if (!hasFocus) {
-                    if (passwordAgainEt.getText()==null || TextUtils.isEmpty(passwordAgainEt.getText().toString())) {
+                    if (TextUtils.isEmpty(text(passwordAgainEt.getText()))) {
                         passwordAgainLy.setError(getString(R.string.auth_validation_empty));
 
-                    } else if (passwordEt.getText()==null || !passwordEt.getText().toString().equals(passwordAgainEt.getText().toString())) {
+                    } else if (!text(passwordEt.getText()).equals(text(passwordAgainEt.getText()))) {
                         passwordAgainLy.setError(getString(R.string.auth_validation_mismatch));
 
                     } else {
@@ -116,35 +147,35 @@ public class AuthenticationActivity extends AppCompatActivity {
                 }
             });
 
+            ImageView roleHelpIv = findViewById(R.id.auth_role_helpIv);
+            roleHelpIv.setVisibility(View.VISIBLE);
+            roleHelpIv.setOnClickListener(new OnSingleClickListener() {
+                @Override
+                public void onSingleClick(View v) {
+                    startOnboardActivity();
+                }
+            });
+
             continueBtn.setOnClickListener(v -> {
+                if (isProcessing) return;
+
                 passwordEt.clearFocus();
                 passwordAgainEt.clearFocus();
-                if (passwordLy.getError()==null && passwordAgainLy.getError()==null) {
-                    AccountViewModel accountViewModel = ViewModelProviders.of(AuthenticationActivity.this)
-                            .get(AccountViewModel.class);
+                if (passwordLy.getError()==null && passwordAgainLy.getError()==null
+                        && getSelectedRole()!= Constants.ROLES.ROLE_NONE
+                        && text(passwordEt.getText()).equals(text(passwordAgainEt.getText()))) {
+                    continueBtn.setProgress(5);
+                    isProcessing = true;
+                    onRegister();
 
-                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                    Account account = new Account(
-                            user.getUid(), user.getPhoneNumber(), passwordEt.getText().toString(), "NONE");
+                } else if (passwordEt.getText()!=null && passwordLy.getError()==null && passwordAgainLy.getError()==null
+                        && getSelectedRole()==Constants.ROLES.ROLE_NONE) {
+                    Snackbar.make(findViewById(android.R.id.content),
+                            getString(R.string.auth_bad_role), Snackbar.LENGTH_SHORT).show();
 
-                    accountViewModel.insert(account)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new DisposableSingleObserver<long[]>() {
-                            @Override
-                            public void onSuccess(long[] longs) {
-                                if (longs!=null) {
-                                    PreferencesUtil.setPrefByName(getApplicationContext(), ACCOUNT_ID,
-                                            String.valueOf(longs[0]));
-
-                                    startWelcomeActivity();
-                                }
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                            }
-                        });
+                } else if (!text(passwordEt.getText()).equals(text(passwordAgainEt.getText()))) {
+                    Snackbar.make(findViewById(android.R.id.content),
+                            getString(R.string.auth_validation_mismatch), Snackbar.LENGTH_SHORT).show();
 
                 } else {
                     Snackbar.make(findViewById(android.R.id.content),
@@ -156,11 +187,13 @@ public class AuthenticationActivity extends AppCompatActivity {
             titleTv.setText(getString(R.string.auth_titleTv_login_label));
             subtitleTv.setText(getString(R.string.auth_subtitleTv_login_label));
             continueBtn.setText(getString(R.string.auth_continueBtn_login_label));
+            continueBtn.setLoadingText(getString(R.string.auth_continueBtn_login_label_progress));
+            continueBtn.setCompleteText(getString(R.string.auth_continueBtn_login_label_complete));
             instructionsTv.setVisibility(View.GONE);
 
             passwordEt.setOnFocusChangeListener((v, hasFocus) -> {
                 if (!hasFocus) {
-                    if (passwordEt.getText()==null || TextUtils.isEmpty(passwordEt.getText().toString())) {
+                    if (TextUtils.isEmpty(text(passwordEt.getText()))) {
                         passwordLy.setError(getString(R.string.auth_validation_empty));
 
                     } else {
@@ -170,34 +203,17 @@ public class AuthenticationActivity extends AppCompatActivity {
             });
 
             continueBtn.setOnClickListener(v -> {
+                if (isProcessing) return;
+
                 passwordEt.clearFocus();
-                if (passwordLy.getError()==null) {
-                    AccountViewModel accountViewModel = ViewModelProviders.of(AuthenticationActivity.this)
-                            .get(AccountViewModel.class);
+                if (passwordLy.getError()==null && getSelectedRole()!= Constants.ROLES.ROLE_NONE) {
+                    continueBtn.setProgress(5);
+                    isProcessing = true;
+                    onLogin();
 
-                    String uuid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                    accountViewModel.getAccountByUUID(uuid)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(new DisposableSingleObserver<List<Account>>() {
-                                @Override
-                                public void onSuccess(List<Account> accounts) {
-                                    if (accounts.get(0).getPassword().equals(passwordEt.getText().toString())) {
-                                        PreferencesUtil.setPrefByName(getApplicationContext(), ACCOUNT_ID,
-                                                String.valueOf(accounts.get(0).getId()));
-                                        startWelcomeActivity();
-
-                                    } else {
-                                        Snackbar.make(findViewById(android.R.id.content),
-                                                getString(R.string.auth_wrong), Snackbar.LENGTH_LONG).show();
-                                    }
-                                }
-
-                                @Override
-                                public void onError(Throwable e) {
-
-                                }
-                            });
+                } else if (passwordLy.getError()==null && getSelectedRole()==Constants.ROLES.ROLE_NONE) {
+                    Snackbar.make(findViewById(android.R.id.content),
+                            getString(R.string.auth_bad_role), Snackbar.LENGTH_SHORT).show();
 
                 } else {
                     Snackbar.make(findViewById(android.R.id.content),
@@ -207,9 +223,163 @@ public class AuthenticationActivity extends AppCompatActivity {
         }
     }
 
-    private void startWelcomeActivity() {
-        PreferencesUtil.setPrefByName(getApplicationContext(), IS_AUTHORIZED, true);
-        Intent intent = new Intent(AuthenticationActivity.this, SetupActivity.class);
+    private void onRegister () {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user!=null || DEBUG_MODE) {
+            String uuid, phoneNumber;
+            if (!DEBUG_MODE) {
+                uuid = user.getUid();
+                phoneNumber = user.getPhoneNumber();
+
+            } else {
+                uuid = "Deya";
+                phoneNumber = DEBUG_PHONE;
+            }
+
+            AsyncTask.execute(() -> {
+                new RequestManager(this).attachToken(TOKEN_NONE)
+                    .register(phoneNumber, uuid, text(passwordEt.getText()),
+                            getFormattedRole(getSelectedRole()))
+                    .setCallback(new RequestCallback() {
+
+                        @Override
+                        public void onRegisterSuccess() {
+                            continueBtn.setProgress(100);
+                            isProcessing=false;
+                            startMainActivity();
+                        }
+
+                        @Override
+                        public void onRegisterFailure(int errorCode) {
+                            continueBtn.setProgress(0);
+                            continueBtn.setText(getString(R.string.auth_titleTv_registration_label));
+                            isProcessing=false;
+
+                            String msg;
+                            switch (errorCode) {
+                                case REGISTRATION_USER_EXISTS:
+                                    msg = getString(R.string.auth_registration_user_exists);
+                                    break;
+
+                                case REGISTRATION_UNKNOWN:
+                                    msg = getString(R.string.auth_registration_unknown);
+                                    break;
+
+                                case TOKEN_STORE_FAIL:
+                                    msg = "Internal Error: Failed to store Auth data";
+                                    break;
+
+                                default:
+                                case LOGIN_BAD_ROLE:
+                                case LOGIN_BAD_PHONE:
+                                    msg = "An internal error occurred: " + errorCode;
+                            }
+
+                            Snackbar.make(findViewById(android.R.id.content),
+                                    msg, Snackbar.LENGTH_INDEFINITE).show();
+                        }
+                    });
+            });
+        } else {
+            isProcessing=false;
+            //todo: implement properly
+        }
+    }
+    private void onLogin() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user!=null || DEBUG_MODE) {
+            String phoneNumber;
+            if (!DEBUG_MODE) {
+                phoneNumber = user.getPhoneNumber();
+            } else {
+                phoneNumber = DEBUG_PHONE;
+            }
+            AsyncTask.execute(() -> {
+                new RequestManager(this).attachToken(TOKEN_NONE)
+                    .login(phoneNumber, text(passwordEt.getText()), getFormattedRole(getSelectedRole()))
+                    .setCallback(new RequestCallback() {
+                        @Override
+                        public void onLoginSuccess() {
+                            continueBtn.setProgress(100);
+                            isProcessing=false;
+                            startMainActivity();
+                        }
+
+                        @Override
+                        public void onLoginFailure(int errorCode) {
+                            continueBtn.setProgress(0);
+                            continueBtn.setText(getString(R.string.auth_titleTv_login_label));
+                            isProcessing=false;
+
+                            String msg;
+                            switch (errorCode) {
+                                case LOGIN_USER_NOT_FOUND:
+                                    msg = getString(R.string.auth_login_wrong_password);
+                                    break;
+
+                                case LOGIN_UNKNOWN:
+                                    msg = getString(R.string.auth_login_unknown);
+                                    break;
+
+                                case TOKEN_STORE_FAIL:
+                                    msg = "Internal Error: Failed to store Auth data";
+                                    break;
+
+                                default:
+                                case LOGIN_BAD_ROLE:
+                                case LOGIN_BAD_PHONE:
+                                    msg = "An internal error occurred: " + errorCode;
+                            }
+
+                            Snackbar.make(findViewById(android.R.id.content),
+                                    msg, Snackbar.LENGTH_INDEFINITE).show();
+                        }
+                    });
+            });
+        } else {
+            isProcessing=false;
+            //TODO: implement
+        }
+    }
+
+    private String text(Editable editable) {
+        return (editable==null)? "" : editable.toString();
+    }
+
+    private String getFormattedRole(int role) {
+        switch (role) {
+            case Constants.ROLES.ROLE_MANAGER: return "ACCOUNT_MANGER";
+            case Constants.ROLES.ROLE_HOST: return "ACCOUNT_HOST";
+            case Constants.ROLES.ROLE_ATTENDEE: return "ACCOUNT_PARTICIPATOR";
+            default: return "";
+        }
+    }
+
+    private int getSelectedRole() {
+        switch (roleSp.getSelectedItemPosition()) {
+            case 0: default: return Constants.ROLES.ROLE_NONE;
+            case 1: return Constants.ROLES.ROLE_MANAGER;
+            case 2: return Constants.ROLES.ROLE_HOST;
+            case 3: return Constants.ROLES.ROLE_ATTENDEE;
+        }
+    }
+
+    public void onRoleSetupDismiss(int selectedRole) {
+        switch (selectedRole) {
+            case Constants.ROLES.ROLE_NONE: roleSp.setSelection(0); break;
+            case Constants.ROLES.ROLE_MANAGER: roleSp.setSelection(1); break;
+            case Constants.ROLES.ROLE_HOST: roleSp.setSelection(2); break;
+            case Constants.ROLES.ROLE_ATTENDEE: roleSp.setSelection(3); break;
+        }
+    }
+
+    private void startOnboardActivity() {
+        Intent intent = new Intent(AuthenticationActivity.this, OnboardActivity.class);
+        startActivity(intent);
+    }
+
+    private void startMainActivity() {
+        Intent intent = new Intent(AuthenticationActivity.this, MainActivity.class);
         startActivity(intent);
         finish();
     }
@@ -232,6 +402,6 @@ public class AuthenticationActivity extends AppCompatActivity {
 
         outState.putString("phone", phone);
         outState.putString("phoneFormatted", phoneFormatted);
-        outState.putBoolean("isRegister", isRegister);
+        outState.putBoolean("isRegistered", isRegistered);
     }
 }

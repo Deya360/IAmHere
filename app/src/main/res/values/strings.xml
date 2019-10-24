@@ -6,8 +6,8 @@
     <string name="splash_retryBtn_label">Retry</string>
 
 
-    <string name="onboard_admin_label">Manager</string>
-    <string name="onboard_admin_desc_label">Create sessions, assign hosts, assemble groups and invite participators.</string>
+    <string name="onboard_manager_label">Manager</string>
+    <string name="onboard_manager_desc_label">Create sessions, assign hosts, assemble groups and invite participators.</string>
     <string name="onboard_host_label">Host</string>
     <string name="onboard_host_desc_label">Hold sessions, track attendance and keep in touch with your attendees.</string>
     <string name="onboard_attendee_label">Attendee</string>
@@ -20,7 +20,9 @@
     <string name="verifi_code_otpEt_hint">Verification Code</string>
     <string name="verifi_code_otp_expiredTv_label">Verification code expired</string>
     <string name="verifi_code_autocompleteTv_label">Verification completed automatically</string>
-    <string name="verifi_code_continueBtn_label">Continue</string>
+    <string name="verifi_code_continueBtn_label_normal">Continue</string>
+    <string name="verifi_code_continueBtn_label_progress">Processing</string>
+    <string name="verifi_code_continueBtn_label_error">Something went wrong :(</string>
 
     <string name="verifi_phone_phoneEt_label">Phone Number</string>
     <string name="verifi_phone_continueBtn_label">Continue</string>
@@ -35,19 +37,40 @@
     <string name="auth_passwordEt_hint">Password</string>
     <string name="auth_instructionsTv_label">The password must be at least 8 characters long and contain upper and lower case letters and at least one number.</string>
     <string name="auth_password_againEt_label">Repeat password</string>
+    <string name="auth_roleIv_label">Roles</string>
+    <string name="auth_roleSp_label">Pick a role</string>
+    <string name="auth_role_helpIv_label">Help me choose</string>
 
     <string name="auth_titleTv_registration_label">Registration</string>
     <string name="auth_subtitleTv_registration_label">You will need to create a password for your account.</string>
-    <string name="auth_continueBtn_registration_label">Register</string>
+    <string name="auth_continueBtn_registration_label_normal">Register</string>
+    <string name="auth_continueBtn_registration_label_progress">Registering…</string>
+    <string name="auth_continueBtn_registration_label_complete">Success!</string>
 
     <string name="auth_titleTv_login_label">Login</string>
     <string name="auth_subtitleTv_login_label">Welcome back!, enter your password to continue.</string>
     <string name="auth_continueBtn_login_label">Login</string>
+    <string name="auth_continueBtn_login_label_progress">Logging in…</string>
+    <string name="auth_continueBtn_login_label_complete">Success!</string>
 
     <string name="auth_validation_empty">This can\'t be empty</string>
     <string name="auth_validation_invalid">Invalid password</string>
     <string name="auth_validation_mismatch">Passwords don\'t match</string>
-    <string name="auth_wrong">Wrong Password!</string>
     <string name="auth_bad_input">Fields filled incorrectly</string>
+    <string name="auth_bad_role">Role not picked</string>
+
+    <string name="auth_login_wrong_password">Incorrect password!</string>
+    <string name="auth_login_unknown">An unexpected error occurred while logging in.</string>
+
+    <string name="auth_registration_user_exists">An account with this phone number already exists.</string>
+    <string name="auth_registration_unknown">An unexpected error occurred while logging in.</string>
+
+
+
+    <string name="setup_helpBtn_label">Help Me Choose</string>
+
+
+    <string name="fragment_role_setup_dialog_tag" translatable="false">RoleSetupDialogFrag</string>
+
 
 </resources>

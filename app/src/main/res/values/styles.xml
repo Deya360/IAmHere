@@ -7,8 +7,8 @@
     </style>
 
     <style name="AppThemeManager" parent="AppTheme">
-        <item name="colorPrimary">@color/colorAdminPrimary</item>
-        <item name="colorPrimaryDark">@color/colorAdminPrimaryDark</item>
+        <item name="colorPrimary">@color/colorManagerPrimary</item>
+        <item name="colorPrimaryDark">@color/colorManagerPrimaryDark</item>
         <item name="colorAccent">@color/colorGeneralAccent</item>
     </style>
 

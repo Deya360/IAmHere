@@ -1,6 +1,7 @@
 package com.sse.iamhere;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -12,11 +13,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.ViewCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.sse.iamhere.Server.Body.CheckData;
+import com.sse.iamhere.Server.RequestCallback;
+import com.sse.iamhere.Server.RequestManager;
+import com.sse.iamhere.Utils.Constants;
 import com.sse.iamhere.Utils.InternetUtil;
 import com.sse.iamhere.Utils.PreferencesUtil;
 
-import static com.sse.iamhere.Utils.Constants.ACCOUNT_ID;
+import static com.sse.iamhere.Utils.Constants.DEBUG_MODE;
 import static com.sse.iamhere.Utils.Constants.IS_FIRST_TIME;
+import static com.sse.iamhere.Utils.ServerConstants.DEBUG_PHONE;
 
 public class SplashActivity extends AppCompatActivity {
     private static final int AUTO_CONTINUE_TIME_DELAY = 1100;
@@ -139,28 +146,85 @@ public class SplashActivity extends AppCompatActivity {
         if (!finished) {
             finished=true;
 
-            Intent intent;
             if (isPhoneVerified) {
-                if (PreferencesUtil.getPrefByName(getApplicationContext(), ACCOUNT_ID, "-1")
-                        .equals("-1")) {
-                    Bundle bundle = new Bundle();
-                    bundle.putString("phone", firebaseAuth.getCurrentUser().getPhoneNumber());
-                    bundle.putString("phoneFormatted", firebaseAuth.getCurrentUser().getPhoneNumber()); //TODO: format properly
-                    bundle.putBoolean("isRegister", false);
+                try {
+                    if (PreferencesUtil.getTokenData(this)!=null) {
+                        startMainActivity();
+                    } else {
+                        startAuthenticationActivity();
+                    }
 
-                    intent = new Intent(SplashActivity.this, AuthenticationActivity.class);
-                    intent.putExtras(bundle);
-
-                } else {
-                    intent = new Intent(SplashActivity.this, SetupActivity.class);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    startAuthenticationActivity();
                 }
 
             } else {
-                intent = new Intent(SplashActivity.this, VerificationActivity.class);
+                startVerificationActivity();
+            }
+        }
+    }
+
+    private void startVerificationActivity() {
+        Intent intent = new Intent(SplashActivity.this, VerificationActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private void startAuthenticationActivity() {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null || Constants.DEBUG_MODE) {
+            String uuid;
+            if (DEBUG_MODE) {
+                uuid = "Deya";
+            } else {
+                uuid = currentUser.getUid();
             }
 
-            startActivity(intent);
-            finish();
+            AsyncTask.execute(() -> {
+                new RequestManager(this).check(uuid).attachToken(Constants.TOKEN_NONE)
+                    .setCallback(new RequestCallback() {
+                        @Override
+                        public void onCheckSuccess(CheckData checkResult) {
+                            startAuthenticationActivity(checkResult.isRegistered());
+                        }
+
+                        @Override
+                        public void onCheckFailure(int errorCode) {
+                            Toast.makeText(SplashActivity.this, "Internal Server Error :(", Toast.LENGTH_LONG).show();
+                            //todo: implement properly
+                        }
+                    });
+            });
+        } else {
+            Toast.makeText(SplashActivity.this, "Couldn't connect to server", Toast.LENGTH_LONG).show();
+            //todo: implement properly
         }
+
+    }
+    private void startAuthenticationActivity(boolean isRegistered) {
+        Intent intent;
+        Bundle bundle = new Bundle();
+        bundle.putBoolean("isRegistered", isRegistered);
+
+        if (DEBUG_MODE) {
+            bundle.putString("phone", DEBUG_PHONE);
+            bundle.putString("phoneFormatted", DEBUG_PHONE);
+
+        } else {
+            bundle.putString("phone", firebaseAuth.getCurrentUser().getPhoneNumber());
+            bundle.putString("phoneFormatted", firebaseAuth.getCurrentUser().getPhoneNumber()); //TODO: format properly
+        }
+
+        intent = new Intent(SplashActivity.this, AuthenticationActivity.class);
+        intent.putExtras(bundle);
+        startActivity(intent);
+        finish();
+    }
+
+    private void startMainActivity() {
+        Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

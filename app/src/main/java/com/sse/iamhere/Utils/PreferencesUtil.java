@@ -3,8 +3,19 @@ package com.sse.iamhere.Utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.security.crypto.EncryptedSharedPreferences;
+import androidx.security.crypto.MasterKeys;
+
+import com.google.gson.Gson;
+import com.sse.iamhere.Server.Body.TokenData;
+
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+
 import static android.content.Context.MODE_PRIVATE;
 import static com.sse.iamhere.Utils.Constants.SETTINGS_PREFS;
+import static com.sse.iamhere.Utils.Constants.SETTINGS_PREFS_SECRET;
+import static com.sse.iamhere.Utils.Constants.TD_KEY;
 
 public class PreferencesUtil {
     // Permissions Util
@@ -36,5 +47,31 @@ public class PreferencesUtil {
     public static void setPrefByName(Context context, String setting, String value){
         SharedPreferences sharedPreference = context.getSharedPreferences(SETTINGS_PREFS, MODE_PRIVATE);
         sharedPreference.edit().putString(setting, value).apply();
+    }
+
+
+    public static TokenData getTokenData(Context context) throws GeneralSecurityException, IOException {
+        String key =  MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC);
+        SharedPreferences encryptedSharedPrefs = EncryptedSharedPreferences.create(
+                SETTINGS_PREFS_SECRET,
+                key,
+                context,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        );
+
+        return new Gson().fromJson(encryptedSharedPrefs.getString(TD_KEY, null), TokenData.class);
+    }
+
+    public static void setToken(Context context, TokenData tokenData) throws GeneralSecurityException, IOException {
+        String key =  MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC);
+        SharedPreferences encryptedSharedPrefs = EncryptedSharedPreferences.create(
+                SETTINGS_PREFS_SECRET,
+                key,
+                context,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        );
+        encryptedSharedPrefs.edit().putString(TD_KEY, new Gson().toJson(tokenData)).apply();
     }
 }

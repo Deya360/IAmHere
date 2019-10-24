@@ -64,30 +64,31 @@ public class VerificationActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onContinue(boolean isRegister, String phoneFormatted, String phone) {
-                startAuthActivity(isRegister, phoneFormatted, phone);
+            public void onContinue(boolean isRegistered, String phoneFormatted, String phone) {
+                startAuthActivity(isRegistered, phoneFormatted, phone);
             }
 
             @Override
             public void onError(int errorCode) {
-                    switch (errorCode) {
-                        case Constants.VerifiEC.VERIFICATION_FAILED:
-                        case Constants.VerifiEC.SIGNIN_FAILED:
-                            Snackbar.make(findViewById(android.R.id.content),
-                                    getString(R.string.verifi_on_error), Snackbar.LENGTH_LONG).show();
-                            break;
-                    }
+                switch (errorCode) {
+                    case Constants.VerifiEC.VERIFICATION_FAILED:
+                    case Constants.VerifiEC.SIGNIN_FAILED:
+                        Snackbar.make(findViewById(android.R.id.content),
+                                getString(R.string.verifi_on_error), Snackbar.LENGTH_INDEFINITE).show();
+                        break;
+                }
             }
 
         });
         viewPager.setAdapter(verificationAdapter);
     }
 
-    private void startAuthActivity(boolean isRegister, String phoneFormatted, String phoneLocal) {
+
+    private void startAuthActivity(boolean isRegistered, String phoneFormatted, String phoneLocal) {
         Bundle bundle = new Bundle();
         bundle.putString("phone", phoneLocal);
         bundle.putString("phoneFormatted", phoneFormatted);
-        bundle.putBoolean("isRegister", isRegister);
+        bundle.putBoolean("isRegistered", isRegistered);
 
         Intent intent = new Intent(VerificationActivity.this, AuthenticationActivity.class);
         intent.putExtras(bundle);

@@ -6,10 +6,11 @@
 
 
     <color name="colorGeneralAccent">#FF5722</color>
+    <color name="colorGeneralAccentDark">#c75b24</color>
 
-    <color name="colorAdminPrimary">#607d8b</color>
-    <color name="colorAdminPrimaryDark">#34515e</color>
-    <color name="colorAdminPrimaryLight">#8eacbb</color>
+    <color name="colorManagerPrimary">#607d8b</color>
+    <color name="colorManagerPrimaryDark">#34515e</color>
+    <color name="colorManagerPrimaryLight">#8eacbb</color>
 
     <color name="colorHostPrimary">#00acc1</color>
     <color name="colorHostPrimaryDark">#007c91</color>

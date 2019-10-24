@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout android:id="@+id/layout"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:background="@color/white">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -17,51 +17,55 @@
             android:padding="15dp">
 
             <LinearLayout
-                android:id="@+id/welcome_headerLy"
+                android:id="@+id/setup_headerLy"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
                 android:layout_marginEnd="10dp"
                 android:layout_marginTop="15dp"
-                android:orientation="vertical">
+                android:orientation="vertical"
+
+                android:visibility="gone"
+                tools:visibility="visible">
 
                 <TextView
-                    android:id="@+id/welcome_titleTv"
+                    android:id="@+id/setup_titleTv"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="5dp"
 
-                    android:text="Welcome!"
                     android:textColor="@android:color/black"
                     android:textSize="28sp"
                     android:textStyle="bold"
-                    android:fontFamily="@font/bree_serif" />
+                    android:fontFamily="@font/bree_serif"
+
+                    tools:text="Welcome!" />
 
                 <TextView
-                    android:id="@+id/welcome_subtitleTv"
+                    android:id="@+id/setup_subtitleTv"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="5dp"
 
-                    android:text="Please pick a role"
                     android:textColor="#94000000"
                     android:textSize="21sp"
-                    android:fontFamily="@font/bree_serif" />
+                    android:fontFamily="@font/bree_serif"
+                    tools:text="Please pick a role" />
 
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/welcome_inputLy"
+                android:id="@+id/setup_inputLy"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
                 android:layout_marginEnd="10dp"
                 android:layout_marginTop="15dp"
-                android:layout_below="@id/welcome_headerLy"
+                android:layout_below="@id/setup_headerLy"
                 android:orientation="vertical">
 
                 <LinearLayout
-                    android:id="@+id/setup_adminLy"
+                    android:id="@+id/setup_managerLy"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
@@ -77,7 +81,8 @@
                     <ImageView
                         android:layout_width="90dp"
                         android:layout_height="90dp"
-                        android:src="@drawable/admin"/>
+                        android:src="@drawable/manager"
+                        tools:ignore="ContentDescription" />
 
                     <TextView
                         android:layout_width="match_parent"
@@ -85,7 +90,7 @@
                         android:gravity="center"
                         android:layout_gravity="center"
 
-                        android:text="Manager"
+                        android:text="@string/onboard_manager_label"
                         android:textColor="@android:color/black"
                         android:textSize="32sp"
                         android:fontFamily="@font/bree_serif" />
@@ -109,7 +114,8 @@
                     <ImageView
                         android:layout_width="90dp"
                         android:layout_height="90dp"
-                        android:src="@drawable/host"/>
+                        android:src="@drawable/host"
+                        tools:ignore="ContentDescription" />
 
                     <TextView
                         android:layout_width="match_parent"
@@ -117,7 +123,7 @@
                         android:gravity="center"
                         android:layout_gravity="center"
 
-                        android:text="Host"
+                        android:text="@string/onboard_host_label"
                         android:textColor="@android:color/black"
                         android:textSize="32sp"
                         android:fontFamily="@font/bree_serif" />
@@ -141,7 +147,8 @@
                 <ImageView
                     android:layout_width="90dp"
                     android:layout_height="90dp"
-                    android:src="@drawable/attendee"/>
+                    android:src="@drawable/attendee"
+                    tools:ignore="ContentDescription" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -149,7 +156,7 @@
                     android:gravity="center"
                     android:layout_gravity="center"
 
-                    android:text="Attendee"
+                    android:text="@string/onboard_attendee_label"
                     android:textColor="@android:color/black"
                     android:textSize="32sp"
                     android:fontFamily="@font/bree_serif" />
@@ -159,15 +166,15 @@
             </LinearLayout>
 
             <Button
-                android:id="@+id/welcome_helpBtn"
+                android:id="@+id/setup_helpBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/welcome_inputLy"
+                android:layout_below="@id/setup_inputLy"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="25dp"
                 android:padding="15dp"
 
-                android:text="Help Me Choose"
+                android:text="@string/setup_helpBtn_label"
                 android:textSize="16sp"
 
                 style="@style/Widget.AppCompat.Button.Colored"/>

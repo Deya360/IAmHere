@@ -2,6 +2,7 @@ package com.sse.iamhere.Adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 
+import com.dd.processbutton.iml.ActionProcessButton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.FirebaseException;
@@ -27,6 +29,9 @@ import com.google.firebase.auth.PhoneAuthProvider;
 import com.redmadrobot.inputmask.MaskedTextChangedListener;
 import com.redmadrobot.inputmask.helper.AffinityCalculationStrategy;
 import com.sse.iamhere.R;
+import com.sse.iamhere.Server.Body.CheckData;
+import com.sse.iamhere.Server.RequestCallback;
+import com.sse.iamhere.Server.RequestManager;
 import com.sse.iamhere.Utils.Constants;
 
 import java.util.ArrayList;
@@ -36,6 +41,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
+import static com.sse.iamhere.Utils.Constants.DEBUG_MODE;
 import static com.sse.iamhere.Utils.Constants.OTP_TIMEOUT;
 
 public class VerificationAdapter extends PagerAdapter {
@@ -45,8 +51,6 @@ public class VerificationAdapter extends PagerAdapter {
     private OnCompleteListener<AuthResult> loginListener;
     private Timer timer = new Timer();
 
-    private boolean debug = false; //TODO: remove debug
-    private boolean isRegister = true;
     private String phone, phoneFormatted;
 
     private VerificationAdapterListener verificationAdapterListener;
@@ -59,7 +63,7 @@ public class VerificationAdapter extends PagerAdapter {
         void onNext(int stageNo);
         void onPhoneValidated(String phone);
         void onVerificationCodeSent(String phoneFormatted);
-        void onContinue(boolean isRegister, String phoneFormatted, String phone);
+        void onContinue(boolean isRegistered, String phoneFormatted, String phone);
         void onError(int errorCode);
     }
 
@@ -92,6 +96,9 @@ public class VerificationAdapter extends PagerAdapter {
         } else if (position==1) {
             view = inflater.inflate(R.layout.item_verifi_code, container, false);
             setupOTPInput(view);
+
+        } else {
+            throw new RuntimeException("Verification Adapter position should never be anything but 0 or 1");
         }
 
         container.addView(view);
@@ -151,7 +158,9 @@ public class VerificationAdapter extends PagerAdapter {
         });
     }
     private void setupOTPInput(View view) {
-        Button continueBtn2 = view.findViewById(R.id.verifi_code_continueBtn);
+//        Button continueBtn2 = view.findViewById(R.id.verifi_code_continueBtn);
+        ActionProcessButton continueBtn2 = view.findViewById(R.id.verifi_code_continueBtn);
+        continueBtn2.setMode(ActionProcessButton.Mode.ENDLESS);
 
         TextView autoCompleteTv = view.findViewById(R.id.verifi_code_autocompleteTv);
         TextView otpExpiredTv = view.findViewById(R.id.verifi_code_otp_expiredTv);
@@ -227,14 +236,8 @@ public class VerificationAdapter extends PagerAdapter {
         };
 
         loginListener = task -> {
-            if (task.isSuccessful() || debug) {
+            if (task.isSuccessful() || DEBUG_MODE) {
                 Log.d("signInWithPhone", "signInWithCredential:success");
-                if (!debug) {
-                    Log.d("NEW USER?!", "onComplete: " +
-                            (task.getResult().getAdditionalUserInfo().isNewUser() ? "new user" : "old user"));
-                    FirebaseUser user = task.getResult().getUser();
-                    isRegister = task.getResult().getAdditionalUserInfo().isNewUser();
-                }
 
                 otpCodeEt.setCompoundDrawablesWithIntrinsicBounds( 0, 0, R.drawable.ic_check_green_24dp, 0 );
                 otpCodeEt.setError(null);
@@ -276,7 +279,50 @@ public class VerificationAdapter extends PagerAdapter {
         otpCodeEt.requestFocus();
         otpCodeEt.setText("");
 
-        continueBtn2.setOnClickListener(v -> verificationAdapterListener.onContinue(isRegister, phoneFormatted, phone));
+
+        continueBtn2.setOnClickListener(new View.OnClickListener() {
+            boolean processing = false;
+            @Override
+            public void onClick(View v) {
+                if (processing) return;
+
+                processing = true;
+                continueBtn2.setProgress(5);
+                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                if (currentUser != null || Constants.DEBUG_MODE) {
+                    String uuid;
+                    if (DEBUG_MODE) {
+                        uuid = "Deya1";
+                    } else {
+                        uuid = currentUser.getUid();
+                    }
+
+                    AsyncTask.execute(() -> {
+                        new RequestManager(context).check(uuid).attachToken(Constants.TOKEN_NONE)
+                            .setCallback(new RequestCallback() {
+                                @Override
+                                public void onCheckSuccess(CheckData checkResult) {
+                                    continueBtn2.setProgress(100);
+                                    boolean isRegistered = checkResult.isRegistered();
+                                    verificationAdapterListener.onContinue(isRegistered, phoneFormatted, phone);
+                                    processing = false;
+                                }
+
+                                @Override
+                                public void onCheckFailure(int errorCode) {
+                                    continueBtn2.setProgress(-1);
+                                    processing = false;
+                                    //todo: implement properly (pass back throught error interface)
+                                }
+                            });
+                    });
+                } else {
+                    continueBtn2.setProgress(-1);
+                    processing = false;
+                    //todo: implement properly
+                }
+            }
+        });
     }
 
 

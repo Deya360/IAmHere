@@ -6,70 +6,76 @@
     android:layout_height="match_parent"
     android:background="@color/white">
 
-    <RelativeLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="15dp">
+        android:layout_height="match_parent">
 
-        <LinearLayout
-            android:id="@+id/verifi_headerLy"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginTop="15dp"
-            android:orientation="vertical">
+            android:padding="15dp">
 
-            <TextView
+            <LinearLayout
+                android:id="@+id/verifi_headerLy"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginTop="15dp"
+                android:orientation="vertical">
 
-                android:text="@string/verifi_title_label"
-                android:textColor="@android:color/black"
-                android:textSize="28sp"
-                android:textStyle="bold"
-                android:fontFamily="@font/bree_serif" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
 
-            <TextView
+                    android:text="@string/verifi_title_label"
+                    android:textColor="@android:color/black"
+                    android:textSize="28sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/bree_serif" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp"
+
+                    android:text="@string/verifi_description_label"
+                    android:textColor="#94000000"
+                    android:textSize="21sp"
+                    android:fontFamily="@font/bree_serif" />
+
+                <TextView
+                    android:id="@+id/verifi_phone_numberTv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp"
+                    android:padding="5dp"
+                    android:gravity="center_vertical"
+
+                    android:textColor="#94000000"
+                    android:textSize="21sp"
+                    android:fontFamily="@font/bree_serif"
+
+                    android:drawableStart="@drawable/ic_phone_black_24dp"
+                    android:drawablePadding="6dp"
+                    android:visibility="gone"
+
+                    tools:text="+7 (900) 123 45-67"
+                    tools:visibility="visible"/>
+
+            </LinearLayout>
+
+            <com.sse.iamhere.Views.NoSwipeViewPager
+                android:id="@+id/verifi_inputVp"
+                android:layout_below="@id/verifi_headerLy"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="15dp"
+                android:layout_height="300dp">
 
-                android:text="@string/verifi_description_label"
-                android:textColor="#94000000"
-                android:textSize="21sp"
-                android:fontFamily="@font/bree_serif" />
+            </com.sse.iamhere.Views.NoSwipeViewPager>
 
-            <TextView
-                android:id="@+id/verifi_phone_numberTv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="15dp"
-                android:padding="5dp"
-                android:gravity="center_vertical"
+        </RelativeLayout>
 
-                android:textColor="#94000000"
-                android:textSize="21sp"
-                android:fontFamily="@font/bree_serif"
-
-                android:drawableStart="@drawable/ic_phone_black_24dp"
-                android:drawablePadding="6dp"
-                android:visibility="gone"
-
-                tools:text="+7 (900) 123 45-67"
-                tools:visibility="visible"/>
-
-        </LinearLayout>
-
-        <com.sse.iamhere.Views.NoSwipeViewPager
-            android:id="@+id/verifi_inputVp"
-            android:layout_below="@id/verifi_headerLy"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-        </com.sse.iamhere.Views.NoSwipeViewPager>
-
-    </RelativeLayout>
+    </ScrollView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

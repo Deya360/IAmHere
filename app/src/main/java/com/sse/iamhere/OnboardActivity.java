@@ -22,9 +22,9 @@ public class OnboardActivity extends AhoyOnboarderActivity {
 
     private void setupOnboard() {
         AhoyOnboarderCard card1 = new AhoyOnboarderCard(
-                getString(R.string.onboard_admin_label),
-                getString(R.string.onboard_admin_desc_label),
-                R.drawable.admin);
+                getString(R.string.onboard_manager_label),
+                getString(R.string.onboard_manager_desc_label),
+                R.drawable.manager);
         card1.setBackgroundColor(R.color.black_transparent_image);
         card1.setTitleColor(R.color.white);
         card1.setDescriptionColor(R.color.grey_200);
@@ -65,7 +65,7 @@ public class OnboardActivity extends AhoyOnboarderActivity {
         setFinishButtonDrawableStyle(ContextCompat.getDrawable(OnboardActivity.this, R.drawable.rounded_button));
 
         List<Integer> colors = new ArrayList<>();
-        colors.add(R.color.colorAdminPrimary);
+        colors.add(R.color.colorManagerPrimary);
         colors.add(R.color.colorHostPrimary);
         colors.add(R.color.colorAttendeePrimary);
         setColorBackground(colors);
