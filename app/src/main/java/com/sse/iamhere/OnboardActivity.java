@@ -24,7 +24,7 @@ public class OnboardActivity extends AhoyOnboarderActivity {
         AhoyOnboarderCard card1 = new AhoyOnboarderCard(
                 getString(R.string.onboard_manager_label),
                 getString(R.string.onboard_manager_desc_label),
-                R.drawable.manager);
+                R.drawable.onboard_manager);
         card1.setBackgroundColor(R.color.black_transparent_image);
         card1.setTitleColor(R.color.white);
         card1.setDescriptionColor(R.color.grey_200);
@@ -34,7 +34,7 @@ public class OnboardActivity extends AhoyOnboarderActivity {
         AhoyOnboarderCard card2 = new AhoyOnboarderCard(
                 getString(R.string.onboard_host_label),
                 getString(R.string.onboard_host_desc_label),
-                R.drawable.host);
+                R.drawable.onboard_host);
         card2.setBackgroundColor(R.color.black_transparent_image);
         card2.setTitleColor(R.color.white);
         card2.setDescriptionColor(R.color.grey_200);
@@ -44,7 +44,7 @@ public class OnboardActivity extends AhoyOnboarderActivity {
         AhoyOnboarderCard card3 = new AhoyOnboarderCard(
                 getString(R.string.onboard_attendee_label),
                 getString(R.string.onboard_attendee_desc_label),
-                R.drawable.attendee);
+                R.drawable.onboard_attendee);
         card3.setBackgroundColor(R.color.black_transparent_image);
         card3.setTitleColor(R.color.white);
         card3.setDescriptionColor(R.color.grey_200);

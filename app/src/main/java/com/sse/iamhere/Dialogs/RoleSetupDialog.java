@@ -20,9 +20,9 @@ import com.sse.iamhere.R;
 import com.sse.iamhere.Utils.Constants;
 
 public class RoleSetupDialog extends AppCompatDialogFragment {
-    private int selectedRole;
+    private Constants.Role selectedRole;
 
-    public RoleSetupDialog(int selectedRole) {
+    public RoleSetupDialog(Constants.Role selectedRole) {
         this.selectedRole = selectedRole;
     }
 
@@ -30,7 +30,7 @@ public class RoleSetupDialog extends AppCompatDialogFragment {
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            selectedRole = savedInstanceState.getInt("selectedRole");
+            selectedRole = Constants.Role.valueOf(savedInstanceState.getString("selectedRole"));
         }
 
         if (!(getActivity() instanceof AuthenticationActivity)) {
@@ -65,21 +65,21 @@ public class RoleSetupDialog extends AppCompatDialogFragment {
 
 
         setup_managerLy.setOnClickListener(v -> {
-            selectedRole = Constants.ROLES.ROLE_MANAGER;
+            selectedRole = Constants.Role.MANAGER;
             setBackgroundColor(v, R.drawable.back_rounded_rect_card_green);
             setBackgroundColor(setup_hostLy, R.drawable.back_rounded_rect_card_grey);
             setBackgroundColor(setup_attendeeLy, R.drawable.back_rounded_rect_card_grey);
         });
 
         setup_hostLy.setOnClickListener(v -> {
-            selectedRole = Constants.ROLES.ROLE_HOST;
+            selectedRole = Constants.Role.HOST;
             setBackgroundColor(v, R.drawable.back_rounded_rect_card_green);
             setBackgroundColor(setup_managerLy, R.drawable.back_rounded_rect_card_grey);
             setBackgroundColor(setup_attendeeLy, R.drawable.back_rounded_rect_card_grey);
         });
 
         setup_attendeeLy.setOnClickListener(v -> {
-            selectedRole = Constants.ROLES.ROLE_ATTENDEE;
+            selectedRole = Constants.Role.ATTENDEE;
             setBackgroundColor(v, R.drawable.back_rounded_rect_card_green);
             setBackgroundColor(setup_managerLy, R.drawable.back_rounded_rect_card_grey);
             setBackgroundColor(setup_hostLy, R.drawable.back_rounded_rect_card_grey);
@@ -102,7 +102,7 @@ public class RoleSetupDialog extends AppCompatDialogFragment {
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
-        outState.putInt("selectedRole", selectedRole);
+        outState.putString("selectedRole", selectedRole.name());
         super.onSaveInstanceState(outState);
     }
 }

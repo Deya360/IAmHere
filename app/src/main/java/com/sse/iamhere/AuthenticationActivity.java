@@ -25,6 +25,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.sse.iamhere.Server.RequestCallback;
 import com.sse.iamhere.Server.RequestManager;
 import com.sse.iamhere.Utils.Constants;
+import com.sse.iamhere.Utils.PreferencesUtil;
 import com.sse.iamhere.Views.OnSingleClickListener;
 
 import java.util.ArrayList;
@@ -95,9 +96,9 @@ public class AuthenticationActivity extends AppCompatActivity {
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,
                 new ArrayList<String>() {{
                     add(getString(R.string.auth_roleSp_label));
-                    add(getString(R.string.onboard_manager_label));
-                    add(getString(R.string.onboard_host_label));
                     add(getString(R.string.onboard_attendee_label));
+                    add(getString(R.string.onboard_host_label));
+                    add(getString(R.string.onboard_manager_label));
                 }});
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         roleSp.setAdapter(dataAdapter);
@@ -162,14 +163,14 @@ public class AuthenticationActivity extends AppCompatActivity {
                 passwordEt.clearFocus();
                 passwordAgainEt.clearFocus();
                 if (passwordLy.getError()==null && passwordAgainLy.getError()==null
-                        && getSelectedRole()!= Constants.ROLES.ROLE_NONE
+                        && getSelectedRole()!= Constants.Role.NONE
                         && text(passwordEt.getText()).equals(text(passwordAgainEt.getText()))) {
                     continueBtn.setProgress(5);
                     isProcessing = true;
                     onRegister();
 
                 } else if (passwordEt.getText()!=null && passwordLy.getError()==null && passwordAgainLy.getError()==null
-                        && getSelectedRole()==Constants.ROLES.ROLE_NONE) {
+                        && getSelectedRole()==Constants.Role.NONE) {
                     Snackbar.make(findViewById(android.R.id.content),
                             getString(R.string.auth_bad_role), Snackbar.LENGTH_SHORT).show();
 
@@ -206,12 +207,12 @@ public class AuthenticationActivity extends AppCompatActivity {
                 if (isProcessing) return;
 
                 passwordEt.clearFocus();
-                if (passwordLy.getError()==null && getSelectedRole()!= Constants.ROLES.ROLE_NONE) {
+                if (passwordLy.getError()==null && getSelectedRole()!= Constants.Role.NONE) {
                     continueBtn.setProgress(5);
                     isProcessing = true;
                     onLogin();
 
-                } else if (passwordLy.getError()==null && getSelectedRole()==Constants.ROLES.ROLE_NONE) {
+                } else if (passwordLy.getError()==null && getSelectedRole()==Constants.Role.NONE) {
                     Snackbar.make(findViewById(android.R.id.content),
                             getString(R.string.auth_bad_role), Snackbar.LENGTH_SHORT).show();
 
@@ -238,15 +239,16 @@ public class AuthenticationActivity extends AppCompatActivity {
 
             AsyncTask.execute(() -> {
                 new RequestManager(this).attachToken(TOKEN_NONE)
-                    .register(phoneNumber, uuid, text(passwordEt.getText()),
-                            getFormattedRole(getSelectedRole()))
+                    .register(uuid, text(passwordEt.getText()), phoneNumber, getFormattedRole(getSelectedRole()))
                     .setCallback(new RequestCallback() {
-
                         @Override
                         public void onRegisterSuccess() {
                             continueBtn.setProgress(100);
                             isProcessing=false;
-                            startMainActivity();
+
+                            PreferencesUtil.setRole(AuthenticationActivity.this, getSelectedRole());
+
+                            startHomeActivity();
                         }
 
                         @Override
@@ -288,28 +290,34 @@ public class AuthenticationActivity extends AppCompatActivity {
     private void onLogin() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user!=null || DEBUG_MODE) {
-            String phoneNumber;
+            String uuid;
             if (!DEBUG_MODE) {
-                phoneNumber = user.getPhoneNumber();
+                uuid = user.getUid();
             } else {
-                phoneNumber = DEBUG_PHONE;
+                uuid = "Deya";
             }
             AsyncTask.execute(() -> {
                 new RequestManager(this).attachToken(TOKEN_NONE)
-                    .login(phoneNumber, text(passwordEt.getText()), getFormattedRole(getSelectedRole()))
+                    .login(uuid, text(passwordEt.getText()), getFormattedRole(getSelectedRole()))
                     .setCallback(new RequestCallback() {
                         @Override
                         public void onLoginSuccess() {
                             continueBtn.setProgress(100);
-                            isProcessing=false;
-                            startMainActivity();
+                            isProcessing=false; //release lock (although not needed as activity will finish)
+
+                            // Save role to prefs
+                            PreferencesUtil.setRole(AuthenticationActivity.this, getSelectedRole());
+
+                            startHomeActivity();
                         }
 
                         @Override
                         public void onLoginFailure(int errorCode) {
+                            // reset button ui
                             continueBtn.setProgress(0);
                             continueBtn.setText(getString(R.string.auth_titleTv_login_label));
-                            isProcessing=false;
+
+                            isProcessing=false; //release lock (although not needed as activity will finish)
 
                             String msg;
                             switch (errorCode) {
@@ -346,31 +354,16 @@ public class AuthenticationActivity extends AppCompatActivity {
         return (editable==null)? "" : editable.toString();
     }
 
-    private String getFormattedRole(int role) {
-        switch (role) {
-            case Constants.ROLES.ROLE_MANAGER: return "ACCOUNT_MANGER";
-            case Constants.ROLES.ROLE_HOST: return "ACCOUNT_HOST";
-            case Constants.ROLES.ROLE_ATTENDEE: return "ACCOUNT_PARTICIPATOR";
-            default: return "";
-        }
+    private String getFormattedRole(Constants.Role role) {
+        return role.toSerializedJSON();
     }
 
-    private int getSelectedRole() {
-        switch (roleSp.getSelectedItemPosition()) {
-            case 0: default: return Constants.ROLES.ROLE_NONE;
-            case 1: return Constants.ROLES.ROLE_MANAGER;
-            case 2: return Constants.ROLES.ROLE_HOST;
-            case 3: return Constants.ROLES.ROLE_ATTENDEE;
-        }
+    private Constants.Role getSelectedRole() {
+        return Constants.Role.values()[roleSp.getSelectedItemPosition()];
     }
 
-    public void onRoleSetupDismiss(int selectedRole) {
-        switch (selectedRole) {
-            case Constants.ROLES.ROLE_NONE: roleSp.setSelection(0); break;
-            case Constants.ROLES.ROLE_MANAGER: roleSp.setSelection(1); break;
-            case Constants.ROLES.ROLE_HOST: roleSp.setSelection(2); break;
-            case Constants.ROLES.ROLE_ATTENDEE: roleSp.setSelection(3); break;
-        }
+    public void onRoleSetupDismiss(Constants.Role selectedRole) {
+        roleSp.setSelection(selectedRole.toIdx());
     }
 
     private void startOnboardActivity() {
@@ -378,8 +371,8 @@ public class AuthenticationActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void startMainActivity() {
-        Intent intent = new Intent(AuthenticationActivity.this, MainActivity.class);
+    private void startHomeActivity() {
+        Intent intent = new Intent(AuthenticationActivity.this, HomeActivity.class);
         startActivity(intent);
         finish();
     }

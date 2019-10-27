@@ -81,7 +81,7 @@
                     <ImageView
                         android:layout_width="90dp"
                         android:layout_height="90dp"
-                        android:src="@drawable/manager"
+                        android:src="@drawable/onboard_manager"
                         tools:ignore="ContentDescription" />
 
                     <TextView
@@ -114,7 +114,7 @@
                     <ImageView
                         android:layout_width="90dp"
                         android:layout_height="90dp"
-                        android:src="@drawable/host"
+                        android:src="@drawable/onboard_host"
                         tools:ignore="ContentDescription" />
 
                     <TextView
@@ -147,7 +147,7 @@
                 <ImageView
                     android:layout_width="90dp"
                     android:layout_height="90dp"
-                    android:src="@drawable/attendee"
+                    android:src="@drawable/onboard_attendee"
                     tools:ignore="ContentDescription" />
 
                 <TextView
@@ -174,7 +174,7 @@
                 android:layout_marginTop="25dp"
                 android:padding="15dp"
 
-                android:text="@string/setup_helpBtn_label"
+                android:text="Help Me Choose"
                 android:textSize="16sp"
 
                 style="@style/Widget.AppCompat.Button.Colored"/>

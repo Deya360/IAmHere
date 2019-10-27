@@ -1,6 +1,13 @@
 <resources>
     <string name="app_name">I Am Here</string>
 
+
+    <string name="activity_home_title">Home</string>
+
+    <string name="fragment_events_tag">EventsFragmentTag</string>
+    <string name="fragment_groups_tag">GroupsFragmentTag</string>
+
+
     <string name="splash_get_started_label">Get Started</string>
     <string name="splash_connectionTv_label">Couldn\'t connect to the Internet</string>
     <string name="splash_retryBtn_label">Retry</string>
@@ -65,12 +72,13 @@
     <string name="auth_registration_user_exists">An account with this phone number already exists.</string>
     <string name="auth_registration_unknown">An unexpected error occurred while logging in.</string>
 
+    <string name="home_nav_drawer_open">Open navigation drawer</string>
+    <string name="home_nav_drawer_close">Close navigation drawer</string>
+    <string name="nav_settings_title">Settings</string>
+    <string name="nav_invite_codes_title">Invite Codes</string>
+    <string name="activity_home_role_change_toast">Logged in as</string>
 
 
-    <string name="setup_helpBtn_label">Help Me Choose</string>
-
-
-    <string name="fragment_role_setup_dialog_tag" translatable="false">RoleSetupDialogFrag</string>
 
 
 </resources>

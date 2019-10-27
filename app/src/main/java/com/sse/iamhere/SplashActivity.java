@@ -106,7 +106,7 @@ public class SplashActivity extends AppCompatActivity {
 
     private void checkConnection() {
         InternetUtil internetUtil = new InternetUtil(connected -> {
-            if (connected) {
+            if (connected || DEBUG_MODE) {
                 finishSplashActivity();
 
             } else {
@@ -149,7 +149,7 @@ public class SplashActivity extends AppCompatActivity {
             if (isPhoneVerified) {
                 try {
                     if (PreferencesUtil.getTokenData(this)!=null) {
-                        startMainActivity();
+                        startHomeActivity();
                     } else {
                         startAuthenticationActivity();
                     }
@@ -160,6 +160,11 @@ public class SplashActivity extends AppCompatActivity {
                 }
 
             } else {
+                if (DEBUG_MODE) {
+                    PreferencesUtil.setRole(this, Constants.Role.HOST);
+                    startHomeActivity();
+                    return;
+                }
                 startVerificationActivity();
             }
         }
@@ -222,8 +227,8 @@ public class SplashActivity extends AppCompatActivity {
         finish();
     }
 
-    private void startMainActivity() {
-        Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+    private void startHomeActivity() {
+        Intent intent = new Intent(SplashActivity.this, HomeActivity.class);
         startActivity(intent);
         finish();
     }

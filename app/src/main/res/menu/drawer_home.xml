@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group
+        android:id="@+id/nav_group_accounts"
+        android:checkableBehavior="single"
+        android:visible="false">
+        <item
+            android:id="@+id/nav_role_attendee"
+            android:title="@string/onboard_attendee_label"
+            android:icon="@drawable/ic_nav_attendee_color_24dp" />
+
+        <item
+            android:id="@+id/nav_role_host"
+            android:title="@string/onboard_host_label"
+            android:icon="@drawable/ic_nav_host_color_24dp"/>
+
+        <item
+            android:id="@+id/nav_role_manager"
+            android:title="@string/onboard_manager_label"
+            android:icon="@drawable/ic_nav_manager_color_24dp"/>
+    </group>
+
+    <group
+        android:id="@+id/nav_group_others">
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_settings_dark_grey_24dp"
+            android:title="@string/nav_settings_title"
+            />
+
+        <item
+            android:id="@+id/nav_invite_codes"
+            android:icon="@drawable/ic_invite_codes_dark_grey_24dp"
+            android:title="@string/nav_invite_codes_title"/>
+
+    </group>
+
+</menu>

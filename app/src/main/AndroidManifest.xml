@@ -7,12 +7,16 @@
     <application
         android:allowBackup="true"
         android:fullBackupContent="true"
-        android:usesCleartextTraffic="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true">
+        <activity
+            android:name=".HomeActivity"
+            android:label="@string/activity_home_title"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".SplashActivity"
             android:screenOrientation="portrait"
@@ -28,13 +32,11 @@
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBarLight"
             android:windowSoftInputMode="adjustResize" />
-
         <activity
             android:name=".AuthenticationActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBarLight"
-            android:windowSoftInputMode="adjustResize"/>
-
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".OnboardActivity"
             android:screenOrientation="portrait"

@@ -87,7 +87,7 @@ public class VerificationAdapter extends PagerAdapter {
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
         LayoutInflater inflater = LayoutInflater.from(container.getContext());
-        View view = null;
+        View view;
 
         if (position==0) {
             view = inflater.inflate(R.layout.item_verifi_phone, container, false);
@@ -292,7 +292,7 @@ public class VerificationAdapter extends PagerAdapter {
                 if (currentUser != null || Constants.DEBUG_MODE) {
                     String uuid;
                     if (DEBUG_MODE) {
-                        uuid = "Deya1";
+                        uuid = "Deya";
                     } else {
                         uuid = currentUser.getUid();
                     }

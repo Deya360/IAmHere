@@ -4,23 +4,41 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+<!--        <item name="android:colorBackground">@color/colorBackground</item>-->
+
     </style>
 
-    <style name="AppThemeManager" parent="AppTheme">
-        <item name="colorPrimary">@color/colorManagerPrimary</item>
-        <item name="colorPrimaryDark">@color/colorManagerPrimaryDark</item>
+    <style name="AppThemeAttendee" parent="AppTheme">
+        <item name="colorPrimary">@color/colorAttendeePrimary</item>
+        <item name="colorPrimaryDark">@color/colorAttendeePrimaryDark</item>
+        <item name="colorPrimaryLight">@color/colorAttendeePrimaryLight</item>
         <item name="colorAccent">@color/colorGeneralAccent</item>
+
+        <item name="side_nav_header_back">@drawable/side_nav_bar_attendee</item>
+        <item name="bottom_nav_menu">@menu/menu_home_attendee</item>
     </style>
 
     <style name="AppThemeHost" parent="AppTheme">
         <item name="colorPrimary">@color/colorHostPrimary</item>
         <item name="colorPrimaryDark">@color/colorHostPrimaryDark</item>
+        <item name="colorPrimaryLight">@color/colorHostPrimaryLight</item>
         <item name="colorAccent">@color/colorGeneralAccent</item>
+
+        <item name="side_nav_header_back">@drawable/side_nav_bar_host</item>
+        <item name="bottom_nav_menu">@menu/menu_home_host</item>
+
     </style>
-    <style name="AppThemeParticipator" parent="AppTheme">
-        <item name="colorPrimary">@color/colorAttendeePrimary</item>
-        <item name="colorPrimaryDark">@color/colorAttendeePrimaryDark</item>
+
+    <style name="AppThemeManager" parent="AppTheme">
+        <item name="colorPrimary">@color/colorManagerPrimary</item>
+        <item name="colorPrimaryDark">@color/colorManagerPrimaryDark</item>
+        <item name="colorPrimaryLight">@color/colorManagerPrimaryLight</item>
         <item name="colorAccent">@color/colorGeneralAccent</item>
+
+        <item name="side_nav_header_back">@drawable/side_nav_bar_manager</item>
+        <item name="bottom_nav_menu">@menu/menu_home_manager</item>
     </style>
 
 
@@ -50,4 +68,19 @@
     <style name="text_input_layout_hint_appearance" parent="@android:style/TextAppearance">
         <item name="android:textSize">14sp</item>
     </style>
+
+    <style name="BottomNavBarTheme">
+        <item name="colorControlHighlight">?colorPrimaryLight</item>
+    </style>
+
+    <!-- Auto generated when creating nav drawer -->
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
 </resources>

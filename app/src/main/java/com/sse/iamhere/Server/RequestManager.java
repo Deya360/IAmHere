@@ -40,12 +40,12 @@ public class RequestManager{
     /*
     *  Auth requests:
     * */
-    public RequestManager register(String phoneNumber, String uuid, String password, String accountType) {
+    public RequestManager register(String uuid, String password, String phoneNumber, String accountType) {
         TokenProvider.getUsableAccessToken(context, tokenType, new TokenProvider.TokenProviderCallback() {
             @Override
             public void onSuccess(int token_type, String token) {
                 Requests requests = ServiceGen.createService(Requests.class, REQUEST_PREFIX, token, tokenType);
-                Call<TokenData> call = requests.register(phoneNumber, uuid, password, accountType);
+                Call<TokenData> call = requests.register(uuid, password, phoneNumber, accountType);
 
                 call.enqueue(new Callback<TokenData>() {
                     @Override
@@ -100,12 +100,12 @@ public class RequestManager{
         });
         return this;
     }
-    public RequestManager login(String phoneNumber, String password, String accountType) {
+    public RequestManager login(String uuid, String password, String accountType) {
         TokenProvider.getUsableAccessToken(context, tokenType, new TokenProvider.TokenProviderCallback() {
             @Override
             public void onSuccess(int token_type, String token) {
                 Requests requests = ServiceGen.createService(Requests.class, REQUEST_PREFIX, token, tokenType);
-                Call<TokenData> call = requests.login(phoneNumber, password, accountType);
+                Call<TokenData> call = requests.login(uuid, password, accountType);
 
                 call.enqueue(new Callback<TokenData>() {
                     @Override
