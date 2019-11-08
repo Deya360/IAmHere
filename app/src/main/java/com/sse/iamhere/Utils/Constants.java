@@ -3,7 +3,7 @@ package com.sse.iamhere.Utils;
 import com.sse.iamhere.R;
 
 public class Constants {
-    public static final boolean DEBUG_MODE = true; //TODO: remove debug
+    public static final boolean DEBUG_MODE = false; //TODO: remove debug
 
     // Preference folder names
     static final String PERMISSION_PREFS = "USER_PERMISSIONS";
@@ -12,12 +12,14 @@ public class Constants {
 
     // Request Codes
     public static final int VERIFICATION_RQ = 8669;
+    public static final int AUTHENTICATION_RQ = 6581 ;
+    public static final int AUTHENTICATION_RELOG_RQ = 6582 ;
 
 
     // Setting names
     public static final String IS_FIRST_TIME = "IS_FIRST_TIME";
+    public static final String INVITE_CODES_TEMP = "INVITE_CODES_TEMP";
     public static final String IS_AUTHORIZED = "IS_AUTHORIZED";
-    public static final String TD_KEY = "TD_KEY";
 
     public static final String ROLE_TYPE = "ROLE_TYPE";
 
@@ -111,6 +113,15 @@ public class Constants {
                 case 1: return R.id.nav_role_attendee;
                 case 2: return R.id.nav_role_host;
                 case 3: return R.id.nav_role_manager;
+            }
+        }
+
+        public String getPrefsKey() {
+            switch (role) {
+                default: case 0: throw new RuntimeException("getSideNavMenuItem: idx is out of bounds");
+                case 1: return "TD_KEY_ATTENDEE";
+                case 2: return "TD_KEY_HOST";
+                case 3: return "TD_KEY_MANAGER";
             }
         }
     }

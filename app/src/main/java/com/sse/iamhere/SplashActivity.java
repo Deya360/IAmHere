@@ -146,16 +146,19 @@ public class SplashActivity extends AppCompatActivity {
         if (!finished) {
             finished=true;
 
-            if (isPhoneVerified) {
-                try {
-                    if (PreferencesUtil.getTokenData(this)!=null) {
-                        startHomeActivity();
-                    } else {
-                        startAuthenticationActivity();
-                    }
+//            try { //TODO: remove this debug stuff
+//                PreferencesUtil.setToken(this, null, Constants.Role.ATTENDEE);
+//            } catch (GeneralSecurityException e) {
+//                e.printStackTrace();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
 
-                } catch (Exception e) {
-                    e.printStackTrace();
+            if (isPhoneVerified) {
+                if (PreferencesUtil.isTokenAvailableForCurrentRole(this)) {
+                    startHomeActivity();
+
+                } else {
                     startAuthenticationActivity();
                 }
 
@@ -205,7 +208,6 @@ public class SplashActivity extends AppCompatActivity {
             Toast.makeText(SplashActivity.this, "Couldn't connect to server", Toast.LENGTH_LONG).show();
             //todo: implement properly
         }
-
     }
     private void startAuthenticationActivity(boolean isRegistered) {
         Intent intent;

@@ -6,14 +6,15 @@ import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.sse.iamhere.Utils.Constants;
 import com.sse.iamhere.Utils.PreferencesUtil;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity_depreciated extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main_depreciated);
 
 //        String android_id = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 //        Log.d("android_id", android_id);
@@ -31,12 +32,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean logUserOut() {
-        try {
-            PreferencesUtil.setToken(this, null);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+        Constants.Role role;
+        if ((role=PreferencesUtil.getRole(this, null))!=null) {
+            try {
+                PreferencesUtil.setToken(this, null, role);
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
-        return true;
+        return false;
     }
 }

@@ -19,10 +19,10 @@ import com.sse.iamhere.OnboardActivity;
 import com.sse.iamhere.R;
 import com.sse.iamhere.Utils.Constants;
 
-public class RoleSetupDialog extends AppCompatDialogFragment {
+public class RoleSetupDialog_depreciated extends AppCompatDialogFragment {
     private Constants.Role selectedRole;
 
-    public RoleSetupDialog(Constants.Role selectedRole) {
+    public RoleSetupDialog_depreciated(Constants.Role selectedRole) {
         this.selectedRole = selectedRole;
     }
 
@@ -34,10 +34,10 @@ public class RoleSetupDialog extends AppCompatDialogFragment {
         }
 
         if (!(getActivity() instanceof AuthenticationActivity)) {
-            throw new RuntimeException("RoleSetupDialog is setup to only run when called from AuthenticationActivity");
+            throw new RuntimeException("RoleSetupDialog_depreciated is setup to only run when called from AuthenticationActivity");
         }
 
-        View view = View.inflate(getActivity(), R.layout.dialog_setup, null);
+        View view = View.inflate(getActivity(), R.layout.dialog_setup_depreciated, null);
         initViews(view);
 
 
@@ -66,23 +66,23 @@ public class RoleSetupDialog extends AppCompatDialogFragment {
 
         setup_managerLy.setOnClickListener(v -> {
             selectedRole = Constants.Role.MANAGER;
-            setBackgroundColor(v, R.drawable.back_rounded_rect_card_green);
-            setBackgroundColor(setup_hostLy, R.drawable.back_rounded_rect_card_grey);
-            setBackgroundColor(setup_attendeeLy, R.drawable.back_rounded_rect_card_grey);
+            setBackgroundColor(v, R.drawable.backg_rounded_rect_card_green);
+            setBackgroundColor(setup_hostLy, R.drawable.backg_rounded_rect_card_grey);
+            setBackgroundColor(setup_attendeeLy, R.drawable.backg_rounded_rect_card_grey);
         });
 
         setup_hostLy.setOnClickListener(v -> {
             selectedRole = Constants.Role.HOST;
-            setBackgroundColor(v, R.drawable.back_rounded_rect_card_green);
-            setBackgroundColor(setup_managerLy, R.drawable.back_rounded_rect_card_grey);
-            setBackgroundColor(setup_attendeeLy, R.drawable.back_rounded_rect_card_grey);
+            setBackgroundColor(v, R.drawable.backg_rounded_rect_card_green);
+            setBackgroundColor(setup_managerLy, R.drawable.backg_rounded_rect_card_grey);
+            setBackgroundColor(setup_attendeeLy, R.drawable.backg_rounded_rect_card_grey);
         });
 
         setup_attendeeLy.setOnClickListener(v -> {
             selectedRole = Constants.Role.ATTENDEE;
-            setBackgroundColor(v, R.drawable.back_rounded_rect_card_green);
-            setBackgroundColor(setup_managerLy, R.drawable.back_rounded_rect_card_grey);
-            setBackgroundColor(setup_hostLy, R.drawable.back_rounded_rect_card_grey);
+            setBackgroundColor(v, R.drawable.backg_rounded_rect_card_green);
+            setBackgroundColor(setup_managerLy, R.drawable.backg_rounded_rect_card_grey);
+            setBackgroundColor(setup_hostLy, R.drawable.backg_rounded_rect_card_grey);
         });
     }
 

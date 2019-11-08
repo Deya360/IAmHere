@@ -1,7 +1,9 @@
 package com.sse.iamhere;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
@@ -32,6 +34,10 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
+import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
+import static com.sse.iamhere.Utils.Constants.AUTHENTICATION_RELOG_RQ;
+import static com.sse.iamhere.Utils.Constants.AUTHENTICATION_RQ;
 import static com.sse.iamhere.Utils.Constants.DEBUG_MODE;
 import static com.sse.iamhere.Utils.Constants.RQM_EC.LOGIN_BAD_PHONE;
 import static com.sse.iamhere.Utils.Constants.RQM_EC.LOGIN_BAD_ROLE;
@@ -41,12 +47,18 @@ import static com.sse.iamhere.Utils.Constants.RQM_EC.REGISTRATION_UNKNOWN;
 import static com.sse.iamhere.Utils.Constants.RQM_EC.REGISTRATION_USER_EXISTS;
 import static com.sse.iamhere.Utils.Constants.RQM_EC.TOKEN_STORE_FAIL;
 import static com.sse.iamhere.Utils.Constants.TOKEN_NONE;
-import static com.sse.iamhere.Utils.ServerConstants.DEBUG_PHONE;
 
 public class AuthenticationActivity extends AppCompatActivity {
     private String phone;
     private String phoneFormatted;
     private boolean isRegistered = true;
+
+    private int forceRole = -1;
+    private String customDescription = null;
+    private boolean showAsDialog = false;
+    private boolean disallowCancel = false;
+    private int returnRequestCode = -1;
+    private int activityOrientation = ORIENTATION_PORTRAIT;
 
     private boolean isProcessing = false;
 
@@ -59,12 +71,18 @@ public class AuthenticationActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_authentication);
 
         if (savedInstanceState!=null) {
             phone = savedInstanceState.getString("phone");
             phoneFormatted = savedInstanceState.getString("phoneFormatted");
             isRegistered = savedInstanceState.getBoolean("isRegistered");
+
+            showAsDialog = savedInstanceState.getBoolean("showAsDialog");
+            forceRole = savedInstanceState.getInt("forceRole");
+            customDescription = savedInstanceState.getString("customDescription");
+            returnRequestCode = savedInstanceState.getInt("returnRequestCode");
+            activityOrientation = savedInstanceState.getInt("activityOrientation");
+            disallowCancel = savedInstanceState.getBoolean("disallowCancel");
 
         } else {
             Bundle extras = getIntent().getExtras();
@@ -76,7 +94,31 @@ public class AuthenticationActivity extends AppCompatActivity {
             phone = extras.getString("phone");
             isRegistered = extras.getBoolean("isRegistered");
             phoneFormatted = extras.getString("phoneFormatted");
+
+            showAsDialog = extras.getBoolean("showAsDialog", showAsDialog);
+            forceRole = extras.getInt("forceRole", forceRole);
+            customDescription = extras.getString("customDescription", customDescription);
+            returnRequestCode = extras.getInt("returnRequestCode", returnRequestCode);
+            activityOrientation = extras.getInt("activityOrientation", activityOrientation);
         }
+
+        if (showAsDialog) {
+            setTheme(R.style.ActivityDialog);
+        }
+
+        if (activityOrientation==ORIENTATION_PORTRAIT) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+
+        } else if (activityOrientation==ORIENTATION_LANDSCAPE) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+
+        } else throw new RuntimeException("Authentication Activity: supplied bad orientation");
+
+        if (disallowCancel) {
+            this.setFinishOnTouchOutside(false);
+        }
+
+        setContentView(R.layout.activity_authentication);
 
 
         TextView phoneNumberTv = findViewById(R.id.auth_phone_numberTv);
@@ -106,7 +148,11 @@ public class AuthenticationActivity extends AppCompatActivity {
 
         if (!isRegistered) {
             titleTv.setText(getString(R.string.auth_titleTv_registration_label));
-            subtitleTv.setText(getString(R.string.auth_subtitleTv_registration_label));
+            if (customDescription!=null) {
+                subtitleTv.setText(customDescription);
+            } else {
+                subtitleTv.setText(getString(R.string.auth_subtitleTv_registration_label));
+            }
             continueBtn.setText(getString(R.string.auth_continueBtn_registration_label_normal));
             continueBtn.setLoadingText(getString(R.string.auth_continueBtn_registration_label_progress));
             continueBtn.setCompleteText(getString(R.string.auth_continueBtn_registration_label_complete));
@@ -186,7 +232,11 @@ public class AuthenticationActivity extends AppCompatActivity {
 
         } else { // Log in
             titleTv.setText(getString(R.string.auth_titleTv_login_label));
-            subtitleTv.setText(getString(R.string.auth_subtitleTv_login_label));
+            if (customDescription!=null) {
+                subtitleTv.setText(customDescription);
+            } else {
+                subtitleTv.setText(getString(R.string.auth_subtitleTv_login_label));
+            }
             continueBtn.setText(getString(R.string.auth_continueBtn_login_label));
             continueBtn.setLoadingText(getString(R.string.auth_continueBtn_login_label_progress));
             continueBtn.setCompleteText(getString(R.string.auth_continueBtn_login_label_complete));
@@ -222,24 +272,27 @@ public class AuthenticationActivity extends AppCompatActivity {
                 }
             });
         }
+
+        if (forceRole!=-1) {
+            roleSp.setSelection(forceRole);
+            roleSp.setEnabled(false);
+        }
     }
 
     private void onRegister () {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user!=null || DEBUG_MODE) {
-            String uuid, phoneNumber;
+            String uuid;
             if (!DEBUG_MODE) {
                 uuid = user.getUid();
-                phoneNumber = user.getPhoneNumber();
 
             } else {
                 uuid = "Deya";
-                phoneNumber = DEBUG_PHONE;
             }
 
             AsyncTask.execute(() -> {
                 new RequestManager(this).attachToken(TOKEN_NONE)
-                    .register(uuid, text(passwordEt.getText()), phoneNumber, getFormattedRole(getSelectedRole()))
+                    .register(uuid, text(passwordEt.getText()), getSelectedRole())
                     .setCallback(new RequestCallback() {
                         @Override
                         public void onRegisterSuccess() {
@@ -248,7 +301,7 @@ public class AuthenticationActivity extends AppCompatActivity {
 
                             PreferencesUtil.setRole(AuthenticationActivity.this, getSelectedRole());
 
-                            startHomeActivity();
+                            finishActivity(true);
                         }
 
                         @Override
@@ -298,7 +351,7 @@ public class AuthenticationActivity extends AppCompatActivity {
             }
             AsyncTask.execute(() -> {
                 new RequestManager(this).attachToken(TOKEN_NONE)
-                    .login(uuid, text(passwordEt.getText()), getFormattedRole(getSelectedRole()))
+                    .login(uuid, text(passwordEt.getText()), getSelectedRole())
                     .setCallback(new RequestCallback() {
                         @Override
                         public void onLoginSuccess() {
@@ -308,7 +361,7 @@ public class AuthenticationActivity extends AppCompatActivity {
                             // Save role to prefs
                             PreferencesUtil.setRole(AuthenticationActivity.this, getSelectedRole());
 
-                            startHomeActivity();
+                            finishActivity(true);
                         }
 
                         @Override
@@ -354,10 +407,6 @@ public class AuthenticationActivity extends AppCompatActivity {
         return (editable==null)? "" : editable.toString();
     }
 
-    private String getFormattedRole(Constants.Role role) {
-        return role.toSerializedJSON();
-    }
-
     private Constants.Role getSelectedRole() {
         return Constants.Role.values()[roleSp.getSelectedItemPosition()];
     }
@@ -368,7 +417,29 @@ public class AuthenticationActivity extends AppCompatActivity {
 
     private void startOnboardActivity() {
         Intent intent = new Intent(AuthenticationActivity.this, OnboardActivity.class);
+        intent.putExtra("activityOrientation", activityOrientation);
         startActivity(intent);
+    }
+
+    private void finishActivity(boolean goodOutcome) {
+        if (getCallingActivity()!=null) {
+            if (returnRequestCode==AUTHENTICATION_RQ) {
+                Intent returnIntent = new Intent();
+                setResult((goodOutcome)? Activity.RESULT_OK : Activity.RESULT_CANCELED, returnIntent);
+                if (goodOutcome) {
+                    returnIntent.putExtra("role", forceRole);
+                }
+                finish();
+
+            } else if (returnRequestCode==AUTHENTICATION_RELOG_RQ) {
+                Intent returnIntent = new Intent();
+                setResult((goodOutcome)? Activity.RESULT_OK : Activity.RESULT_CANCELED, returnIntent);
+                finish();
+            }
+
+        } else {
+            startHomeActivity();
+        }
     }
 
     private void startHomeActivity() {
@@ -390,11 +461,26 @@ public class AuthenticationActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if (getCallingActivity()!=null && !disallowCancel) {
+            finishActivity(false);
+        }
+    }
+
+    @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putString("phone", phone);
         outState.putString("phoneFormatted", phoneFormatted);
         outState.putBoolean("isRegistered", isRegistered);
+
+        outState.putBoolean("showAsDialog", showAsDialog);
+        outState.putInt("forceRole", forceRole);
+        outState.putString("customDescription", customDescription);
+        outState.putInt("returnRequestCode", returnRequestCode);
+        outState.putInt("activityOrientation", activityOrientation);
+        outState.putBoolean("disallowCancel", disallowCancel);
     }
 }

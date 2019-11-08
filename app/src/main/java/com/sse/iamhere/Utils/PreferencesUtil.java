@@ -2,6 +2,7 @@ package com.sse.iamhere.Utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
 
 import androidx.security.crypto.EncryptedSharedPreferences;
 import androidx.security.crypto.MasterKeys;
@@ -11,12 +12,14 @@ import com.sse.iamhere.Server.Body.TokenData;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
 import static com.sse.iamhere.Utils.Constants.ROLE_TYPE;
 import static com.sse.iamhere.Utils.Constants.SETTINGS_PREFS;
 import static com.sse.iamhere.Utils.Constants.SETTINGS_PREFS_SECRET;
-import static com.sse.iamhere.Utils.Constants.TD_KEY;
 
 public class PreferencesUtil {
     // Permissions Util
@@ -42,6 +45,20 @@ public class PreferencesUtil {
         sharedPreference.edit().putBoolean(setting, state).apply();
     }
 
+    public static ArrayList<String> getStringArrayPrefByName(Context context, String setting, String defaultString){
+        ArrayList<String> returnArr = new ArrayList<>();
+        String tempStr = context.getSharedPreferences(SETTINGS_PREFS, MODE_PRIVATE).getString(setting, defaultString);
+        if (tempStr!=null && !tempStr.equals("")) {
+            returnArr.addAll(Arrays.asList(tempStr.split("\\s*,\\s*")));
+        }
+        return returnArr;
+    }
+
+    public static void setStringArrayByName(Context context, String setting, List<String> array){
+        SharedPreferences sharedPreference = context.getSharedPreferences(SETTINGS_PREFS, MODE_PRIVATE);
+        sharedPreference.edit().putString(setting, TextUtils.join(",",array)).apply();
+    }
+
 //    public static String getPrefByName(Context context, String setting, String defaultValue){
 //        return context.getSharedPreferences(SETTINGS_PREFS, MODE_PRIVATE).getString(setting, defaultValue);
 //    }
@@ -61,7 +78,8 @@ public class PreferencesUtil {
     }
 
     // Methods for obtaining and storing token data in encrypted shared preferences
-    public static TokenData getTokenData(Context context) throws GeneralSecurityException, IOException {
+    public static TokenData getTokenData(Context context, Constants.Role role)
+                        throws GeneralSecurityException, IOException {
         String key =  MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC);
         SharedPreferences encryptedSharedPrefs = EncryptedSharedPreferences.create(
                 SETTINGS_PREFS_SECRET,
@@ -71,10 +89,11 @@ public class PreferencesUtil {
                 EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         );
 
-        return new Gson().fromJson(encryptedSharedPrefs.getString(TD_KEY, null), TokenData.class);
+        return new Gson().fromJson(encryptedSharedPrefs.getString(role.getPrefsKey(), null), TokenData.class);
     }
 
-    public static void setToken(Context context, TokenData tokenData) throws GeneralSecurityException, IOException {
+    public static void setToken(Context context, TokenData tokenData, Constants.Role role)
+                        throws GeneralSecurityException, IOException {
         String key =  MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC);
         SharedPreferences encryptedSharedPrefs = EncryptedSharedPreferences.create(
                 SETTINGS_PREFS_SECRET,
@@ -83,7 +102,7 @@ public class PreferencesUtil {
                 EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
                 EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         );
-        encryptedSharedPrefs.edit().putString(TD_KEY, new Gson().toJson(tokenData)).apply();
+        encryptedSharedPrefs.edit().putString(role.getPrefsKey(), new Gson().toJson(tokenData)).apply();
     }
 
     // Methods for getting role
@@ -98,4 +117,23 @@ public class PreferencesUtil {
         sharedPreference.edit().putString(ROLE_TYPE,  new Gson().toJson(role)).apply();
     }
 
+    // Convenience methods:
+    public static boolean isTokenAvailableForCurrentRole(Context context) {
+        Constants.Role role;
+        if ((role =getRole(context, null))!=null) {
+            return isTokenAvailableForRole(context, role);
+        }
+        return false;
+    }
+
+    public static boolean isTokenAvailableForRole(Context context, Constants.Role role) {
+        try {
+            if (getTokenData(context, role)!=null) {
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

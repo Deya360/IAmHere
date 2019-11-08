@@ -6,20 +6,193 @@
     android:layout_height="match_parent"
     tools:context=".EventsFrag">
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/events_swipe_refreshLy"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Events Fragment!"
-            android:textSize="25sp"
-            android:textColor="@android:color/black"
-            android:textStyle="bold"
-            android:gravity="center" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="3dp"
+            android:background="@drawable/border_back_b">
 
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_gravity="top"
+                android:background="@drawable/border_back_b">
+
+                <ImageView
+                    android:id="@+id/events_date_prvIv"
+                    android:layout_width="0dp"
+                    android:layout_weight="0.15"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/ic_keyboard_arrow_left_black_24dp"
+                    android:backgroundTint="#77616161"
+
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
+
+                </ImageView>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="0.8"
+                    android:weightSum="1"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/events_date_todayTv"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="5dp"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:paddingTop="2dp"
+                        android:paddingBottom="4dp"
+
+                        android:fontFamily="@font/pt_serif"
+                        android:text="@string/events_date_today_label"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"
+                        android:textSize="22sp"
+                        android:gravity="center_horizontal"
+                        android:lines="1"
+                        android:ellipsize="end"
+
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"/>
+
+                    <TextView
+                        android:id="@+id/events_date_tomTv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="5dp"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:paddingTop="2dp"
+                        android:paddingBottom="4dp"
+                        android:layout_marginStart="10dp"
+
+                        android:fontFamily="@font/pt_serif"
+                        android:text="@string/events_date_tom_label"
+                        android:textColor="@color/black"
+                        android:textSize="22sp"
+                        android:gravity="center_horizontal"
+                        android:lines="1"
+                        android:ellipsize="end"
+
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"/>
+
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/events_date_nxtIv"
+                    android:layout_width="0dp"
+                    android:layout_weight="0.15"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/ic_keyboard_arrow_right_black_24dp"
+
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"/>
+
+
+                <ImageView
+                    android:id="@+id/events_date_calIv"
+                    android:layout_width="0dp"
+                    android:layout_weight="0.2"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_calendar_black_24dp"
+
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"/>
+
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/events_date_dateStrTv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:padding="7dp"
+
+                android:textSize="22sp"
+                android:fontFamily="@font/pt_serif"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                tools:text="Monday, 14 September" />
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/events_empty_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="70dp"
+
+                android:fontFamily="@font/bree_serif"
+                android:text="There aren't any events to show!"
+                android:textAlignment="center"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+
+                tools:visibility="visible"
+                android:visibility="gone" />
+
+            <ProgressBar
+                android:id="@+id/events_empty_progress_view"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="70dp"
+
+                android:visibility="visible" />
+
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/events_swipe_refreshLy"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <com.sse.iamhere.Views.EmptySupportedRecyclerView
+                    android:id="@+id/events_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clipToPadding="false"
+                    android:paddingBottom="92dp"
+                    android:scrollbars="vertical"
+
+                    tools:listitem="@layout/item_event">
+
+                </com.sse.iamhere.Views.EmptySupportedRecyclerView>
+
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+
+        </FrameLayout>
+
+
+    </LinearLayout>
+
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

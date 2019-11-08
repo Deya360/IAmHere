@@ -4,8 +4,11 @@
 
     <string name="activity_home_title">Home</string>
 
-    <string name="fragment_events_tag">EventsFragmentTag</string>
-    <string name="fragment_groups_tag">GroupsFragmentTag</string>
+    <string name="fragment_events_tag" translatable="false">EventsFragmentTag</string>
+    <string name="fragment_groups_tag" translatable="false">GroupsFragmentTag</string>
+    <string name="fragment_relog_dialog_tag" translatable="false">RelogDialogFragmentTag</string>
+    <string name="fragment_input_invite_code_dialog_tag" translatable="false">input_invite_code_dialogTag</string>
+    <string name="fragment_invite_code_dialog_tag" translatable="false">invite_code_dialogTag</string>
 
 
     <string name="splash_get_started_label">Get Started</string>
@@ -50,12 +53,17 @@
 
     <string name="auth_titleTv_registration_label">Registration</string>
     <string name="auth_subtitleTv_registration_label">You will need to create a password for your account.</string>
+    <string name="auth_subtitleTv_remote_registration_label_prefix">You will need to register for a</string>
+    <string name="auth_subtitleTv_remote_registration_label_prefix_attendee_extra">n</string>
+    <string name="auth_subtitleTv_remote_registration_label_suffix">account to continue.</string>
     <string name="auth_continueBtn_registration_label_normal">Register</string>
     <string name="auth_continueBtn_registration_label_progress">Registering…</string>
     <string name="auth_continueBtn_registration_label_complete">Success!</string>
 
     <string name="auth_titleTv_login_label">Login</string>
     <string name="auth_subtitleTv_login_label">Welcome back!, enter your password to continue.</string>
+    <string name="auth_subtitleTv_remote_login_label_prefix">Enter the password to your</string>
+    <string name="auth_subtitleTv_remote_login_label_suffix">account to continue.</string>
     <string name="auth_continueBtn_login_label">Login</string>
     <string name="auth_continueBtn_login_label_progress">Logging in…</string>
     <string name="auth_continueBtn_login_label_complete">Success!</string>
@@ -66,19 +74,30 @@
     <string name="auth_bad_input">Fields filled incorrectly</string>
     <string name="auth_bad_role">Role not picked</string>
 
+    <string name="auth_re_log_authenticate">Authenticate</string>
+    <string name="auth_re_log_authenticate_msg">This session has expired, you will need to authenticate again.</string>
+
     <string name="auth_login_wrong_password">Incorrect password!</string>
     <string name="auth_login_unknown">An unexpected error occurred while logging in.</string>
 
     <string name="auth_registration_user_exists">An account with this phone number already exists.</string>
     <string name="auth_registration_unknown">An unexpected error occurred while logging in.</string>
 
+    <string name="home_role_change_toast">Logged in as</string>
     <string name="home_nav_drawer_open">Open navigation drawer</string>
     <string name="home_nav_drawer_close">Close navigation drawer</string>
     <string name="nav_settings_title">Settings</string>
     <string name="nav_invite_codes_title">Invite Codes</string>
-    <string name="activity_home_role_change_toast">Logged in as</string>
+
+    <string name="invite_code_addBtn_label">Add New Code</string>
+    <string name="invite_code_empty_view_label">No Invite Codes to show!</string>
+    <string name="invite_code_infoTv_attendee_label">You can join Parties by adding here Invite Codes given to you by the Party Manager.</string>
+    <string name="invite_code_infoTv_host_label">You can join Events by adding here Invite Codes given to you by the Event creator.</string>
 
 
+    <string name="events_date_today_label">Today</string>
+    <string name="events_date_tom_label">Tomorrow</string>
+    <string name="input_invite_code_nameEt_label">Code</string>
 
 
 </resources>

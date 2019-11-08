@@ -1,6 +1,7 @@
 package com.sse.iamhere.Server.Body;
 
 import com.google.gson.annotations.SerializedName;
+import com.sse.iamhere.Utils.Constants;
 
 public class CheckData {
     private final String manager;
@@ -17,6 +18,15 @@ public class CheckData {
 
     public boolean isRegistered() {
         return (found(manager) || found(host) || found(attendee));
+    }
+
+    public boolean getRegisteredStatusByRole(Constants.Role role) {
+        switch (role) {
+            case ATTENDEE: return found(attendee);
+            case HOST: return found(host);
+            case MANAGER: return found(manager);
+            default: return false;
+        }
     }
 
     public boolean getManagerRegisterStatus() {

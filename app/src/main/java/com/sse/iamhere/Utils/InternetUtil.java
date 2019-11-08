@@ -5,7 +5,6 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
-import android.os.Build;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -38,7 +37,7 @@ public class InternetUtil {
 
         // Network connection maybe available, however there may not be any connection,
         // so, If network connection is available, then check if network accesses is available too
-        if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+        if (netInfo != null && netInfo.isConnectedOrConnecting()) { //depreciated refers to this, should switch over to getActiveNetworkInfo();
             new InternetAccessCheck(internet -> {
                 //Callback
                 if (internet) {

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:showIn="navigation_view">
 
     <group
@@ -10,17 +11,23 @@
         <item
             android:id="@+id/nav_role_attendee"
             android:title="@string/onboard_attendee_label"
-            android:icon="@drawable/ic_nav_attendee_color_24dp" />
+            android:icon="@drawable/ic_nav_attendee_color_24dp"
+            app:showAsAction="ifRoom"
+            app:actionLayout="@layout/drawer_home_progress"/>
 
         <item
             android:id="@+id/nav_role_host"
             android:title="@string/onboard_host_label"
-            android:icon="@drawable/ic_nav_host_color_24dp"/>
+            android:icon="@drawable/ic_nav_host_color_24dp"
+            app:showAsAction="ifRoom"
+            app:actionLayout="@layout/drawer_home_progress"/>
 
         <item
             android:id="@+id/nav_role_manager"
             android:title="@string/onboard_manager_label"
-            android:icon="@drawable/ic_nav_manager_color_24dp"/>
+            android:icon="@drawable/ic_nav_manager_color_24dp"
+            app:showAsAction="ifRoom"
+            app:actionLayout="@layout/drawer_home_progress"/>
     </group>
 
     <group

@@ -14,7 +14,7 @@ import static com.sse.iamhere.Utils.Constants.TOKEN_ACCESS;
 import static com.sse.iamhere.Utils.Constants.TOKEN_NONE;
 import static com.sse.iamhere.Utils.Constants.TOKEN_REFRESH;
 
-class TokenProvider {
+public class TokenProvider {
     static class TokenPair {
         private String token;
         private long expiry;
@@ -39,13 +39,13 @@ class TokenProvider {
         void onFailure(int errorCode);
     }
 
-    static void getUsableAccessToken(Context context, int type, TokenProviderCallback callback) {
+    public static void getUsableAccessToken(Context context, int type, Constants.Role role, TokenProviderCallback callback) {
         if (type==TOKEN_NONE) {
             callback.onSuccess(type, null);
             return;
         }
 
-        TokenPair tokenPair = getTokenPair(context, type);
+        TokenPair tokenPair = getTokenPair(context, type, role);
 
         boolean valid = isTokenValid(tokenPair.getExpiry());
         if (valid) {
@@ -54,7 +54,7 @@ class TokenProvider {
         } else {
             if (type==TOKEN_ACCESS) {
                 // Renew using refresh token
-                getUsableAccessToken(context, TOKEN_REFRESH, new TokenProviderCallback() {
+                getUsableAccessToken(context, TOKEN_REFRESH, role, new TokenProviderCallback() {
                     @Override
                     public void onSuccess(int token_type, String token) {
                         if (token_type==TOKEN_REFRESH && !TextUtils.isEmpty(token)) {
@@ -65,7 +65,7 @@ class TokenProvider {
                                     @Override
                                     public void onRefreshSuccess(TokenData renewedTokenData) {
                                         try {
-                                            PreferencesUtil.setToken(context, renewedTokenData);
+                                            PreferencesUtil.setToken(context, renewedTokenData, role);
                                         } catch (Exception e) {
                                             e.printStackTrace();
                                             onRefreshFailure(Constants.RQM_EC.TOKEN_STORE_FAIL);
@@ -106,11 +106,11 @@ class TokenProvider {
         return !expiryCal.before(new Date());
     }
 
-    private static TokenPair getTokenPair(Context context, int type) {
+    private static TokenPair getTokenPair(Context context, int type, Constants.Role role) {
         TokenPair tokenPair = null;
 
         try {
-            TokenData tokenData = PreferencesUtil.getTokenData(context);
+            TokenData tokenData = PreferencesUtil.getTokenData(context, role);
 
             tokenPair = new TokenPair();
             if (type==TOKEN_ACCESS) {

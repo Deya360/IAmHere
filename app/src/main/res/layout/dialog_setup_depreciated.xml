@@ -76,7 +76,7 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:foreground="?android:attr/selectableItemBackgroundBorderless"
-                    android:background="@drawable/back_rounded_rect_card_grey">
+                    android:background="@drawable/backg_rounded_rect_card_grey">
 
                     <ImageView
                         android:layout_width="90dp"
@@ -109,7 +109,7 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:foreground="?android:attr/selectableItemBackgroundBorderless"
-                    android:background="@drawable/back_rounded_rect_card_grey">
+                    android:background="@drawable/backg_rounded_rect_card_grey">
 
                     <ImageView
                         android:layout_width="90dp"
@@ -142,7 +142,7 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:foreground="?android:attr/selectableItemBackgroundBorderless"
-                    android:background="@drawable/back_rounded_rect_card_grey">
+                    android:background="@drawable/backg_rounded_rect_card_grey">
 
                 <ImageView
                     android:layout_width="90dp"

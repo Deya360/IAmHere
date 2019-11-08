@@ -1,37 +1,62 @@
 package com.sse.iamhere;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.SparseArray;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.sse.iamhere.Dialogs.InviteCodesDialog;
+import com.sse.iamhere.Dialogs.ReLogDialog;
+import com.sse.iamhere.Server.Body.CheckData;
+import com.sse.iamhere.Server.RequestCallback;
+import com.sse.iamhere.Server.RequestManager;
+import com.sse.iamhere.Server.TokenProvider;
 import com.sse.iamhere.Utils.Constants;
 import com.sse.iamhere.Utils.PreferencesUtil;
 import com.sse.iamhere.Views.DropdownOnClickListener;
 
+import java.util.ArrayList;
+
+import static com.sse.iamhere.Utils.Constants.AUTHENTICATION_RQ;
+import static com.sse.iamhere.Utils.Constants.DEBUG_MODE;
+import static com.sse.iamhere.Utils.Constants.INVITE_CODES_TEMP;
+import static com.sse.iamhere.Utils.Constants.TOKEN_ACCESS;
+import static com.sse.iamhere.Utils.PreferencesUtil.getStringArrayPrefByName;
+import static com.sse.iamhere.Utils.PreferencesUtil.setStringArrayByName;
+
 public class HomeActivity extends AppCompatActivity {
 
     private DrawerLayout drawer;
+    private NavigationView sideNav;
     private BottomNavigationView bottomNav;
 
     private Constants.Role role;
     private boolean isRoleDropdownExpanded;
     private int currentBottomNavItemId;
     private SparseArray<Fragment.SavedState> savedStateSA = new SparseArray<>();
+
+    private boolean changingRole = false;
+    private int menuItemId = -1;
 
 
     @Override
@@ -47,22 +72,91 @@ public class HomeActivity extends AppCompatActivity {
 
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 
-        NavigationView sideNav = findViewById(R.id.home_sideNav);
-        setupNavContent(sideNav, savedInstanceState);
-
+        sideNav = findViewById(R.id.home_sideNav);
+        setupSideNavContent(savedInstanceState);
         setupNavAvatar();
-
-        setupFragments(savedInstanceState);
 
         setupBottomNav();
 
+        setupFragments(savedInstanceState);
+
+        if (savedInstanceState!=null) {
+            // check if role change was intiated before screen rotation
+            changingRole = savedInstanceState.getBoolean("changingRole");
+            menuItemId = savedInstanceState.getInt("menuItemId");
+
+            if (changingRole) {
+                sideNav.getMenu().findItem(menuItemId).getActionView().setVisibility(View.VISIBLE);
+            }
+        }
+
+
+//        startBackgroundServices(1000*10);
+
+    }
+
+    private void startBackgroundServices(int delayInMilli) {
+        new Handler().postDelayed(this::startBackgroundAccountCheck, delayInMilli);
+    }
+    private void startBackgroundAccountCheck() {
+        //Check if account is still valid
+        if ((role=PreferencesUtil.getRole(HomeActivity.this, Constants.Role.NONE))!= Constants.Role.NONE) {
+            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (currentUser!=null) {
+                AsyncTask.execute(() -> {
+                    new RequestManager(this)
+                        .check(currentUser.getUid())
+                        .setCallback(new RequestCallback() {
+                            @Override
+                            public void onCheckSuccess(CheckData checkResult) {
+                                startBackgroundTokenValidityCheck(checkResult.getRegisteredStatusByRole(role));
+                            }
+
+                            @Override
+                            public void onCheckFailure(int errorCode) {
+                                //TODO: implement
+                            }
+                        });
+                });
+            } else {
+                //TODO: implement
+            }
+        } else {
+            //Todo: implement
+        }
+
+    }
+    private void startBackgroundTokenValidityCheck(boolean isRegistered) {
+        //Check if token is still valid
+        Constants.Role role;
+        if ((role=PreferencesUtil.getRole(HomeActivity.this, Constants.Role.NONE))!= Constants.Role.NONE) {
+            TokenProvider.getUsableAccessToken(HomeActivity.this, TOKEN_ACCESS, role,
+                new TokenProvider.TokenProviderCallback() {
+                    @Override
+                    public void onSuccess(int token_type, String token) {
+                        FragmentManager fm = getSupportFragmentManager();
+                        ReLogDialog reLogDialog = new ReLogDialog(isRegistered);
+                        reLogDialog.show(fm, getString(R.string.fragment_relog_dialog_tag));
+                    }
+
+                    @Override
+                    public void onFailure(int errorCode) {
+                        //Todo: implement
+                    }
+                });
+
+        } else {
+            //Todo: implement
+        }
     }
 
 
-    private void setupNavContent(NavigationView sideNav, Bundle savedInstanceState) {
+    private void setupSideNavContent(Bundle savedInstanceState) {
         sideNav.setItemIconTintList(null);
 
         View navHeaderView = sideNav.getHeaderView(0);
+        TextView textrole = navHeaderView.findViewById(R.id.nav_header_nameTv);
+        textrole.setText(getString(role.toStringRes()));
         ImageView dropdownIv = navHeaderView.findViewById(R.id.nav_header_dropdownIv);
         DropdownOnClickListener dropdownOnClickListener =
             new DropdownOnClickListener() {
@@ -97,24 +191,46 @@ public class HomeActivity extends AppCompatActivity {
         dropdownIv.setOnClickListener(dropdownOnClickListener);
 
         sideNav.setNavigationItemSelectedListener(menuItem -> {
-            switch (menuItem.getItemId()) {
-                case R.id.nav_role_attendee:
-                    changeRole(Constants.Role.ATTENDEE);
-                    return true;
-                case R.id.nav_role_host:
-                    changeRole(Constants.Role.HOST);
-                    return true;
-                case R.id.nav_role_manager:
-                    changeRole(Constants.Role.MANAGER);
-                    return true;
-                case R.id.nav_settings:
-                    //TODO: Implement
-                    return true;
-                case R.id.nav_invite_codes:
-                    //TODO: Implement
-                    return true;
-                default: return false;
+            if (!menuItem.isChecked()) {
+                View actionView;
+                switch (menuItem.getItemId()) {
+                    case R.id.nav_role_attendee:
+                        if (!changingRole) {
+                            actionView = menuItem.getActionView();
+                            actionView.setVisibility(View.VISIBLE);
+                            menuItemId = menuItem.getItemId();
+                            changeRole(Constants.Role.ATTENDEE, actionView);
+                        }
+                        return false;
+
+                    case R.id.nav_role_host:
+                        if (!changingRole) {
+                            actionView = menuItem.getActionView();
+                            actionView.setVisibility(View.VISIBLE);
+                            menuItemId = menuItem.getItemId();
+                            changeRole(Constants.Role.HOST, actionView);
+                        }
+                        return false;
+
+                    case R.id.nav_role_manager:
+                        if(!changingRole) {
+                            actionView = menuItem.getActionView();
+                            actionView.setVisibility(View.VISIBLE);
+                            menuItemId = menuItem.getItemId();
+                            changeRole(Constants.Role.MANAGER, actionView);
+                        }
+                        return false;
+
+                    case R.id.nav_settings:
+                        //TODO: Implement
+                        return true;
+                    case R.id.nav_invite_codes:
+                        //TODO: Implement
+                        showInviteCodeDialog();
+                        return true;
+                }
             }
+            return false;
         });
 
 
@@ -135,7 +251,7 @@ public class HomeActivity extends AppCompatActivity {
                 dropdownOnClickListener.onClick(dropdownIv,false);
 
                 Toast.makeText(this,
-                        getString(R.string.activity_home_role_change_toast) + " " + getString(role.toStringRes()),
+                        getString(R.string.home_role_change_toast) + " " + getString(role.toStringRes()),
                         Toast.LENGTH_LONG).show();
             }
         }
@@ -148,19 +264,7 @@ public class HomeActivity extends AppCompatActivity {
             }
         }
     }
-    private void changeRole(Constants.Role newRole) {
-        PreferencesUtil.setRole(HomeActivity.this, newRole);
-        Intent intent = new Intent(HomeActivity.this, HomeActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putBoolean("changeRole", true);
-        intent.putExtras(bundle);
-        startActivity(intent);
-        finish();
-    }
 
-    private void setupNavAvatar() {
-
-    }
 
     private void setupBottomNav() {
         bottomNav = findViewById(R.id.home_bottomNav);
@@ -176,6 +280,13 @@ public class HomeActivity extends AppCompatActivity {
             return false;
         });
     }
+
+    private void setupNavAvatar() {
+
+    }
+
+
+
 
     private void setupFragments(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
@@ -196,7 +307,6 @@ public class HomeActivity extends AppCompatActivity {
             }
         }
     }
-
 
     private void swapFragments(int actionId, String tag) {
         if (getSupportFragmentManager().findFragmentByTag(tag) == null) {
@@ -230,6 +340,142 @@ public class HomeActivity extends AppCompatActivity {
     }
 
 
+
+
+
+    // workflow, first we check if we have a stored token for the new role, if yes, we switch interface over,
+    // if not, second, we check if user has account of new role, if yes, we redirect to login, else, to register.
+    private void changeRole(Constants.Role newRole, View actionView) {
+        changingRole = true;
+        if (PreferencesUtil.isTokenAvailableForRole(this, newRole) || DEBUG_MODE) {
+            preformRoleSwitch(newRole);
+
+        } else {
+            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (currentUser!=null) {
+                AsyncTask.execute(() -> {
+                    new RequestManager(this)
+                            .check(currentUser.getUid())
+                            .setCallback(new RequestCallback() {
+                                @Override
+                                public void onCheckSuccess(CheckData checkResult) {
+                                    startAuthenticationActivityDialog(
+                                        checkResult.getRegisteredStatusByRole(newRole), newRole, currentUser);
+                                }
+
+                                @Override
+                                public void onCheckFailure(int errorCode) {
+                                    changingRole = false;
+                                    actionView.setVisibility(View.GONE);
+                                    //TODO: implement
+                                }
+                            });
+                });
+            } else {
+                changingRole = false;
+                actionView.setVisibility(View.GONE);
+                //TODO: implement. close drawer then show snackbar
+            }
+        }
+    }
+
+    private void preformRoleSwitch(Constants.Role newRole) {
+        PreferencesUtil.setRole(HomeActivity.this, newRole);
+        Intent intent = new Intent(HomeActivity.this, HomeActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putBoolean("changeRole", true);
+        intent.putExtras(bundle);
+        startActivity(intent);
+        finish();
+    }
+
+    private void startAuthenticationActivityDialog(boolean isRegistered, Constants.Role newRole, FirebaseUser currentUser) {
+        Intent intent;
+        Bundle bundle = new Bundle();
+        bundle.putBoolean("isRegistered", isRegistered);
+        bundle.putString("phone", currentUser.getPhoneNumber());
+        bundle.putString("phoneFormatted", currentUser.getPhoneNumber()); //TODO: format properly
+        bundle.putBoolean("showAsDialog", true);
+        bundle.putInt("forceRole", newRole.toIdx());
+        bundle.putInt("activityOrientation",this.getResources().getConfiguration().orientation);
+        bundle.putInt("returnRequestCode", AUTHENTICATION_RQ);
+
+
+        String description = "";
+        if (isRegistered) {
+            description = getString(R.string.auth_subtitleTv_remote_login_label_prefix) + " " +
+                    getString(newRole.toStringRes()) + " " + getString(R.string.auth_subtitleTv_remote_login_label_suffix);
+
+        } else {
+            switch (newRole) {
+                case HOST:
+                case MANAGER:
+                    description = getString(R.string.auth_subtitleTv_remote_registration_label_prefix) + " " +
+                            getString(newRole.toStringRes()) + " "
+                            + getString(R.string.auth_subtitleTv_remote_registration_label_suffix);
+                    break;
+
+                case ATTENDEE:
+                    description = getString(R.string.auth_subtitleTv_remote_registration_label_prefix) +
+                            getString(R.string.auth_subtitleTv_remote_registration_label_prefix_attendee_extra) + " " +
+                            getString(newRole.toStringRes()) + " "
+                            + getString(R.string.auth_subtitleTv_remote_registration_label_suffix);
+                    break;
+            }
+        }
+
+
+        bundle.putString("customDescription", description);
+
+        intent = new Intent(HomeActivity.this, AuthenticationActivity.class);
+        intent.putExtras(bundle);
+        startActivityForResult(intent, AUTHENTICATION_RQ);
+    }
+
+    private void showInviteCodeDialog() {
+        //TODO invite codes should be loaded from server instead of local shared prefs
+        InviteCodesDialog inviteCodesDialog = new InviteCodesDialog(role, new InviteCodesDialog.InviteCodesDialogListener() {
+            @Override
+            public void onPositiveButton(ArrayList<String> individuals) {
+                setStringArrayByName(HomeActivity.this, INVITE_CODES_TEMP, individuals);
+            }
+
+            @Override
+            public void onDismiss() {
+
+            }
+        });
+
+        ArrayList<String> arr = getStringArrayPrefByName(this, INVITE_CODES_TEMP, "");
+        inviteCodesDialog.setInviteCodes(arr);
+
+        FragmentManager fm = getSupportFragmentManager();
+        inviteCodesDialog.show(fm, getString(R.string.fragment_invite_code_dialog_tag));
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // receives result of launched authentication activity, if result is ok, change role, else cancel
+        if (requestCode==AUTHENTICATION_RQ) {
+            if (resultCode==RESULT_OK) {
+                if (data!=null) {
+                    int newRole = data.getIntExtra("role",-1);
+                    if (newRole!=-1) {
+                        preformRoleSwitch(Constants.Role.values()[newRole]);
+                        return;
+                    }
+                }
+            }
+
+            changingRole = false;
+            if (menuItemId!=-1) {
+                sideNav.getMenu().findItem(menuItemId).getActionView().setVisibility(View.GONE);
+            }
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -269,5 +515,7 @@ public class HomeActivity extends AppCompatActivity {
         outState.putSparseParcelableArray("savedStateSA", savedStateSA);
         outState.putInt("currentBottomNavItemId", currentBottomNavItemId);
 
+        outState.putBoolean("changingRole", changingRole);
+        outState.putInt("menuItemId", menuItemId);
     }
 }

@@ -189,8 +189,8 @@ public class VerificationAdapter extends PagerAdapter {
                         context.runOnUiThread(() -> {
                             if (counter >= 0) {
                                 resendBtn.setText(String.format(Locale.getDefault(),"%s%d%s",
-                                        context.getString(R.string.verifi_phone_resendBtn_label_inactive_suffix), counter,
-                                        context.getString(R.string.verifi_phone_resendBtn_label_inactive_prefix)));
+                                        context.getString(R.string.verifi_phone_resendBtn_label_inactive_prefix), counter,
+                                        context.getString(R.string.verifi_phone_resendBtn_label_inactive_suffix)));
                                 if (counter == OTP_TIMEOUT-10) {
                                     resendBtn.setVisibility(View.VISIBLE);
                                 }

@@ -40,12 +40,12 @@ public class RequestManager{
     /*
     *  Auth requests:
     * */
-    public RequestManager register(String uuid, String password, String phoneNumber, String accountType) {
-        TokenProvider.getUsableAccessToken(context, tokenType, new TokenProvider.TokenProviderCallback() {
+    public RequestManager register(String uuid, String password, Constants.Role role) {
+        TokenProvider.getUsableAccessToken(context, tokenType, role, new TokenProvider.TokenProviderCallback() {
             @Override
             public void onSuccess(int token_type, String token) {
                 Requests requests = ServiceGen.createService(Requests.class, REQUEST_PREFIX, token, tokenType);
-                Call<TokenData> call = requests.register(uuid, password, phoneNumber, accountType);
+                Call<TokenData> call = requests.register(uuid, password, role.toSerializedJSON());
 
                 call.enqueue(new Callback<TokenData>() {
                     @Override
@@ -55,7 +55,7 @@ public class RequestManager{
 
                             //Save tokenData
                             try {
-                                PreferencesUtil.setToken(context, response.body());
+                                PreferencesUtil.setToken(context, response.body(), role);
                                 mCallback.onRegisterSuccess();
 
                             } catch (Exception e) {
@@ -100,12 +100,12 @@ public class RequestManager{
         });
         return this;
     }
-    public RequestManager login(String uuid, String password, String accountType) {
-        TokenProvider.getUsableAccessToken(context, tokenType, new TokenProvider.TokenProviderCallback() {
+    public RequestManager login(String uuid, String password, Constants.Role role) {
+        TokenProvider.getUsableAccessToken(context, tokenType, role, new TokenProvider.TokenProviderCallback() {
             @Override
             public void onSuccess(int token_type, String token) {
                 Requests requests = ServiceGen.createService(Requests.class, REQUEST_PREFIX, token, tokenType);
-                Call<TokenData> call = requests.login(uuid, password, accountType);
+                Call<TokenData> call = requests.login(uuid, password, role.toSerializedJSON());
 
                 call.enqueue(new Callback<TokenData>() {
                     @Override
@@ -115,7 +115,7 @@ public class RequestManager{
 
                             //Save tokenData
                             try {
-                                PreferencesUtil.setToken(context, response.body());
+                                PreferencesUtil.setToken(context, response.body(), role);
                                 mCallback.onLoginSuccess();
 
                             } catch (Exception e) {
@@ -188,7 +188,7 @@ public class RequestManager{
         return this;
     }
     public RequestManager check(String uuid) {
-        TokenProvider.getUsableAccessToken(context, tokenType, new TokenProvider.TokenProviderCallback() {
+        TokenProvider.getUsableAccessToken(context, tokenType, null, new TokenProvider.TokenProviderCallback() {
             @Override
             public void onSuccess(int token_type, String token) {
                 Requests requests = ServiceGen.createService(Requests.class, REQUEST_PREFIX, token, tokenType);
@@ -228,43 +228,46 @@ public class RequestManager{
 
 
     /*
-    *  Participator - party requests:
-    * */
+     *  Participator - party requests:
+     * */
     public RequestManager attendeeFindParty(String codeWord) {
-        TokenProvider.getUsableAccessToken(context, tokenType, new TokenProvider.TokenProviderCallback() {
-            @Override
-            public void onSuccess(int token_type, String token) {
-                Requests requests = ServiceGen.createService(Requests.class, REQUEST_PREFIX, token, tokenType);
-                Call<PartyData> call = requests.attendeeFindParty(codeWord);
-
-                call.enqueue(new Callback<PartyData>() {
+        TokenProvider.getUsableAccessToken(context, tokenType,
+                PreferencesUtil.getRole(context, Constants.Role.NONE), new TokenProvider.TokenProviderCallback() {
                     @Override
-                    public void onResponse(@NonNull Call<PartyData> call, @NonNull Response<PartyData> response) {
-                        if (response.isSuccessful()) {
-                            Log.i("RequestManager", "attendeeFindParty:onResponse - Code: " + response.code());
-                            mCallback.onParticipatorSuccess(response.body());
+                    public void onSuccess(int token_type, String token) {
+                        Requests requests = ServiceGen.createService(Requests.class, REQUEST_PREFIX, token, tokenType);
+                        Call<PartyData> call = requests.attendeeFindParty(codeWord);
 
-                        } else {
-                            Log.i("RequestManager",
-                                    String.format("attendeeFindParty:onResponse - Code: %d\nMsg: %s",
-                                            response.code(), response.message()));
-                            mCallback.onParticipatorFailure(Constants.RQM_EC.FIND_PARTY_ATTENDEE_UNKNOWN);
-                        }
+                        call.enqueue(new Callback<PartyData>() {
+                            @Override
+                            public void onResponse(@NonNull Call<PartyData> call, @NonNull Response<PartyData> response) {
+                                if (response.isSuccessful()) {
+                                    Log.i("RequestManager", "attendeeFindParty:onResponse - Code: " + response.code());
+                                    mCallback.onParticipatorSuccess(response.body());
+
+                                } else {
+                                    Log.i("RequestManager",
+                                            String.format("attendeeFindParty:onResponse - Code: %d\nMsg: %s",
+                                                    response.code(), response.message()));
+                                    mCallback.onParticipatorFailure(Constants.RQM_EC.FIND_PARTY_ATTENDEE_UNKNOWN);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(@NonNull Call<PartyData> call, @NonNull Throwable t) {
+                                Log.i("RequestManager", "attendeeFindParty:onFailure - Msg: " + t.getMessage());
+                                mCallback.onParticipatorFailure(Constants.RQM_EC.FIND_PARTY_ATTENDEE_UNKNOWN);
+                            }
+                        });
                     }
 
                     @Override
-                    public void onFailure(@NonNull Call<PartyData> call, @NonNull Throwable t) {
-                        Log.i("RequestManager", "attendeeFindParty:onFailure - Msg: " + t.getMessage());
-                        mCallback.onParticipatorFailure(Constants.RQM_EC.FIND_PARTY_ATTENDEE_UNKNOWN);
+                    public void onFailure(int errorCode) {
+                        mCallback.onParticipatorFailure(errorCode);
                     }
                 });
-            }
-
-            @Override
-            public void onFailure(int errorCode) {
-                mCallback.onParticipatorFailure(errorCode);
-            }
-        });
         return this;
     }
+
+
 }

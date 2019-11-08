@@ -19,7 +19,6 @@ public interface Requests {
     @POST("app/register")
     Call<TokenData> register(@Header("UUID") String uuid,
                              @Header("password") String password,
-                             @Query("phone_number") String phoneNumber,
                              @Query("account_type") String accountType);
 
     /*
@@ -48,4 +47,8 @@ public interface Requests {
      */
     @GET("app/participator/find_party")
     Call<PartyData> attendeeFindParty(@Query("code_word") String codeWord);
+
+
+//    @POST("app/participator/upload_code_words")
+//    Call<> attendeeCodeWord
 }

@@ -7,7 +7,15 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
 <!--        <item name="android:colorBackground">@color/colorBackground</item>-->
+    </style>
 
+    <style name="NoTitleDialog" parent="@android:style/Theme.Dialog">
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <style name="ActivityDialog" parent="Theme.AppCompat.Light.Dialog">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
     </style>
 
     <style name="AppThemeAttendee" parent="AppTheme">
@@ -28,7 +36,10 @@
 
         <item name="side_nav_header_back">@drawable/side_nav_bar_host</item>
         <item name="bottom_nav_menu">@menu/menu_home_host</item>
+    </style>
 
+    <style name="DatePickerDialogThemeHost" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@color/colorHostPrimary</item>
     </style>
 
     <style name="AppThemeManager" parent="AppTheme">

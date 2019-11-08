@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="15dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="20dp"
+            android:orientation="horizontal"
+            android:background="@drawable/border_white_back_b"
+
+            android:visibility="visible">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="10dp"
+
+                android:src="@drawable/ic_info_outline_light_black_40dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/invite_code_infoTv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:fontFamily="@font/roboto_slab"
+                    android:textColor="#8A000000"
+                    android:textSize="15sp"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/invite_code_viewLy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:weightSum="1"
+            android:orientation="vertical"
+
+            android:background="@drawable/border_white_back_b">
+
+            <TextView
+                android:id="@+id/invite_code_empty_view"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="40dp"
+                android:visibility="gone"
+
+                android:fontFamily="@font/bree_serif"
+                android:text="@string/invite_code_empty_view_label"
+                android:textAlignment="center"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
+
+            <com.sse.iamhere.Views.EmptySupportedRecyclerView
+               android:id="@+id/invite_code_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_marginTop="10dp"
+                android:clipToPadding="false"
+                android:scrollbars="vertical"
+
+                tools:listitem="@layout/item_invite_code">
+
+            </com.sse.iamhere.Views.EmptySupportedRecyclerView>
+
+            <Button
+                android:id="@+id/invite_code_addBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp"
+                android:layout_gravity="bottom"
+
+                android:text="@string/invite_code_addBtn_label"
+                android:textSize="15sp"
+                android:fontFamily="@font/roboto_slab"
+                android:gravity="start|center_vertical"
+
+                android:drawableStart="@drawable/ic_add_green_30dp"
+                android:drawablePadding="5dp"
+                android:background="@drawable/border_back_button_all"
+                style="@style/Widget.AppCompat.Button.Borderless"
+
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

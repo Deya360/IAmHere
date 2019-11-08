@@ -1,5 +1,6 @@
 package com.sse.iamhere;
 
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 
 import androidx.core.content.ContextCompat;
@@ -10,11 +11,29 @@ import com.codemybrainsout.onboarder.AhoyOnboarderCard;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
+import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
+
 public class OnboardActivity extends AhoyOnboarderActivity {
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        int activityOrientation = ORIENTATION_PORTRAIT;
+
+        if (getIntent().getExtras()!=null) {
+            activityOrientation = getIntent().getExtras().getInt("activityOrientation", activityOrientation);
+        }
+
+        if (activityOrientation ==ORIENTATION_PORTRAIT) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+
+        } else if (activityOrientation ==ORIENTATION_LANDSCAPE) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+
+        } else throw new RuntimeException("Authentication Activity: supplied bad orientation");
 
         setupOnboard();
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);

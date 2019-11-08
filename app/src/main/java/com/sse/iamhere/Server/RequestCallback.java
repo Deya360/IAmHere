@@ -31,7 +31,8 @@ interface FindPartyCallback {
 }
 
 
-public class RequestCallback implements RegisterCallback, LoginCallback, RefreshCallback, CheckCallback, FindPartyCallback {
+public class RequestCallback implements RegisterCallback, LoginCallback, RefreshCallback,
+        CheckCallback, FindPartyCallback {
     @Override
     public void onRegisterSuccess() { }
 

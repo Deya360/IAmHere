@@ -41,7 +41,7 @@
                 android:paddingBottom="5dp"
                 android:gravity="center"
 
-                android:text="A"
+                android:text=""
                 android:textSize="34sp"
                 android:textColor="@android:color/black"
                 android:fontFamily="@font/roboto_slab"/>
@@ -52,15 +52,16 @@
             android:id="@+id/nav_header_nameTv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="8dp"
+            android:paddingTop="16dp"
             android:text="Android Studio"
+            android:textSize="22sp"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
         <TextView
             android:id="@+id/nav_header_roleTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="android.studio@android.com" />
+            android:text="" />
 
     </LinearLayout>
 
