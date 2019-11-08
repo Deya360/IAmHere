@@ -14,130 +14,69 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:paddingTop="4dp"
             android:paddingBottom="3dp"
+            android:paddingStart="3dp"
+            android:paddingEnd="3dp"
+
+            android:gravity="center_vertical"
+            android:layout_gravity="top"
+            android:orientation="horizontal"
+            android:elevation="5dp"
+
             android:background="@drawable/border_back_b">
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <Button
+                android:id="@+id/events_date_prvBtn"
+                android:layout_width="0dp"
+                android:layout_weight="0.1"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_gravity="top"
-                android:background="@drawable/border_back_b">
+                android:background="@drawable/ic_keyboard_arrow_left_black_24dp"
+                android:backgroundTint="#77616161"
+                android:enabled="false"
 
-                <ImageView
-                    android:id="@+id/events_date_prvIv"
-                    android:layout_width="0dp"
-                    android:layout_weight="0.15"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/ic_keyboard_arrow_left_black_24dp"
-                    android:backgroundTint="#77616161"
-
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="?attr/selectableItemBackground">
-
-                </ImageView>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_weight="0.8"
-                    android:weightSum="1"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center">
-
-                    <TextView
-                        android:id="@+id/events_date_todayTv"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginBottom="5dp"
-                        android:paddingStart="10dp"
-                        android:paddingEnd="10dp"
-                        android:paddingTop="2dp"
-                        android:paddingBottom="4dp"
-
-                        android:fontFamily="@font/pt_serif"
-                        android:text="@string/events_date_today_label"
-                        android:textColor="@color/black"
-                        android:textStyle="bold"
-                        android:textSize="22sp"
-                        android:gravity="center_horizontal"
-                        android:lines="1"
-                        android:ellipsize="end"
-
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:foreground="?attr/selectableItemBackground"/>
-
-                    <TextView
-                        android:id="@+id/events_date_tomTv"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginBottom="5dp"
-                        android:paddingStart="10dp"
-                        android:paddingEnd="10dp"
-                        android:paddingTop="2dp"
-                        android:paddingBottom="4dp"
-                        android:layout_marginStart="10dp"
-
-                        android:fontFamily="@font/pt_serif"
-                        android:text="@string/events_date_tom_label"
-                        android:textColor="@color/black"
-                        android:textSize="22sp"
-                        android:gravity="center_horizontal"
-                        android:lines="1"
-                        android:ellipsize="end"
-
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:foreground="?attr/selectableItemBackground"/>
-
-                </LinearLayout>
-
-                <ImageView
-                    android:id="@+id/events_date_nxtIv"
-                    android:layout_width="0dp"
-                    android:layout_weight="0.15"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/ic_keyboard_arrow_right_black_24dp"
-
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="?attr/selectableItemBackground"/>
-
-
-                <ImageView
-                    android:id="@+id/events_date_calIv"
-                    android:layout_width="0dp"
-                    android:layout_weight="0.2"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_calendar_black_24dp"
-
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="?attr/selectableItemBackground"/>
-
-
-            </LinearLayout>
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"/>
 
             <TextView
                 android:id="@+id/events_date_dateStrTv"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
+                android:layout_weight="0.65"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
                 android:padding="7dp"
 
-                android:textSize="22sp"
+                android:textSize="20sp"
                 android:fontFamily="@font/pt_serif"
                 android:textColor="@color/black"
                 android:textStyle="bold"
+                android:textAlignment="center"
+
                 tools:text="Monday, 14 September" />
+
+            <Button
+                android:id="@+id/events_date_nxtBtn"
+                android:layout_width="0dp"
+                android:layout_weight="0.1"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_keyboard_arrow_right_black_24dp"
+
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"/>
+
+
+            <ImageView
+                android:id="@+id/events_date_calIv"
+                android:layout_width="0dp"
+                android:layout_weight="0.15"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_calendar_black_24dp"
+
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"/>
 
         </LinearLayout>
 
@@ -173,7 +112,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <com.sse.iamhere.Views.EmptySupportedRecyclerView
+                <com.sse.iamhere.Subclasses.EmptySupportedRecyclerView
                     android:id="@+id/events_recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -183,7 +122,7 @@
 
                     tools:listitem="@layout/item_event">
 
-                </com.sse.iamhere.Views.EmptySupportedRecyclerView>
+                </com.sse.iamhere.Subclasses.EmptySupportedRecyclerView>
 
             </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

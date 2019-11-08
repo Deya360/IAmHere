@@ -26,9 +26,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.sse.iamhere.Server.RequestCallback;
 import com.sse.iamhere.Server.RequestManager;
+import com.sse.iamhere.Subclasses.OnSingleClickListener;
 import com.sse.iamhere.Utils.Constants;
 import com.sse.iamhere.Utils.PreferencesUtil;
-import com.sse.iamhere.Views.OnSingleClickListener;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;

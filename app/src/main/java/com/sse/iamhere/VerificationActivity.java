@@ -10,8 +10,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.sse.iamhere.Adapters.VerificationAdapter;
+import com.sse.iamhere.Subclasses.NoSwipeViewPager;
 import com.sse.iamhere.Utils.Constants;
-import com.sse.iamhere.Views.NoSwipeViewPager;
 
 public class VerificationActivity extends AppCompatActivity {
     private int verificationStage = 0;

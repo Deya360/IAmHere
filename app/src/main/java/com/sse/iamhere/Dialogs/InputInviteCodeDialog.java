@@ -19,6 +19,9 @@ public class InputInviteCodeDialog extends AppCompatDialogFragment {
     private EditText inputEt;
     private String name = "";
 
+
+    public InputInviteCodeDialog() { }
+
     private InputIndividualDialogListener inputIndividualDialogListener;
     public interface InputIndividualDialogListener {
         void onPositiveButton(String name);

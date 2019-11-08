@@ -3,7 +3,7 @@ package com.sse.iamhere.Utils;
 import com.sse.iamhere.R;
 
 public class Constants {
-    public static final boolean DEBUG_MODE = false; //TODO: remove debug
+    public static final boolean DEBUG_MODE = true; //TODO: remove debug
 
     // Preference folder names
     static final String PERMISSION_PREFS = "USER_PERMISSIONS";

@@ -1,4 +1,4 @@
-package com.sse.iamhere.Views;
+package com.sse.iamhere.Subclasses;
 
 import android.view.View;
 

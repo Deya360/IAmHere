@@ -1,19 +1,21 @@
-package com.sse.iamhere.Views;
+package com.sse.iamhere.Subclasses;
 
 import android.os.SystemClock;
 import android.view.View;
+import android.widget.AdapterView;
 
 /*
 * Borrowed from: https://stackoverflow.com/a/20672997/11193085
 * */
-public abstract class OnSingleClickListener implements View.OnClickListener {
-    private long MIN_CLICK_INTERVAL=600;
+public abstract class OnSingleClickAdapterViewListener implements AdapterView.OnItemClickListener {
+    private long MIN_CLICK_INTERVAL=400;
     private long mLastClickTime;
 
-    public abstract void onSingleClick(View v);
+    public abstract void onSingleItemClick(AdapterView<?> parent, View view, int position, long id);
+
 
     @Override
-    public final void onClick(View v) {
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         long currentClickTime= SystemClock.uptimeMillis();
         long elapsedTime=currentClickTime-mLastClickTime;
 
@@ -22,7 +24,7 @@ public abstract class OnSingleClickListener implements View.OnClickListener {
         if(elapsedTime<=MIN_CLICK_INTERVAL)
             return;
 
-        onSingleClick(v);
+        onSingleItemClick(parent, view, position, id);
     }
 
     public void setMinClickInterval(int interval) {

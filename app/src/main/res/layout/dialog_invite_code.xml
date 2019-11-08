@@ -77,7 +77,7 @@
                 android:textAlignment="center"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
 
-            <com.sse.iamhere.Views.EmptySupportedRecyclerView
+            <com.sse.iamhere.Subclasses.EmptySupportedRecyclerView
                android:id="@+id/invite_code_recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
@@ -88,7 +88,7 @@
 
                 tools:listitem="@layout/item_invite_code">
 
-            </com.sse.iamhere.Views.EmptySupportedRecyclerView>
+            </com.sse.iamhere.Subclasses.EmptySupportedRecyclerView>
 
             <Button
                 android:id="@+id/invite_code_addBtn"

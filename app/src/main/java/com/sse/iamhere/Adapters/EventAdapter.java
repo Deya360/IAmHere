@@ -1,5 +1,6 @@
 package com.sse.iamhere.Adapters;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +17,6 @@ import java.util.List;
 
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder> {
     private List<Subject> subjects = new ArrayList<>();
-    private String query = "";
 
     public interface EventAdapterListener {
         void onClick(int subjectId);
@@ -34,11 +34,12 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
 
     class EventHolder extends RecyclerView.ViewHolder {
         private TextView nameTv;
+        private TextView descTv;
 
         EventHolder(View itemView) {
             super(itemView);
             this.nameTv = itemView.findViewById(R.id.event_nameTv);
-
+            this.descTv = itemView.findViewById(R.id.event_descTv);
         }
     }
 
@@ -57,6 +58,13 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
 
         holder.nameTv.setText(currentResult.getName());
 
+        String description = currentResult.getDescription();
+        if (!TextUtils.isEmpty(description)) {
+            holder.descTv.setVisibility(View.VISIBLE);
+            holder.descTv.setText(description);
+        } else {
+            holder.descTv.setVisibility(View.GONE);
+        }
     }
 
     @Override

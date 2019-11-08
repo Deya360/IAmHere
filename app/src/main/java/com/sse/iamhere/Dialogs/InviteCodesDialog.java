@@ -25,8 +25,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.sse.iamhere.Adapters.InviteCodeAdapter;
 import com.sse.iamhere.R;
+import com.sse.iamhere.Subclasses.EmptySupportedRecyclerView;
 import com.sse.iamhere.Utils.Constants;
-import com.sse.iamhere.Views.EmptySupportedRecyclerView;
 
 import java.util.ArrayList;
 
@@ -41,6 +41,11 @@ public class InviteCodesDialog extends AppCompatDialogFragment {
         void onPositiveButton(ArrayList<String> individuals);
         void onDismiss();
     }
+
+    /*
+     * DO NOT USE THIS CONSTRUCTOR, it's here for a technical reason
+     * */
+    public InviteCodesDialog() { }
 
     public InviteCodesDialog(Constants.Role role, InviteCodesDialogListener listener) {
         this.role = role;
@@ -71,6 +76,7 @@ public class InviteCodesDialog extends AppCompatDialogFragment {
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         if (savedInstanceState!=null) {
             inviteCodes = savedInstanceState.getStringArrayList("inviteCodes");
+            role = Constants.Role.values()[savedInstanceState.getInt("role")];
         }
 
         View view = View.inflate(getActivity(), R.layout.dialog_invite_code, null);
@@ -168,15 +174,18 @@ public class InviteCodesDialog extends AppCompatDialogFragment {
             }
         }).attachToRecyclerView(recyclerView);
 
+        @Nullable
         TextView infoTv = view.findViewById(R.id.invite_code_infoTv);
-        if (role == Constants.Role.ATTENDEE) {
-            infoTv.setText(getString(R.string.invite_code_infoTv_attendee_label));
+        if (infoTv!=null) { //infoTv can be null in landscape mode
+            if (role == Constants.Role.ATTENDEE) {
+                infoTv.setText(getString(R.string.invite_code_infoTv_attendee_label));
 
-        } else if (role == Constants.Role.HOST) {
-            infoTv.setText(getString(R.string.invite_code_infoTv_host_label));
+            } else if (role == Constants.Role.HOST) {
+                infoTv.setText(getString(R.string.invite_code_infoTv_host_label));
 
-        } else {
-            throw new RuntimeException("Invite Code Dialog can only be used for Roles: Attendee, Host");
+            } else {
+                throw new RuntimeException("Invite Code Dialog can only be used for Roles: Attendee, Host");
+            }
         }
 
         Button addBtn = view.findViewById(R.id.invite_code_addBtn);
@@ -235,6 +244,7 @@ public class InviteCodesDialog extends AppCompatDialogFragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putStringArrayList("inviteCodes", inviteCodes);
+        outState.putInt("role", role.toIdx());
         super.onSaveInstanceState(outState);
     }
 }

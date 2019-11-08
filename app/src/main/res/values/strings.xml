@@ -9,6 +9,7 @@
     <string name="fragment_relog_dialog_tag" translatable="false">RelogDialogFragmentTag</string>
     <string name="fragment_input_invite_code_dialog_tag" translatable="false">input_invite_code_dialogTag</string>
     <string name="fragment_invite_code_dialog_tag" translatable="false">invite_code_dialogTag</string>
+    <string name="fragment_date_picker_dialog_tag" translatable="false">date_picker_dialogTag</string>
 
 
     <string name="splash_get_started_label">Get Started</string>

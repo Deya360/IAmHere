@@ -3,11 +3,6 @@ package com.sse.iamhere.Data_depreciated.Entitites;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
-import androidx.room.TypeConverters;
-
-import com.sse.iamhere.Utils.TimestampConverter;
-
-import java.util.Date;
 
 @Entity(tableName = "subject")
 public class Subject {
@@ -18,16 +13,17 @@ public class Subject {
     @ColumnInfo(name="name")
     private String name;
 
-    @ColumnInfo(name="datetime")
-    @TypeConverters(TimestampConverter.class)
-    private Date date;
+    @ColumnInfo(name="description")
+    private String description;
 
-    @ColumnInfo(name="date_str")
-    private String date_str;
+    @ColumnInfo(name="date")
+    private String date;
 
-    public Subject(String name, String date_str) {
+
+    public Subject(String name, String description, String date) {
         this.name = name;
-        this.date_str = date_str;
+        this.description = description;
+        this.date = date;
     }
 
     public int getId() {
@@ -46,19 +42,19 @@ public class Subject {
         this.name = name;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setDate(String date_str) {
+        this.date = date_str;
     }
 
-    public String getDate_str() {
-        return date_str;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDate_str(String date_str) {
-        this.date_str = date_str;
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

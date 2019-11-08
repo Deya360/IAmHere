@@ -36,9 +36,10 @@
 
         <item name="side_nav_header_back">@drawable/side_nav_bar_host</item>
         <item name="bottom_nav_menu">@menu/menu_home_host</item>
+        <item name="sublimePickerStyle">@style/DatePickerDialogThemeHost</item>
     </style>
 
-    <style name="DatePickerDialogThemeHost" parent="Theme.AppCompat.Light.Dialog">
+    <style name="DatePickerDialogThemeHost" parent="SublimePickerStyleLight">
         <item name="colorAccent">@color/colorHostPrimary</item>
     </style>
 

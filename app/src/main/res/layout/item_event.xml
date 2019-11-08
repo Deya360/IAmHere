@@ -1,27 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp"
+
+    android:orientation="vertical"
+
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    android:background="@drawable/border_white_back_b" >
 
     <TextView
         android:id="@+id/event_nameTv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:paddingEnd="10dp"
-        android:paddingStart="20dp"
 
         android:fontFamily="@font/pt_serif"
         android:textSize="22sp"
         android:textStyle="bold"
         android:textColor="@color/black"
+        android:maxLines="2"
+        android:ellipsize="end"
 
-        android:clickable="true"
-        android:focusable="true"
-        android:foreground="?attr/selectableItemBackground"
-        android:background="@drawable/border_white_back_b"
         tools:text="Science"/>
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+    <TextView
+        android:id="@+id/event_descTv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:fontFamily="@font/pt_serif"
+        android:textSize="20sp"
+        android:textColor="#B0000000"
+        android:maxLines="3"
+        android:ellipsize="end"
+        android:justificationMode="inter_word"
+
+        tools:text="Science is the study of the nature and behaviour of natural things and the knowledge that we obtain about them."/>
+
+</LinearLayout>

@@ -66,13 +66,13 @@
 
             </LinearLayout>
 
-            <com.sse.iamhere.Views.NoSwipeViewPager
+            <com.sse.iamhere.Subclasses.NoSwipeViewPager
                 android:id="@+id/verifi_inputVp"
                 android:layout_below="@id/verifi_headerLy"
                 android:layout_width="match_parent"
                 android:layout_height="300dp">
 
-            </com.sse.iamhere.Views.NoSwipeViewPager>
+            </com.sse.iamhere.Subclasses.NoSwipeViewPager>
 
         </RelativeLayout>
 

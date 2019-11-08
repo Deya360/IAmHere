@@ -1,9 +1,8 @@
 package com.sse.iamhere;
 
-import android.app.DatePickerDialog;
+import android.annotation.SuppressLint;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.text.TextUtils;
@@ -11,7 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.DatePicker;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -19,31 +18,46 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.appeaser.sublimepickerlibrary.helpers.SublimeOptions;
 import com.sse.iamhere.Adapters.EventAdapter;
+import com.sse.iamhere.Data_depreciated.Entitites.Subject;
 import com.sse.iamhere.Data_depreciated.VM.SubjectViewModel;
-import com.sse.iamhere.Views.EmptySupportedRecyclerView;
-import com.sse.iamhere.Views.OnSingleClickListener;
+import com.sse.iamhere.Dialogs.DatePickerFragment;
+import com.sse.iamhere.Subclasses.EmptySupportedRecyclerView;
+import com.sse.iamhere.Subclasses.OnSingleClickListener;
+import com.sse.iamhere.Subclasses.RepeatListener;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
-public class EventsFrag extends Fragment implements DatePickerDialog.OnDateSetListener {
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.observers.DisposableSingleObserver;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subscribers.DisposableSubscriber;
+
+import static com.sse.iamhere.Utils.CalendarUtils.getNextDay;
+import static com.sse.iamhere.Utils.CalendarUtils.getPrvDay;
+import static com.sse.iamhere.Utils.CalendarUtils.getStringDate;
+import static com.sse.iamhere.Utils.CalendarUtils.isSameDay;
+import static com.sse.iamhere.Utils.CalendarUtils.trimTime;
+
+public class EventsFrag extends Fragment {
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private EmptySupportedRecyclerView recyclerView;
     private Parcelable savedRecyclerLayoutState;
 
-    private ImageView datePrvIv;
-    private ImageView dateNxtIv;
-    private TextView dateTodayTv;
-    private TextView dateTomorrowTv;
+    private Button datePrvIv;
+    private Button dateNxtIv;
     private TextView dateStrTv;
 
     private Calendar currentDate;
@@ -88,10 +102,8 @@ public class EventsFrag extends Fragment implements DatePickerDialog.OnDateSetLi
         }
 
         if (savedInstanceState!=null){
-            Calendar cal = Calendar.getInstance();
-            cal.setTimeInMillis(savedInstanceState.getLong("currentDate"));
-            currentDate =  cal;
-
+            currentDate = Calendar.getInstance();
+            currentDate.setTimeInMillis(savedInstanceState.getLong("currentDate"));
             savedRecyclerLayoutState = savedInstanceState.getParcelable("mListState");
         }
 
@@ -122,58 +134,58 @@ public class EventsFrag extends Fragment implements DatePickerDialog.OnDateSetLi
 //                    }
 //                });
 
-//        Subject[] subjectz = {
-//            new Subject("Accounting & Finance", "07112019"),
-//            new Subject("Business & Management Studies", "07112019"),
-//            new Subject("Law", "07112019"),
-//            new Subject("Business & Management Studies", "08112019"),
-//            new Subject("Management Studies", "08112019")
-//        };
-//
-//        subjectViewModel.insert(subjectz)
-//            .subscribeOn(Schedulers.io())
-//            .observeOn(AndroidSchedulers.mainThread())
-//            .subscribe(new DisposableSingleObserver<long[]>() {
-//                @Override
-//                public void onSuccess(long[] longs) {
-//
-//                }
-//
-//                @Override
-//                public void onError(Throwable e) {
-//
-//                }
-//            });
+        Subject[] subjectz = {
+            new Subject("Accounting & Finance", "cool description" ,"07112019"),
+            new Subject("Business & Management Studies", "not cool description" , "07112019"),
+            new Subject("Law", "" , "07112019"),
+            new Subject("Business & Management Studies", "random very very long description that seems to never ever ever end, you thought that was it, nope, yup, it keeps on going, and on, and on, and on....." , "08112019"),
+            new Subject("Management Studies", "" , "08112019")
+        };
 
-//        SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyyyy", Locale.getDefault());
-//        dateFormat.format(currentDate.getTime());
-//
-//        subjectViewModel.getAllByDate(dateFormat.format(currentDate.getTime()))
-//            .subscribeOn(Schedulers.io())
-//            .observeOn(AndroidSchedulers.mainThread())
-//            .filter(subjects -> {
-//                adapter.setSubjects(subjects);
-//                mSwipeRefreshLayout.setRefreshing(false);
-//                if (recyclerView.getLayoutManager()!=null && savedRecyclerLayoutState!=null)
-//                    recyclerView.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
-//                if(subjects.isEmpty()) {
-//                    recyclerView.setPlaceHolderView(getActivity().findViewById(R.id.events_empty_view));
-//                }
-//
-//                return !subjects.isEmpty();
-//            }).subscribe(new DisposableSubscriber<List<Subject>>() {
-//            @Override
-//            public void onNext(List<Subject> subjects) {
-//            }
-//
-//            @Override
-//            public void onError(Throwable t) {
-//            }
-//
-//            @Override
-//            public void onComplete() {
-//            }
-//        });
+        subjectViewModel.insert(subjectz)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new DisposableSingleObserver<long[]>() {
+                @Override
+                public void onSuccess(long[] longs) {
+
+                }
+
+                @Override
+                public void onError(Throwable e) {
+
+                }
+            });
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyyyy", Locale.getDefault());
+        dateFormat.format(currentDate.getTime());
+
+        subjectViewModel.getAllByDate(dateFormat.format(currentDate.getTime()))
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .filter(subjects -> {
+                adapter.setSubjects(subjects);
+                mSwipeRefreshLayout.setRefreshing(false);
+                if (recyclerView.getLayoutManager()!=null && savedRecyclerLayoutState!=null)
+                    recyclerView.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
+                if(subjects.isEmpty()) {
+                    recyclerView.setPlaceHolderView(getActivity().findViewById(R.id.events_empty_view));
+                }
+
+                return !subjects.isEmpty();
+            }).subscribe(new DisposableSubscriber<List<Subject>>() {
+            @Override
+            public void onNext(List<Subject> subjects) {
+            }
+
+            @Override
+            public void onError(Throwable t) {
+            }
+
+            @Override
+            public void onComplete() {
+            }
+        });
     }
 
     private void setupUI() {
@@ -194,133 +206,100 @@ public class EventsFrag extends Fragment implements DatePickerDialog.OnDateSetLi
     }
 
 
+    @SuppressLint("ClickableViewAccessibility")
     private void initDatePanel(@NonNull View view) {
-        datePrvIv = view.findViewById(R.id.events_date_prvIv);
-        dateNxtIv = view.findViewById(R.id.events_date_nxtIv);
-        dateTodayTv = view.findViewById(R.id.events_date_todayTv);
-        dateTomorrowTv = view.findViewById(R.id.events_date_tomTv);
+        datePrvIv = view.findViewById(R.id.events_date_prvBtn);
+        dateNxtIv = view.findViewById(R.id.events_date_nxtBtn);
         dateStrTv = view.findViewById(R.id.events_date_dateStrTv);
 
-        View.OnClickListener today = v -> {
-            EventsFrag.this.selectDate(Calendar.getInstance());
+        datePrvIv.setOnTouchListener(new RepeatListener(300, 125, v -> {
+            selectDate(getPrvDay(currentDate));
             populateTestData(currentDate.getTime());
-        };
-        View.OnClickListener tomorrow = v -> {
-            Calendar tomorrow1 = Calendar.getInstance();
-            tomorrow1.add(Calendar.DAY_OF_YEAR,1);
-            selectDate(tomorrow1);
-            populateTestData(currentDate.getTime());
-        };
-        datePrvIv.setOnClickListener(today);
-        dateTodayTv.setOnClickListener(today);
+        }));
 
-        dateNxtIv.setOnClickListener(tomorrow);
-        dateTomorrowTv.setOnClickListener(tomorrow);
+        dateNxtIv.setOnTouchListener(new RepeatListener(300, 125, v -> {
+            selectDate(getNextDay(currentDate));
+            populateTestData(currentDate.getTime());
+        }));
 
         ImageView dateCalTv = view.findViewById(R.id.events_date_calIv);
         dateCalTv.setOnClickListener(new OnSingleClickListener() {
             @Override
             public void onSingleClick(View v) {
-                DatePickerDialog datePickerDialog =
-                    new DatePickerDialog(getActivity(), R.style.DatePickerDialogThemeHost, EventsFrag.this,
-                        currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH), currentDate.get(Calendar.DAY_OF_MONTH));
-                datePickerDialog.show();
+            showDatePickerDialog();
             }
         });
 
         if (dateStrTv.getText()==null || TextUtils.isEmpty(dateStrTv.getText().toString())) {
-            selectDate(Calendar.getInstance());
+            if (currentDate==null) {
+                Calendar today = Calendar.getInstance();
+                selectDate(trimTime(today));
+            } else {
+                selectDate(currentDate);
+            }
         }
+    }
+
+    private void showDatePickerDialog() {
+        Calendar cal;
+
+        SublimeOptions options = new SublimeOptions();
+
+        options.setCanPickDateRange(false);
+        options.setDateParams(currentDate.get(Calendar.YEAR),
+                    currentDate.get(Calendar.MONTH),
+                    currentDate.get(Calendar.DAY_OF_MONTH));
+
+        options.setDisplayOptions(SublimeOptions.ACTIVATE_DATE_PICKER);
+
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("SUBLIME_OPTIONS", options);
+
+        DatePickerFragment datePickerFrag = new DatePickerFragment();
+        datePickerFrag.setCancelable(true);
+        datePickerFrag.setArguments(bundle);
+        datePickerFrag.setStyle(DialogFragment.STYLE_NO_TITLE, 0);
+        datePickerFrag.show(getChildFragmentManager(),
+                getResources().getString(R.string.fragment_date_picker_dialog_tag));
     }
 
     private void selectDate(Calendar date) {
         currentDate = date;
         dateStrTv.setText(getStringDate(date));
 
-        Calendar today = Calendar.getInstance();
-        if (isSameDay(date, today)) {
+        if (isSameDay(date, Calendar.getInstance())) {
             deActivateArrow(datePrvIv);
             activateArrow(dateNxtIv);
 
-            selectDay(dateTodayTv);
-            deSelectDay(dateTomorrowTv);
-            return;
-        }
-
-        Calendar tomorrow = Calendar.getInstance();
-        tomorrow.add(Calendar.DAY_OF_YEAR,1);
-        if (isSameDay(date, tomorrow)) {
-            deActivateArrow(dateNxtIv);
-            activateArrow(datePrvIv);
-
-            selectDay(dateTomorrowTv);
-            deSelectDay(dateTodayTv);
-
         } else {
-            deActivateArrow(datePrvIv);
-            deActivateArrow(dateNxtIv);
-
-            deSelectDay(dateTodayTv);
-            deSelectDay(dateTomorrowTv);
+            activateArrow(datePrvIv);
         }
-
     }
 
-    private void selectDay(TextView view) {
-//        LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
-//            LinearLayout.LayoutParams.MATCH_PARENT,
-//            LinearLayout.LayoutParams.WRAP_CONTENT,
-//            1.0f
-//        );
-//        view.setLayoutParams(param);
-        view.setTypeface(view.getTypeface(), Typeface.BOLD);
-    }
-    private void deSelectDay(TextView view) {
-//        LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
-//            LinearLayout.LayoutParams.MATCH_PARENT,
-//            LinearLayout.LayoutParams.WRAP_CONTENT
-//        );
-//        view.setLayoutParams(param);
-        Typeface t = view.getTypeface();
-
-        view.setTypeface(null, Typeface.NORMAL);
-        view.setTypeface(t);
-    }
-
-    private void activateArrow(ImageView view) {
+    private void activateArrow(Button view) {
         ViewCompat.setBackgroundTintList(
                 view,
                 null);
         view.setClickable(true);
         view.setFocusable(true);
+        view.setEnabled(true);
     }
-    private void deActivateArrow(ImageView view) {
+    private void deActivateArrow(Button view) {
         ViewCompat.setBackgroundTintList(
                 view,
                 ColorStateList.valueOf(Color.parseColor("#77616161")));
         view.setClickable(false);
         view.setFocusable(false);
+        view.setEnabled(false);
     }
 
-    private boolean isSameDay(Calendar date1, Calendar date2) {
-        return  (date1.get(Calendar.DAY_OF_YEAR) == date2.get(Calendar.DAY_OF_YEAR) &&
-                date1.get(Calendar.YEAR) == date2.get(Calendar.YEAR));
-    }
-
-    private String getStringDate(Calendar date) {
-//        String weekdays[] = new DateFormatSymbols(Locale.getDefault()).getWeekdays();
-        SimpleDateFormat sdf = new SimpleDateFormat("EEEE, d MMMM", Locale.getDefault());
-        return sdf.format(date.getTime());
-    }
-
-    @Override
-    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-        Calendar setDate = Calendar.getInstance();
-        setDate.set(Calendar.YEAR, year);
-        setDate.set(Calendar.MONTH, month);
-        setDate.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-
-        selectDate(setDate);
+    /*
+    * Callback method for the DatePickerDialog, sets the local currentDate to the user picked date
+    * */
+    public void onClose(Calendar selectedDate) {
+        if (selectedDate!=null) {
+            selectDate(trimTime(selectedDate));
+        }
     }
 
     @Override
@@ -336,6 +315,5 @@ public class EventsFrag extends Fragment implements DatePickerDialog.OnDateSetLi
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
-
     }
 }
