@@ -7,7 +7,6 @@ import com.sse.iamhere.Server.Body.TokenData;
 import com.sse.iamhere.Utils.Constants;
 import com.sse.iamhere.Utils.PreferencesUtil;
 
-import java.util.Calendar;
 import java.util.Date;
 
 import static com.sse.iamhere.Utils.Constants.TOKEN_ACCESS;
@@ -39,7 +38,7 @@ public class TokenProvider {
         void onFailure(int errorCode);
     }
 
-    public static void getUsableAccessToken(Context context, int type, Constants.Role role, TokenProviderCallback callback) {
+    public static void getUsableToken(Context context, int type, Constants.Role role, TokenProviderCallback callback) {
         if (type==TOKEN_NONE) {
             callback.onSuccess(type, null);
             return;
@@ -54,29 +53,33 @@ public class TokenProvider {
         } else {
             if (type==TOKEN_ACCESS) {
                 // Renew using refresh token
-                getUsableAccessToken(context, TOKEN_REFRESH, role, new TokenProviderCallback() {
+                getUsableToken(context, TOKEN_REFRESH, role, new TokenProviderCallback() {
                     @Override
                     public void onSuccess(int token_type, String token) {
                         if (token_type==TOKEN_REFRESH && !TextUtils.isEmpty(token)) {
                             //call to renew
 
-                            new RequestManager(context).refresh(token).attachToken(token_type)
-                                .setCallback(new RequestCallback() {
+                            new AuthRequestBuilder(context)
+                                .setCallback(new RequestsCallback() {
                                     @Override
                                     public void onRefreshSuccess(TokenData renewedTokenData) {
                                         try {
                                             PreferencesUtil.setToken(context, renewedTokenData, role);
+                                            callback.onSuccess(type, renewedTokenData.getAccessToken());
+
                                         } catch (Exception e) {
                                             e.printStackTrace();
-                                            onRefreshFailure(Constants.RQM_EC.TOKEN_STORE_FAIL);
+                                            onFailure(Constants.RQM_EC.TOKEN_STORE_FAIL);
                                         }
                                     }
 
                                     @Override
-                                    public void onRefreshFailure(int errorCode) {
+                                    public void onFailure(int errorCode) {
                                         callback.onFailure(errorCode);
                                     }
-                                });
+                                })
+                                .attachToken(token_type)
+                                .refresh(token);
 
                         } else {
                             callback.onFailure(Constants.RQM_EC.REFRESH_REFRESH_EXPIRED);
@@ -100,10 +103,8 @@ public class TokenProvider {
     }
 
     private static boolean isTokenValid(long expiry) {
-        Calendar expiryCal = Calendar.getInstance();
-        expiryCal.setTimeInMillis(expiry);
-        expiryCal.add(-5, Calendar.SECOND);
-        return !expiryCal.before(new Date());
+        long now = new Date().getTime();
+        return now < (expiry-5000);
     }
 
     private static TokenPair getTokenPair(Context context, int type, Constants.Role role) {
@@ -114,12 +115,12 @@ public class TokenProvider {
 
             tokenPair = new TokenPair();
             if (type==TOKEN_ACCESS) {
-                tokenPair.setToken(tokenData.getAccess_token());
-                tokenPair.setExpiry(tokenData.getAccess_token_expire_date());
+                tokenPair.setToken(tokenData.getAccessToken());
+                tokenPair.setExpiry(tokenData.getAccessTokenExpiryDate());
 
             } else if (type==TOKEN_REFRESH) {
-                tokenPair.setToken(tokenData.getRefresh_token());
-                tokenPair.setExpiry(tokenData.getRefresh_token_expire_date());
+                tokenPair.setToken(tokenData.getRefreshToken());
+                tokenPair.setExpiry(tokenData.getRefreshTokenExpiryDate());
             }
 
         } catch (Exception e) {

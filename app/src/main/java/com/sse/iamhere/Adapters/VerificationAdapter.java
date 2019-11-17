@@ -29,9 +29,9 @@ import com.google.firebase.auth.PhoneAuthProvider;
 import com.redmadrobot.inputmask.MaskedTextChangedListener;
 import com.redmadrobot.inputmask.helper.AffinityCalculationStrategy;
 import com.sse.iamhere.R;
+import com.sse.iamhere.Server.AuthRequestBuilder;
 import com.sse.iamhere.Server.Body.CheckData;
-import com.sse.iamhere.Server.RequestCallback;
-import com.sse.iamhere.Server.RequestManager;
+import com.sse.iamhere.Server.RequestsCallback;
 import com.sse.iamhere.Utils.Constants;
 
 import java.util.ArrayList;
@@ -298,8 +298,8 @@ public class VerificationAdapter extends PagerAdapter {
                     }
 
                     AsyncTask.execute(() -> {
-                        new RequestManager(context).check(uuid).attachToken(Constants.TOKEN_NONE)
-                            .setCallback(new RequestCallback() {
+                        new AuthRequestBuilder(context).attachToken(Constants.TOKEN_NONE)
+                            .setCallback(new RequestsCallback() {
                                 @Override
                                 public void onCheckSuccess(CheckData checkResult) {
                                     continueBtn2.setProgress(100);
@@ -309,17 +309,18 @@ public class VerificationAdapter extends PagerAdapter {
                                 }
 
                                 @Override
-                                public void onCheckFailure(int errorCode) {
+                                public void onFailure(int errorCode) {
                                     continueBtn2.setProgress(-1);
                                     processing = false;
-                                    //todo: implement properly (pass back throught error interface)
+                                    verificationAdapterListener.onError(Constants.RQM_EC.NO_INTERNET_CONNECTION);
                                 }
-                            });
+                            })
+                            .check(uuid);
                     });
                 } else {
                     continueBtn2.setProgress(-1);
                     processing = false;
-                    //todo: implement properly
+                    verificationAdapterListener.onError(Constants.VerifiEC.REVERIFY_PHONE);
                 }
             }
         });

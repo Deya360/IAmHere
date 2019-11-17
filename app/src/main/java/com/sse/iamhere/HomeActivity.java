@@ -4,10 +4,14 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.TextUtils;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,24 +27,34 @@ import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.sse.iamhere.Dialogs.InviteCodesDialog;
 import com.sse.iamhere.Dialogs.ReLogDialog;
+import com.sse.iamhere.Server.AuthRequestBuilder;
 import com.sse.iamhere.Server.Body.CheckData;
-import com.sse.iamhere.Server.RequestCallback;
-import com.sse.iamhere.Server.RequestManager;
+import com.sse.iamhere.Server.Body.CredentialData;
+import com.sse.iamhere.Server.RequestBuilder;
+import com.sse.iamhere.Server.RequestsCallback;
 import com.sse.iamhere.Server.TokenProvider;
 import com.sse.iamhere.Subclasses.DropdownOnClickListener;
+import com.sse.iamhere.Subclasses.OnSingleClickListener;
+import com.sse.iamhere.Subclasses.OnSingleClickNavListener;
 import com.sse.iamhere.Utils.Constants;
+import com.sse.iamhere.Utils.InternetUtil;
 import com.sse.iamhere.Utils.PreferencesUtil;
+import com.sse.iamhere.Utils.TextFormatter;
 
 import java.util.ArrayList;
 
+import static com.sse.iamhere.Utils.Constants.ACCOUNT_RQ;
+import static com.sse.iamhere.Utils.Constants.AUTHENTICATION_RELOG_RQ;
 import static com.sse.iamhere.Utils.Constants.AUTHENTICATION_RQ;
 import static com.sse.iamhere.Utils.Constants.DEBUG_MODE;
 import static com.sse.iamhere.Utils.Constants.INVITE_CODES_TEMP;
 import static com.sse.iamhere.Utils.Constants.TOKEN_ACCESS;
+import static com.sse.iamhere.Utils.Constants.TOKEN_REFRESH;
 import static com.sse.iamhere.Utils.PreferencesUtil.getStringArrayPrefByName;
 import static com.sse.iamhere.Utils.PreferencesUtil.setStringArrayByName;
 
@@ -72,14 +86,33 @@ public class HomeActivity extends AppCompatActivity {
 
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 
+
+        /*
+        * Setup the side navigation pane (as in, setup the role dropdown menu, menu items. etc)
+        * */
         sideNav = findViewById(R.id.home_sideNav);
         setupSideNavContent(savedInstanceState);
+
+        /*
+        * Setup user avatar (in the side navigation pane) based on user name
+        * */
         setupNavAvatar();
 
+        /*
+        * Setup the bottom navigation pane based on the current role
+        * */
         setupBottomNav();
 
+        /*
+        * Based on both the selected role (in the side nav panel) and the current tab (in the bottom nav),
+        * show the correct fragment in R.layout.content_home
+        * */
         setupFragments(savedInstanceState);
 
+
+        /*
+        * Restore variable states after screen rotation
+        * */
         if (savedInstanceState!=null) {
             // check if role change was intiated before screen rotation
             changingRole = savedInstanceState.getBoolean("changingRole");
@@ -90,13 +123,37 @@ public class HomeActivity extends AppCompatActivity {
             }
         }
 
+        startBackgroundServices(1000*10);
 
-//        startBackgroundServices(1000*10);
+
+        new Handler().postDelayed(this::test, 5000);
 
     }
 
+    private void test () {
+        if (getWindow().getDecorView().isShown()) {
+            Log.d("test","can show");
+        } else {
+            Log.d("test","cant show");
+        }
+    }
+
     private void startBackgroundServices(int delayInMilli) {
-        new Handler().postDelayed(this::startBackgroundAccountCheck, delayInMilli);
+        new Handler().postDelayed(this::startBackgroundInternetCheck, delayInMilli);
+    }
+    private void startBackgroundInternetCheck() {
+        //Check if internet connection is available
+        new InternetUtil(new InternetUtil.InternetResponse() {
+            @Override
+            public void isConnected() {
+                startBackgroundAccountCheck();
+            }
+
+            @Override
+            public void notConnected() {
+                showInfoSnackbar(getString(R.string.splash_connectionTv_label), Snackbar.LENGTH_LONG);
+            }
+        }).hasInternetConnection(this);
     }
     private void startBackgroundAccountCheck() {
         //Check if account is still valid
@@ -104,50 +161,52 @@ public class HomeActivity extends AppCompatActivity {
             FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
             if (currentUser!=null) {
                 AsyncTask.execute(() -> {
-                    new RequestManager(this)
-                        .check(currentUser.getUid())
-                        .setCallback(new RequestCallback() {
+                    new AuthRequestBuilder(this)
+                        .setCallback(new RequestsCallback() {
                             @Override
                             public void onCheckSuccess(CheckData checkResult) {
-                                startBackgroundTokenValidityCheck(checkResult.getRegisteredStatusByRole(role));
+                                startBackgroundSessionValidityCheck(checkResult.getRegisteredStatusByRole(role));
                             }
 
                             @Override
-                            public void onCheckFailure(int errorCode) {
-                                //TODO: implement
+                            public void onFailure(int errorCode) {
+                                //Todo: implement properly: add relog dialog (role not constrained)
+                                showInfoSnackbar("Debug: Couldn't get user account for role", Snackbar.LENGTH_LONG);
                             }
-                        });
+                        })
+                        .check(currentUser.getUid());
                 });
             } else {
-                //TODO: implement
+                //Todo: implement properly: add verify phone dialog
+                showInfoSnackbar("Debug: Couldn't get firebase user", Snackbar.LENGTH_LONG);
             }
         } else {
-            //Todo: implement
+            //Todo: implement properly: add relog dialog (role not constrained)
+            showInfoSnackbar("Debug: Couldn't get role", Snackbar.LENGTH_LONG);
         }
-
     }
-    private void startBackgroundTokenValidityCheck(boolean isRegistered) {
-        //Check if token is still valid
-        Constants.Role role;
-        if ((role=PreferencesUtil.getRole(HomeActivity.this, Constants.Role.NONE))!= Constants.Role.NONE) {
-            TokenProvider.getUsableAccessToken(HomeActivity.this, TOKEN_ACCESS, role,
-                new TokenProvider.TokenProviderCallback() {
-                    @Override
-                    public void onSuccess(int token_type, String token) {
-                        FragmentManager fm = getSupportFragmentManager();
-                        ReLogDialog reLogDialog = new ReLogDialog(isRegistered);
-                        reLogDialog.show(fm, getString(R.string.fragment_relog_dialog_tag));
-                    }
+    private void startBackgroundSessionValidityCheck(boolean isRegistered) {
+        //Check if refresh token is still valid
+        TokenProvider.getUsableToken(HomeActivity.this, TOKEN_REFRESH,
+            PreferencesUtil.getRole(HomeActivity.this, Constants.Role.NONE),
+            new TokenProvider.TokenProviderCallback() {
+                @Override
+                public void onSuccess(int token_type, String token) {
+                    //don't need to do anything all is good,
+                    // perhaps in future we add a timer to repeat this chain of checks again every n seconds
+                }
 
-                    @Override
-                    public void onFailure(int errorCode) {
-                        //Todo: implement
+                @Override
+                public void onFailure(int errorCode) {
+                    if (errorCode== Constants.RQM_EC.REFRESH_REFRESH_EXPIRED) {
+                        if (getWindow().getDecorView().isShown()) {
+                            FragmentManager fm = getSupportFragmentManager();
+                            ReLogDialog reLogDialog = new ReLogDialog(isRegistered);
+                            reLogDialog.show(fm, getString(R.string.fragment_relog_dialog_tag));
+                        }
                     }
-                });
-
-        } else {
-            //Todo: implement
-        }
+                }
+            });
     }
 
 
@@ -155,8 +214,17 @@ public class HomeActivity extends AppCompatActivity {
         sideNav.setItemIconTintList(null);
 
         View navHeaderView = sideNav.getHeaderView(0);
-        TextView textrole = navHeaderView.findViewById(R.id.nav_header_nameTv);
-        textrole.setText(getString(role.toStringRes()));
+        TextView headerRoleTv = navHeaderView.findViewById(R.id.nav_header_roleTv);
+        headerRoleTv.setText(getString(role.toStringRes()));
+
+        RelativeLayout headerAvatarLy = navHeaderView.findViewById(R.id.nav_header_avatarLy);
+        headerAvatarLy.setOnClickListener(new OnSingleClickListener() {
+            @Override
+            public void onSingleClick(View v) {
+                startAccountActivity();
+            }
+        });
+
         ImageView dropdownIv = navHeaderView.findViewById(R.id.nav_header_dropdownIv);
         DropdownOnClickListener dropdownOnClickListener =
             new DropdownOnClickListener() {
@@ -190,49 +258,66 @@ public class HomeActivity extends AppCompatActivity {
             };
         dropdownIv.setOnClickListener(dropdownOnClickListener);
 
-        sideNav.setNavigationItemSelectedListener(menuItem -> {
-            if (!menuItem.isChecked()) {
-                View actionView;
-                switch (menuItem.getItemId()) {
-                    case R.id.nav_role_attendee:
-                        if (!changingRole) {
-                            actionView = menuItem.getActionView();
-                            actionView.setVisibility(View.VISIBLE);
-                            menuItemId = menuItem.getItemId();
-                            changeRole(Constants.Role.ATTENDEE, actionView);
-                        }
-                        return false;
+        sideNav.setNavigationItemSelectedListener(new OnSingleClickNavListener() {
+            @Override
+            public boolean onSingleNavigationItemSelected(@NonNull MenuItem menuItem) {
+                if (!menuItem.isChecked()) {
+                    View actionView;
+                    switch (menuItem.getItemId()) {
+                        case R.id.nav_role_attendee:
+                            if (!changingRole) {
+                                actionView = menuItem.getActionView();
+                                actionView.setVisibility(View.VISIBLE);
+                                menuItemId = menuItem.getItemId();
+                                changeRole(Constants.Role.ATTENDEE, actionView);
+                            }
+                            return false;
 
-                    case R.id.nav_role_host:
-                        if (!changingRole) {
-                            actionView = menuItem.getActionView();
-                            actionView.setVisibility(View.VISIBLE);
-                            menuItemId = menuItem.getItemId();
-                            changeRole(Constants.Role.HOST, actionView);
-                        }
-                        return false;
+                        case R.id.nav_role_host:
+                            if (!changingRole) {
+                                actionView = menuItem.getActionView();
+                                actionView.setVisibility(View.VISIBLE);
+                                menuItemId = menuItem.getItemId();
+                                changeRole(Constants.Role.HOST, actionView);
+                            }
+                            return false;
 
-                    case R.id.nav_role_manager:
-                        if(!changingRole) {
-                            actionView = menuItem.getActionView();
-                            actionView.setVisibility(View.VISIBLE);
-                            menuItemId = menuItem.getItemId();
-                            changeRole(Constants.Role.MANAGER, actionView);
-                        }
-                        return false;
+                        case R.id.nav_role_manager:
+                            if (!changingRole) {
+                                actionView = menuItem.getActionView();
+                                actionView.setVisibility(View.VISIBLE);
+                                menuItemId = menuItem.getItemId();
+                                changeRole(Constants.Role.MANAGER, actionView);
+                            }
+                            return false;
 
-                    case R.id.nav_settings:
-                        //TODO: Implement
-                        return true;
-                    case R.id.nav_invite_codes:
-                        //TODO: Implement
-                        showInviteCodeDialog();
-                        return true;
+                        case R.id.nav_all_events:
+                            startAllEventsActivity();
+                            return true;
+
+                        case R.id.nav_invite_codes:
+                            showInviteCodeDialog();
+                            return true;
+
+                        case R.id.nav_account:
+                            startAccountActivity();
+                            return true;
+
+                        case R.id.nav_settings:
+                            //TODO: Implement
+                            return true;
+                    }
                 }
+                return false;
             }
-            return false;
         });
 
+        //Customize side nav menu items based on role
+        MenuItem inviteCodesMIt = sideNav.getMenu().findItem(R.id.nav_invite_codes);
+        inviteCodesMIt.setVisible(role!=Constants.Role.MANAGER);
+
+        MenuItem allEventsMIt = sideNav.getMenu().findItem(R.id.nav_all_events);
+        allEventsMIt.setVisible(role==Constants.Role.HOST);
 
         Toolbar toolbar = findViewById(R.id.home_toolbar);
         setSupportActionBar(toolbar);
@@ -265,7 +350,6 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-
     private void setupBottomNav() {
         bottomNav = findViewById(R.id.home_bottomNav);
         bottomNav.setOnNavigationItemSelectedListener(item -> {
@@ -273,8 +357,8 @@ public class HomeActivity extends AppCompatActivity {
                 case R.id.nav_host_events:
                     swapFragments(item.getItemId(), getResources().getString(R.string.fragment_events_tag));
                     return true;
-                case R.id.nav_host_groups:
-                    swapFragments(item.getItemId(), getResources().getString(R.string.fragment_groups_tag));
+                case R.id.nav_host_parties:
+                    swapFragments(item.getItemId(), getResources().getString(R.string.fragment_parties_tag));
                     return true;
             }
             return false;
@@ -282,7 +366,49 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void setupNavAvatar() {
+        AsyncTask.execute(() -> {
+            RequestBuilder rb = new RequestBuilder()
+                .setCallback(new RequestsCallback() {
+                    @Override
+                    public void onGetCredentialsSuccess(CredentialData credentialData) {
+                        String name = credentialData.getName();
 
+                        View navHeaderView = sideNav.getHeaderView(0);
+                        TextView headerNameTv = navHeaderView.findViewById(R.id.nav_header_nameTv);
+                        TextView headerAvatarTv = navHeaderView.findViewById(R.id.nav_header_avatarTv);
+                        ImageView headerAvatarIv = navHeaderView.findViewById(R.id.nav_header_avatarIv);
+
+                        if (!TextUtils.isEmpty(name)) {
+                            headerNameTv.setVisibility(View.VISIBLE);
+                            headerNameTv.setText(name);
+                            headerAvatarTv.setText(String.valueOf(name.charAt(0)));
+                            headerAvatarIv.setVisibility(View.GONE);
+
+                        } else {
+                            headerNameTv.setVisibility(View.GONE);
+                            headerNameTv.setText("");
+                            headerAvatarTv.setText("");
+                            headerAvatarIv.setVisibility(View.VISIBLE);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int errorCode) {
+                        if (errorCode== Constants.RQM_EC.NO_INTERNET_CONNECTION) {
+                            showInfoSnackbar(getString(R.string.splash_connectionTv_label), Snackbar.LENGTH_LONG);
+
+                        } else {
+                            showInfoSnackbar(getString(R.string.msg_server_error), Snackbar.LENGTH_LONG);
+                        }
+                    }
+                });
+            rb.checkInternet(this).attachToken(this, TOKEN_ACCESS);
+            switch (role) {
+                case ATTENDEE: rb.callRequest(rb::attendeeGetCredentials); break;
+                case HOST: rb.callRequest(rb::hostGetCredentials); break;
+                case MANAGER: break;//FIX_FOR_MANAGER
+            }
+        });
     }
 
 
@@ -319,7 +445,7 @@ public class HomeActivity extends AppCompatActivity {
         Fragment fragment;
         switch (actionId) {
             case R.id.nav_host_events: fragment = new EventsFrag(); break;
-            case R.id.nav_host_groups: fragment = new GroupsFrag(); break;
+            case R.id.nav_host_parties: fragment = new PartiesFrag(); break;
             default: throw new RuntimeException("HomeActivity:createFragment No fragment found for actionId: " + actionId);
         }
 
@@ -353,30 +479,44 @@ public class HomeActivity extends AppCompatActivity {
         } else {
             FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
             if (currentUser!=null) {
-                AsyncTask.execute(() -> {
-                    new RequestManager(this)
-                            .check(currentUser.getUid())
-                            .setCallback(new RequestCallback() {
-                                @Override
-                                public void onCheckSuccess(CheckData checkResult) {
-                                    startAuthenticationActivityDialog(
-                                        checkResult.getRegisteredStatusByRole(newRole), newRole, currentUser);
-                                }
+                new InternetUtil(new InternetUtil.InternetResponse() {
+                    @Override
+                    public void isConnected() {
+                        AsyncTask.execute(() -> {
+                            new AuthRequestBuilder(HomeActivity.this)
+                                .setCallback(new RequestsCallback() {
+                                    @Override
+                                    public void onCheckSuccess(CheckData checkResult) {
+                                        startActivityForResult(getAuthActivityIntent(currentUser,
+                                                checkResult.getRegisteredStatusByRole(newRole),
+                                                newRole, false, AUTHENTICATION_RQ), AUTHENTICATION_RQ);
+                                    }
 
-                                @Override
-                                public void onCheckFailure(int errorCode) {
-                                    changingRole = false;
-                                    actionView.setVisibility(View.GONE);
-                                    //TODO: implement
-                                }
-                            });
-                });
+                                    @Override
+                                    public void onFailure(int errorCode) {
+                                        changeRoleFailure(actionView, getString(R.string.msg_server_error));
+                                    }
+                                })
+                                .check(currentUser.getUid());
+                        });
+                    }
+
+                    @Override
+                    public void notConnected() {
+                        changeRoleFailure(actionView, getString(R.string.splash_connectionTv_label));
+                    }
+                }).hasInternetConnection(this);
+
             } else {
-                changingRole = false;
-                actionView.setVisibility(View.GONE);
-                //TODO: implement. close drawer then show snackbar
+                changeRoleFailure(actionView, getString(R.string.msg_unknown_error));
             }
         }
+    }
+    private void changeRoleFailure(View actionView, String errorMsg) {
+        changingRole = false;
+        actionView.setVisibility(View.GONE);
+        drawer.closeDrawer(GravityCompat.START);
+        showInfoSnackbar(errorMsg, Snackbar.LENGTH_LONG);
     }
 
     private void preformRoleSwitch(Constants.Role newRole) {
@@ -389,36 +529,41 @@ public class HomeActivity extends AppCompatActivity {
         finish();
     }
 
-    private void startAuthenticationActivityDialog(boolean isRegistered, Constants.Role newRole, FirebaseUser currentUser) {
+    private Intent getAuthActivityIntent(FirebaseUser currentUser, boolean isRegistered, Constants.Role role,
+                                         boolean disallowCancel, int requestCode) {
         Intent intent;
         Bundle bundle = new Bundle();
         bundle.putBoolean("isRegistered", isRegistered);
         bundle.putString("phone", currentUser.getPhoneNumber());
-        bundle.putString("phoneFormatted", currentUser.getPhoneNumber()); //TODO: format properly
+        bundle.putString("phoneFormatted", TextFormatter.formatPhone(currentUser.getPhoneNumber()));
         bundle.putBoolean("showAsDialog", true);
-        bundle.putInt("forceRole", newRole.toIdx());
+
+        if (role!=null && role!= Constants.Role.NONE) {
+            bundle.putInt("forceRole", role.toIdx());
+        }
         bundle.putInt("activityOrientation",this.getResources().getConfiguration().orientation);
-        bundle.putInt("returnRequestCode", AUTHENTICATION_RQ);
+        bundle.putBoolean("disallowCancel", disallowCancel);
+        bundle.putInt("returnRequestCode", requestCode);
 
 
         String description = "";
         if (isRegistered) {
             description = getString(R.string.auth_subtitleTv_remote_login_label_prefix) + " " +
-                    getString(newRole.toStringRes()) + " " + getString(R.string.auth_subtitleTv_remote_login_label_suffix);
+                    getString(role.toStringRes()) + " " + getString(R.string.auth_subtitleTv_remote_login_label_suffix);
 
         } else {
-            switch (newRole) {
+            switch (role) {
                 case HOST:
                 case MANAGER:
                     description = getString(R.string.auth_subtitleTv_remote_registration_label_prefix) + " " +
-                            getString(newRole.toStringRes()) + " "
+                            getString(role.toStringRes()) + " "
                             + getString(R.string.auth_subtitleTv_remote_registration_label_suffix);
                     break;
 
                 case ATTENDEE:
                     description = getString(R.string.auth_subtitleTv_remote_registration_label_prefix) +
                             getString(R.string.auth_subtitleTv_remote_registration_label_prefix_attendee_extra) + " " +
-                            getString(newRole.toStringRes()) + " "
+                            getString(role.toStringRes()) + " "
                             + getString(R.string.auth_subtitleTv_remote_registration_label_suffix);
                     break;
             }
@@ -426,14 +571,22 @@ public class HomeActivity extends AppCompatActivity {
 
 
         bundle.putString("customDescription", description);
-
         intent = new Intent(HomeActivity.this, AuthenticationActivity.class);
         intent.putExtras(bundle);
-        startActivityForResult(intent, AUTHENTICATION_RQ);
+        return intent;
+    }
+
+    private void startAllEventsActivity() {
+        Intent intent = new Intent(HomeActivity.this, AllEventsActivity.class);
+        startActivity(intent);
+    }
+
+    private void startAccountActivity() {
+        Intent intent = new Intent(HomeActivity.this, AccountActivity.class);
+        startActivityForResult(intent, Constants.ACCOUNT_RQ);
     }
 
     private void showInviteCodeDialog() {
-        //TODO invite codes should be loaded from server instead of local shared prefs
         InviteCodesDialog inviteCodesDialog = new InviteCodesDialog(role, new InviteCodesDialog.InviteCodesDialogListener() {
             @Override
             public void onPositiveButton(ArrayList<String> individuals) {
@@ -447,12 +600,31 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         ArrayList<String> arr = getStringArrayPrefByName(this, INVITE_CODES_TEMP, "");
-        inviteCodesDialog.setInviteCodes(arr);
 
         FragmentManager fm = getSupportFragmentManager();
         inviteCodesDialog.show(fm, getString(R.string.fragment_invite_code_dialog_tag));
     }
 
+    private void showInfoSnackbar(String msg, int duration) {
+        if (getWindow().getDecorView().isShown()) {
+            if (!TextUtils.isEmpty(msg)) {
+                Snackbar.make(findViewById(R.id.home_mainLy), msg, duration).show();
+            }
+        }
+    }
+
+
+    /* This method is a callback of the ReLogDialog fragment */
+    public void onReLogDialogAuthenticate(boolean isRegistered) {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser!=null) {
+            startActivityForResult(getAuthActivityIntent(currentUser,
+                    isRegistered, role, true, AUTHENTICATION_RELOG_RQ), AUTHENTICATION_RELOG_RQ);
+
+        } else {
+            Toast.makeText(HomeActivity.this, getString(R.string.msg_unknown_error), Toast.LENGTH_LONG).show();
+        }
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -470,11 +642,44 @@ public class HomeActivity extends AppCompatActivity {
                 }
             }
 
-            changingRole = false;
             if (menuItemId!=-1) {
-                sideNav.getMenu().findItem(menuItemId).getActionView().setVisibility(View.GONE);
+                changeRoleFailure(sideNav.getMenu().findItem(menuItemId).getActionView(), getString(R.string.msg_authentication_aborted));
             }
         }
+
+        if (requestCode==AUTHENTICATION_RELOG_RQ) {
+            if (resultCode==RESULT_OK) {
+                preformRoleSwitch(PreferencesUtil.getRole(this, Constants.Role.NONE));
+
+            } else { //RESULT_CANCELED
+                finish();
+            }
+        }
+
+        // receives result from account saying whether account details need to be updated
+        if (requestCode==ACCOUNT_RQ) {
+            if (resultCode==RESULT_OK) {
+                if (data!=null) {
+                    boolean isLogout = data.getBooleanExtra("isLogout",false);
+                    if (isLogout) {
+                        restart();
+
+
+                    } else {
+                        boolean updateNeeded = data.getBooleanExtra("updateNeeded",false);
+                        if (updateNeeded) {
+                            setupNavAvatar();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void restart() {
+        Intent intent = new Intent(HomeActivity.this, SplashActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     @Override

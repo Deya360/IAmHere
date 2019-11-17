@@ -25,7 +25,7 @@
         <item name="colorAccent">@color/colorGeneralAccent</item>
 
         <item name="side_nav_header_back">@drawable/side_nav_bar_attendee</item>
-        <item name="bottom_nav_menu">@menu/menu_home_attendee</item>
+        <item name="bottom_nav_menu">@menu/bnav_home_attendee</item>
     </style>
 
     <style name="AppThemeHost" parent="AppTheme">
@@ -35,7 +35,7 @@
         <item name="colorAccent">@color/colorGeneralAccent</item>
 
         <item name="side_nav_header_back">@drawable/side_nav_bar_host</item>
-        <item name="bottom_nav_menu">@menu/menu_home_host</item>
+        <item name="bottom_nav_menu">@menu/bnav_home_host</item>
         <item name="sublimePickerStyle">@style/DatePickerDialogThemeHost</item>
     </style>
 
@@ -50,7 +50,7 @@
         <item name="colorAccent">@color/colorGeneralAccent</item>
 
         <item name="side_nav_header_back">@drawable/side_nav_bar_manager</item>
-        <item name="bottom_nav_menu">@menu/menu_home_manager</item>
+        <item name="bottom_nav_menu">@menu/bnav_home_manager</item>
     </style>
 
 

@@ -9,6 +9,7 @@ import androidx.security.crypto.MasterKeys;
 
 import com.google.gson.Gson;
 import com.sse.iamhere.Server.Body.TokenData;
+import com.sse.iamhere.Server.ServiceGen;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -115,6 +116,7 @@ public class PreferencesUtil {
     public static void setRole(Context context, Constants.Role role) {
         SharedPreferences sharedPreference = context.getSharedPreferences(SETTINGS_PREFS, MODE_PRIVATE);
         sharedPreference.edit().putString(ROLE_TYPE,  new Gson().toJson(role)).apply();
+        ServiceGen.resetCachedServices();
     }
 
     // Convenience methods:

@@ -2,6 +2,6 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:bottom="6dp"
-        android:drawable="@drawable/border_back_button_all_bg"
+        android:drawable="@drawable/border_trans_back_all_extra"
         android:top="6dp" />
 </layer-list>

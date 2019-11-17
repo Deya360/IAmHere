@@ -20,8 +20,8 @@ public class InviteCodeAdapter extends RecyclerView.Adapter<InviteCodeAdapter.In
 
     }
 
-    public void setInviteCodes(List<String> individuals) {
-        this.inviteCodes = individuals;
+    public void setInviteCodes(List<String> inviteCodes) {
+        this.inviteCodes = inviteCodes;
         notifyDataSetChanged();
     }
 

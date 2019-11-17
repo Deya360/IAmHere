@@ -61,7 +61,7 @@
         android:textSize="21sp"
         android:fontFamily="@font/bree_serif"
 
-        android:drawableStart="@drawable/ic_check_green_filled_24dp"
+        android:drawableStart="@drawable/ic_check_green_filled_32dp"
         android:drawablePadding="12dp"
         android:visibility="gone"
 

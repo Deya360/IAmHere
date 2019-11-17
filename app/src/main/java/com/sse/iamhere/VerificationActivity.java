@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -71,10 +72,18 @@ public class VerificationActivity extends AppCompatActivity {
             @Override
             public void onError(int errorCode) {
                 switch (errorCode) {
+                    case Constants.VerifiEC.REVERIFY_PHONE:
+                        //Todo: implement properly: add verify phone dialog
+                        Toast.makeText(VerificationActivity.this, "Debug: Couldn't get firebase user", Toast.LENGTH_LONG).show();
+
                     case Constants.VerifiEC.VERIFICATION_FAILED:
                     case Constants.VerifiEC.SIGNIN_FAILED:
                         Snackbar.make(findViewById(android.R.id.content),
                                 getString(R.string.verifi_on_error), Snackbar.LENGTH_INDEFINITE).show();
+                        break;
+                    case Constants.RQM_EC.NO_INTERNET_CONNECTION:
+                        Snackbar.make(findViewById(android.R.id.content),
+                                getString(R.string.splash_connectionTv_label), Snackbar.LENGTH_LONG).show();
                         break;
                 }
             }

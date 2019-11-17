@@ -3,9 +3,14 @@
 
 
     <string name="activity_home_title">Home</string>
+    <string name="fragment_events_title">My Events</string>
+    <string name="fragment_parties_title">My Parties</string>
+    <string name="activity_all_events_title">All Events</string>
+    <string name="activity_account_events_title">Account</string>
+
 
     <string name="fragment_events_tag" translatable="false">EventsFragmentTag</string>
-    <string name="fragment_groups_tag" translatable="false">GroupsFragmentTag</string>
+    <string name="fragment_parties_tag" translatable="false">PartiesFragmentTag</string>
     <string name="fragment_relog_dialog_tag" translatable="false">RelogDialogFragmentTag</string>
     <string name="fragment_input_invite_code_dialog_tag" translatable="false">input_invite_code_dialogTag</string>
     <string name="fragment_invite_code_dialog_tag" translatable="false">invite_code_dialogTag</string>
@@ -18,7 +23,7 @@
 
 
     <string name="onboard_manager_label">Manager</string>
-    <string name="onboard_manager_desc_label">Create sessions, assign hosts, assemble groups and invite participators.</string>
+    <string name="onboard_manager_desc_label">Create sessions, assign hosts, assemble parties and invite participators.</string>
     <string name="onboard_host_label">Host</string>
     <string name="onboard_host_desc_label">Hold sessions, track attendance and keep in touch with your attendees.</string>
     <string name="onboard_attendee_label">Attendee</string>
@@ -87,18 +92,47 @@
     <string name="home_role_change_toast">Logged in as</string>
     <string name="home_nav_drawer_open">Open navigation drawer</string>
     <string name="home_nav_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_dropdownIv_label">Show/Hide Roles</string>
+    <string name="nav_all_events">All Events</string>
     <string name="nav_settings_title">Settings</string>
     <string name="nav_invite_codes_title">Invite Codes</string>
+    <string name="nav_account_title">Account</string>
+
+    <string name="bnav_host_events_label">Events</string>
+    <string name="bnav_host_parties_label">Parties</string>
+
 
     <string name="invite_code_addBtn_label">Add New Code</string>
     <string name="invite_code_empty_view_label">No Invite Codes to show!</string>
     <string name="invite_code_infoTv_attendee_label">You can join Parties by adding here Invite Codes given to you by the Party Manager.</string>
     <string name="invite_code_infoTv_host_label">You can join Events by adding here Invite Codes given to you by the Event creator.</string>
+    <string name="input_invite_code_nameEt_label">Code</string>
 
 
     <string name="events_date_today_label">Today</string>
     <string name="events_date_tom_label">Tomorrow</string>
-    <string name="input_invite_code_nameEt_label">Code</string>
+    <string name="events_empty_view_label">There aren\'t any events to show!</string>
+    <string name="events_date_calIv_desc">Date Picker</string>
+
+    <string name="parties_empty_view_label">You aren\'t a part of any party!</string>
+
+    <string name="all_events_empty_view_label">You aren\'t a part of any Events!</string>
+
+
+    <string name="account_nameEt_label">Name</string>
+    <string name="account_emailEt_label">Email</string>
+    <string name="account_logoutIv_label">Logout</string>
+    <string name="account_edit_applyIv_label">Edit/Apply</string>
+    <string name="account_details_headerTv_label">Details</string>
+    <string name="account_joinedTv_label">Joined:</string>
+    <string name="account_bad_email">Invalid Email</string>
+    <string name="account_email_help">You will be able to recover your account password via this Email.</string>
+
+
+
+    <string name="msg_unknown_error">The app has encountered an unknown error :(</string>
+    <string name="msg_server_error">Oops, there was a internal server error, please try again later</string>
+    <string name="msg_authentication_aborted">Authentication aborted</string>
 
 
 </resources>

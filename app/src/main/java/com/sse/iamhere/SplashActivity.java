@@ -14,12 +14,13 @@ import androidx.core.view.ViewCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.sse.iamhere.Server.AuthRequestBuilder;
 import com.sse.iamhere.Server.Body.CheckData;
-import com.sse.iamhere.Server.RequestCallback;
-import com.sse.iamhere.Server.RequestManager;
+import com.sse.iamhere.Server.RequestsCallback;
 import com.sse.iamhere.Utils.Constants;
 import com.sse.iamhere.Utils.InternetUtil;
 import com.sse.iamhere.Utils.PreferencesUtil;
+import com.sse.iamhere.Utils.TextFormatter;
 
 import static com.sse.iamhere.Utils.Constants.DEBUG_MODE;
 import static com.sse.iamhere.Utils.Constants.IS_FIRST_TIME;
@@ -105,38 +106,50 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void checkConnection() {
-        InternetUtil internetUtil = new InternetUtil(connected -> {
-            if (connected || DEBUG_MODE) {
+        InternetUtil internetUtil = new InternetUtil(new InternetUtil.InternetResponse() {
+            @Override
+            public void isConnected() {
                 finishSplashActivity();
+            }
 
-            } else {
+            @Override
+            public void notConnected() {
+                if (DEBUG_MODE) {
+                    finishSplashActivity();
+                    return;
+                }
+
                 ViewCompat.animate(findViewById(R.id.splash_connectionTv))
-                    .translationY(50).alpha(1)
-                    .setDuration(ANIM_ITEM_DURATION)
-                    .setInterpolator(new DecelerateInterpolator()).start();
+                        .translationY(50).alpha(1)
+                        .setDuration(ANIM_ITEM_DURATION)
+                        .setInterpolator(new DecelerateInterpolator()).start();
 
                 Button retryBtn = findViewById(R.id.splash_retryBtn);
                 retryBtn.setOnClickListener(v -> {
-                        Toast.makeText(SplashActivity.this, "Checking...", Toast.LENGTH_LONG).show();
-                        retryBtn.setEnabled(false);
+                            Toast.makeText(SplashActivity.this, "Checking...", Toast.LENGTH_LONG).show();
+                            retryBtn.setEnabled(false);
 
-                        new InternetUtil(connected1 -> {
-                            retryBtn.setEnabled(true);
-                            if (connected1) {
-                                Toast.makeText(SplashActivity.this, "Connected!", Toast.LENGTH_LONG).show();
-                                finishSplashActivity();
+                            new InternetUtil(new InternetUtil.InternetResponse() {
+                                @Override
+                                public void isConnected() {
+                                    retryBtn.setEnabled(true);
+                                    Toast.makeText(SplashActivity.this, "Connected!", Toast.LENGTH_LONG).show();
+                                    finishSplashActivity();
+                                }
 
-                            } else {
-                                Toast.makeText(SplashActivity.this, "No Connection", Toast.LENGTH_LONG).show();
-                            }
-                        }).hasInternetConnection(SplashActivity.this);
-                    }
+                                @Override
+                                public void notConnected() {
+                                    retryBtn.setEnabled(true);
+                                    Toast.makeText(SplashActivity.this, "No Connection", Toast.LENGTH_LONG).show();
+                                }
+                            }).hasInternetConnection(SplashActivity.this);
+                        }
                 );
 
                 ViewCompat.animate(retryBtn)
-                    .scaleY(1).scaleX(1)
-                    .setDuration(ANIM_ITEM_DURATION)
-                    .setInterpolator(new DecelerateInterpolator()).start();
+                        .scaleY(1).scaleX(1)
+                        .setDuration(ANIM_ITEM_DURATION)
+                        .setInterpolator(new DecelerateInterpolator()).start();
             }
         });
         internetUtil.hasInternetConnection(SplashActivity.this);
@@ -145,14 +158,6 @@ public class SplashActivity extends AppCompatActivity {
     private void finishSplashActivity() {
         if (!finished) {
             finished=true;
-
-//            try { //TODO: remove this debug stuff
-//                PreferencesUtil.setToken(this, null, Constants.Role.ATTENDEE);
-//            } catch (GeneralSecurityException e) {
-//                e.printStackTrace();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
 
             if (isPhoneVerified) {
                 if (PreferencesUtil.isTokenAvailableForCurrentRole(this)) {
@@ -181,6 +186,7 @@ public class SplashActivity extends AppCompatActivity {
 
     private void startAuthenticationActivity() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
         if (currentUser != null || Constants.DEBUG_MODE) {
             String uuid;
             if (DEBUG_MODE) {
@@ -190,23 +196,22 @@ public class SplashActivity extends AppCompatActivity {
             }
 
             AsyncTask.execute(() -> {
-                new RequestManager(this).check(uuid).attachToken(Constants.TOKEN_NONE)
-                    .setCallback(new RequestCallback() {
+                new AuthRequestBuilder(this)
+                    .setCallback(new RequestsCallback() {
                         @Override
                         public void onCheckSuccess(CheckData checkResult) {
                             startAuthenticationActivity(checkResult.isRegistered());
                         }
 
                         @Override
-                        public void onCheckFailure(int errorCode) {
-                            Toast.makeText(SplashActivity.this, "Internal Server Error :(", Toast.LENGTH_LONG).show();
-                            //todo: implement properly
+                        public void onFailure(int errorCode) {
+                            Toast.makeText(SplashActivity.this, getString(R.string.msg_server_error), Toast.LENGTH_LONG).show();
                         }
-                    });
+                    })
+                    .check(uuid).attachToken(Constants.TOKEN_NONE);
             });
         } else {
-            Toast.makeText(SplashActivity.this, "Couldn't connect to server", Toast.LENGTH_LONG).show();
-            //todo: implement properly
+            Toast.makeText(SplashActivity.this, getString(R.string.msg_server_error), Toast.LENGTH_LONG).show();
         }
     }
     private void startAuthenticationActivity(boolean isRegistered) {
@@ -220,7 +225,7 @@ public class SplashActivity extends AppCompatActivity {
 
         } else {
             bundle.putString("phone", firebaseAuth.getCurrentUser().getPhoneNumber());
-            bundle.putString("phoneFormatted", firebaseAuth.getCurrentUser().getPhoneNumber()); //TODO: format properly
+            bundle.putString("phoneFormatted", TextFormatter.formatPhone(firebaseAuth.getCurrentUser().getPhoneNumber()));
         }
 
         intent = new Intent(SplashActivity.this, AuthenticationActivity.class);

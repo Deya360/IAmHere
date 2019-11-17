@@ -23,6 +23,7 @@
             android:layout_marginTop="20dp"
             android:layout_marginBottom="40dp"
             android:visibility="gone"
+            tools:visibility="visible"
 
             android:fontFamily="@font/bree_serif"
             android:text="@string/invite_code_empty_view_label"
@@ -60,7 +61,7 @@
 
             android:drawableStart="@drawable/ic_add_green_30dp"
             android:drawablePadding="5dp"
-            android:background="@drawable/border_back_button_all"
+            android:background="@drawable/border_trans_back_all"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:clickable="true"
             android:focusable="true"

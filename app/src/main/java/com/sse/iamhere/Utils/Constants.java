@@ -11,9 +11,9 @@ public class Constants {
     static final String SETTINGS_PREFS_SECRET = "APP_SETTINGS_SECRET";
 
     // Request Codes
-    public static final int VERIFICATION_RQ = 8669;
     public static final int AUTHENTICATION_RQ = 6581 ;
     public static final int AUTHENTICATION_RELOG_RQ = 6582 ;
+    public static final int ACCOUNT_RQ = 6567 ;
 
 
     // Setting names
@@ -32,6 +32,7 @@ public class Constants {
     // Request Manager - error codes
     public static class RQM_EC {
         public static final int TOKEN_STORE_FAIL = 101;
+        public static final int NO_INTERNET_CONNECTION = 102;
 
         public static final int REGISTRATION_UNKNOWN = 1001;
         public static final int REGISTRATION_BAD_PHONE = 1002;
@@ -51,7 +52,41 @@ public class Constants {
 
         public static final int CHECK_UNKNOWN = 4001;
 
-        public static final int FIND_PARTY_ATTENDEE_UNKNOWN = 5001;
+        public static final int LOGOUT_UNKNOWN = 5001;
+
+        public static final int GET_CREDENTIALS_UNKNOWN = 6001;
+        public static final int GET_CREDENTIALS_USER_NOT_FOUND = 6002; //conflict
+
+        public static final int SET_CREDENTIALS_UNKNOWN = 7001;
+        public static final int SET_CREDENTIALS_USER_NOT_FOUND = 7002; //conflict
+
+        public static final int QR_CODE_UNKNOWN = 8001;
+        public static final int QR_CODE_USER_NOT_FOUND = 8002; //conflict
+        public static final int QR_CODE_SUBJECT_NOT_FOUND = 8003; //bad request
+
+        public static final int CODE_WORDS_UNKNOWN = 9001;
+        public static final int CODE_WORDS_USER_NOT_FOUND = 9002; //conflict
+
+        public static final int FIND_BY_CODE_UNKNOWN = 1101;
+
+        public static final int FIND_BY_CODES_UNKNOWN = 1201;
+        public static final int FIND_BY_CODES_USER_NOT_FOUND = 1202; //conflict
+
+        public static final int JOIN_UNKNOWN = 1301;
+        public static final int JOIN_USER_NOT_FOUND = 1302; //conflict
+        public static final int JOIN_CODE_MISMATCH = 1303; //conflict
+
+        public static final int ATTENDEE_GET_PARTIES_UNKNOWN = 1401;
+
+        public static final int HOST_GET_EVENTS_UNKNOWN = 1501;
+
+        public static final int HOST_GET_EVENTS_BY_DATE_UNKNOWN = 1601;
+        public static final int HOST_GET_EVENTS_BY_DATE_USER_NOT_FOUND = 1602; //conflict
+
+        public static final int HOST_GET_PARTIES_BY_EVENT_ID_UNKNOWN = 1701;
+        public static final int HOST_GET_PARTIES_BY_EVENT_ID_USER_NOT_FOUND = 1702; //conflict
+
+        public static final int HOST_GET_PARTIES_UNKNOWN = 1801;
     }
 
 
@@ -63,6 +98,7 @@ public class Constants {
     public static class VerifiEC {
         public static final int VERIFICATION_FAILED = 0;
         public static final int SIGNIN_FAILED = 1;
+        public static final int REVERIFY_PHONE = 2;
     }
 
     public enum Role {

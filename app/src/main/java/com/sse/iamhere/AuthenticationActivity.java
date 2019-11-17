@@ -14,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,8 +25,8 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.sse.iamhere.Server.RequestCallback;
-import com.sse.iamhere.Server.RequestManager;
+import com.sse.iamhere.Server.AuthRequestBuilder;
+import com.sse.iamhere.Server.RequestsCallback;
 import com.sse.iamhere.Subclasses.OnSingleClickListener;
 import com.sse.iamhere.Utils.Constants;
 import com.sse.iamhere.Utils.PreferencesUtil;
@@ -65,6 +66,7 @@ public class AuthenticationActivity extends AppCompatActivity {
     private ActionProcessButton continueBtn;
     private TextInputEditText passwordEt;
     private Spinner roleSp;
+    private int attempts = 1;
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -100,6 +102,7 @@ public class AuthenticationActivity extends AppCompatActivity {
             customDescription = extras.getString("customDescription", customDescription);
             returnRequestCode = extras.getInt("returnRequestCode", returnRequestCode);
             activityOrientation = extras.getInt("activityOrientation", activityOrientation);
+            disallowCancel = extras.getBoolean("disallowCancel", disallowCancel);
         }
 
         if (showAsDialog) {
@@ -114,8 +117,9 @@ public class AuthenticationActivity extends AppCompatActivity {
 
         } else throw new RuntimeException("Authentication Activity: supplied bad orientation");
 
+
         if (disallowCancel) {
-            this.setFinishOnTouchOutside(false);
+            setFinishOnTouchOutside(false);
         }
 
         setContentView(R.layout.activity_authentication);
@@ -291,9 +295,8 @@ public class AuthenticationActivity extends AppCompatActivity {
             }
 
             AsyncTask.execute(() -> {
-                new RequestManager(this).attachToken(TOKEN_NONE)
-                    .register(uuid, text(passwordEt.getText()), getSelectedRole())
-                    .setCallback(new RequestCallback() {
+                new AuthRequestBuilder(this).attachToken(TOKEN_NONE)
+                    .setCallback(new RequestsCallback() {
                         @Override
                         public void onRegisterSuccess() {
                             continueBtn.setProgress(100);
@@ -305,7 +308,7 @@ public class AuthenticationActivity extends AppCompatActivity {
                         }
 
                         @Override
-                        public void onRegisterFailure(int errorCode) {
+                        public void onFailure(int errorCode) {
                             continueBtn.setProgress(0);
                             continueBtn.setText(getString(R.string.auth_titleTv_registration_label));
                             isProcessing=false;
@@ -333,11 +336,13 @@ public class AuthenticationActivity extends AppCompatActivity {
                             Snackbar.make(findViewById(android.R.id.content),
                                     msg, Snackbar.LENGTH_INDEFINITE).show();
                         }
-                    });
+                    })
+                    .register(uuid, text(passwordEt.getText()), getSelectedRole());
             });
         } else {
+            //Todo: implement properly: add verify phone dialog
             isProcessing=false;
-            //todo: implement properly
+            Toast.makeText(this, "Debug: Couldn't get firebase user", Toast.LENGTH_LONG).show();
         }
     }
     private void onLogin() {
@@ -350,9 +355,8 @@ public class AuthenticationActivity extends AppCompatActivity {
                 uuid = "Deya";
             }
             AsyncTask.execute(() -> {
-                new RequestManager(this).attachToken(TOKEN_NONE)
-                    .login(uuid, text(passwordEt.getText()), getSelectedRole())
-                    .setCallback(new RequestCallback() {
+                new AuthRequestBuilder(this).attachToken(TOKEN_NONE)
+                    .setCallback(new RequestsCallback() {
                         @Override
                         public void onLoginSuccess() {
                             continueBtn.setProgress(100);
@@ -365,7 +369,7 @@ public class AuthenticationActivity extends AppCompatActivity {
                         }
 
                         @Override
-                        public void onLoginFailure(int errorCode) {
+                        public void onFailure(int errorCode) {
                             // reset button ui
                             continueBtn.setProgress(0);
                             continueBtn.setText(getString(R.string.auth_titleTv_login_label));
@@ -395,11 +399,13 @@ public class AuthenticationActivity extends AppCompatActivity {
                             Snackbar.make(findViewById(android.R.id.content),
                                     msg, Snackbar.LENGTH_INDEFINITE).show();
                         }
-                    });
+                    })
+                    .login(uuid, text(passwordEt.getText()), getSelectedRole());
             });
         } else {
             isProcessing=false;
-            //TODO: implement
+            //Todo: implement properly: add verify phone dialog
+            Toast.makeText(this, "Debug: Couldn't get firebase user", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -425,10 +431,10 @@ public class AuthenticationActivity extends AppCompatActivity {
         if (getCallingActivity()!=null) {
             if (returnRequestCode==AUTHENTICATION_RQ) {
                 Intent returnIntent = new Intent();
-                setResult((goodOutcome)? Activity.RESULT_OK : Activity.RESULT_CANCELED, returnIntent);
                 if (goodOutcome) {
                     returnIntent.putExtra("role", forceRole);
                 }
+                setResult((goodOutcome)? Activity.RESULT_OK : Activity.RESULT_CANCELED, returnIntent);
                 finish();
 
             } else if (returnRequestCode==AUTHENTICATION_RELOG_RQ) {
@@ -462,10 +468,20 @@ public class AuthenticationActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        if (getCallingActivity()!=null && !disallowCancel) {
-            finishActivity(false);
+        if (disallowCancel) {
+            if (attempts>0) {
+                Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show();
+                attempts--;
+                return;
+
+            } else {
+                if (getCallingActivity()!=null) {
+                    finishActivity(false);
+                    return;
+                }
+            }
         }
+        super.onBackPressed();
     }
 
     @Override

@@ -13,11 +13,17 @@ import static com.sse.iamhere.Utils.Constants.TOKEN_ACCESS;
 import static com.sse.iamhere.Utils.Constants.TOKEN_NONE;
 import static com.sse.iamhere.Utils.Constants.TOKEN_REFRESH;
 
-class ServiceGen {
+public class ServiceGen {
     private static Retrofit retrofit = null;
     private static Retrofit retrofitAccess = null;
     private static Retrofit retrofitRefresh = null;
-    private static HttpLoggingInterceptor.Level loggingLevel = HttpLoggingInterceptor.Level.BASIC;
+    private static HttpLoggingInterceptor.Level loggingLevel = HttpLoggingInterceptor.Level.BASIC; //TODO: change to level.NONE for release
+
+    public static void resetCachedServices() {
+        retrofit=null;
+        retrofitAccess=null;
+        retrofitRefresh=null;
+    }
 
     static <S> S createService(Class<S> serviceClass, String baseURL, String token, int tokenType) {
         switch (tokenType) {

@@ -24,14 +24,14 @@
             android:orientation="horizontal"
             android:elevation="5dp"
 
-            android:background="@drawable/border_back_b">
+            android:background="@drawable/border_white_back_thick_b">
 
             <Button
                 android:id="@+id/events_date_prvBtn"
                 android:layout_width="0dp"
                 android:layout_weight="0.1"
                 android:layout_height="wrap_content"
-                android:background="@drawable/ic_keyboard_arrow_left_black_24dp"
+                android:background="@drawable/ic_keyboard_arrow_left_black_48dp"
                 android:backgroundTint="#77616161"
                 android:enabled="false"
 
@@ -47,7 +47,7 @@
                 android:layout_marginStart="15dp"
                 android:padding="7dp"
 
-                android:textSize="20sp"
+                android:textSize="21sp"
                 android:fontFamily="@font/pt_serif"
                 android:textColor="@color/black"
                 android:textStyle="bold"
@@ -60,7 +60,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="0.1"
                 android:layout_height="wrap_content"
-                android:background="@drawable/ic_keyboard_arrow_right_black_24dp"
+                android:background="@drawable/ic_keyboard_arrow_right_black_48dp"
 
                 android:clickable="true"
                 android:focusable="true"
@@ -72,11 +72,12 @@
                 android:layout_width="0dp"
                 android:layout_weight="0.15"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_calendar_black_24dp"
+                android:src="@drawable/ic_calendar_black_28dp"
 
                 android:clickable="true"
                 android:focusable="true"
-                android:foreground="?attr/selectableItemBackground"/>
+                android:foreground="?attr/selectableItemBackground"
+                android:contentDescription="@string/events_date_calIv_desc" />
 
         </LinearLayout>
 
@@ -91,7 +92,7 @@
                 android:layout_marginTop="70dp"
 
                 android:fontFamily="@font/bree_serif"
-                android:text="There aren't any events to show!"
+                android:text="@string/events_empty_view_label"
                 android:textAlignment="center"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
 
@@ -99,7 +100,7 @@
                 android:visibility="gone" />
 
             <ProgressBar
-                android:id="@+id/events_empty_progress_view"
+                android:id="@+id/events_progress_view"
                 android:layout_width="75dp"
                 android:layout_height="75dp"
                 android:layout_gravity="center_horizontal"
@@ -125,7 +126,6 @@
                 </com.sse.iamhere.Subclasses.EmptySupportedRecyclerView>
 
             </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
 
         </FrameLayout>
 

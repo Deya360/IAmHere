@@ -32,7 +32,8 @@
                 android:paddingStart="0dp"
                 android:paddingEnd="10dp"
 
-                android:src="@drawable/ic_info_outline_light_black_40dp" />
+                android:src="@drawable/ic_info_outline_light_black_40dp"
+                tools:ignore="ContentDescription" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -75,7 +76,16 @@
                 android:fontFamily="@font/bree_serif"
                 android:text="@string/invite_code_empty_view_label"
                 android:textAlignment="center"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                tools:visibility="visible"/>
+
+            <ProgressBar
+                android:id="@+id/events_progress_view"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_gravity="center_horizontal"
+
+                android:visibility="visible" />
 
             <com.sse.iamhere.Subclasses.EmptySupportedRecyclerView
                android:id="@+id/invite_code_recycler_view"
@@ -108,7 +118,7 @@
 
                 android:drawableStart="@drawable/ic_add_green_30dp"
                 android:drawablePadding="5dp"
-                android:background="@drawable/border_back_button_all"
+                android:background="@drawable/border_trans_back_all"
                 style="@style/Widget.AppCompat.Button.Borderless"
 
                 android:clickable="true"

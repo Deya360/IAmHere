@@ -1,32 +1,41 @@
 package com.sse.iamhere.Server.Body;
 
+import com.google.gson.annotations.SerializedName;
+
 public class TokenData {
-    private final String access_token;
-    private final String refresh_token;
-    private final long access_token_expire_date;
-    private final long refresh_token_expire_date;
+    @SerializedName("access_token")
+    private final String accessToken;
 
-    public TokenData(String access_token, String refresh_token,
-                     long access_token_expire_date, long refresh_token_expire_date) {
-        this.access_token = access_token;
-        this.refresh_token = refresh_token;
-        this.access_token_expire_date = access_token_expire_date;
-        this.refresh_token_expire_date = refresh_token_expire_date;
+    @SerializedName("refresh_token")
+    private final String refreshToken;
+
+    @SerializedName("access_token_expire_date")
+    private final long accessTokenExpireDate;
+
+    @SerializedName("refresh_token_expire_date")
+    private final long refreshTokenExpireDate;
+
+    public TokenData(String accessToken, String refreshToken,
+                     long accessTokenExpireDate, long refreshTokenExpireDate) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+        this.accessTokenExpireDate = accessTokenExpireDate;
+        this.refreshTokenExpireDate = refreshTokenExpireDate;
     }
 
-    public String getAccess_token() {
-        return access_token;
+    public String getAccessToken() {
+        return accessToken;
     }
 
-    public String getRefresh_token() {
-        return refresh_token;
+    public String getRefreshToken() {
+        return refreshToken;
     }
 
-    public long getAccess_token_expire_date() {
-        return access_token_expire_date;
+    public long getAccessTokenExpiryDate() {
+        return accessTokenExpireDate;
     }
 
-    public long getRefresh_token_expire_date() {
-        return refresh_token_expire_date;
+    public long getRefreshTokenExpiryDate() {
+        return refreshTokenExpireDate;
     }
 }

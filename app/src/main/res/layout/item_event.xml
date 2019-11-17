@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
 
         android:fontFamily="@font/pt_serif"
-        android:textSize="22sp"
+        android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="@color/black"
         android:maxLines="2"
@@ -36,7 +36,7 @@
         android:layout_height="wrap_content"
 
         android:fontFamily="@font/pt_serif"
-        android:textSize="20sp"
+        android:textSize="18sp"
         android:textColor="#B0000000"
         android:maxLines="3"
         android:ellipsize="end"

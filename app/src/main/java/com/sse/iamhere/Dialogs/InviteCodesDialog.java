@@ -34,7 +34,11 @@ public class InviteCodesDialog extends AppCompatDialogFragment {
     private ArrayList<String> inviteCodes = new ArrayList<>();
     private boolean dialogInputInviteCodesDismissed = true;
     private Constants.Role role;
+
+    private EmptySupportedRecyclerView recyclerView;
+    private TextView placeHolderView;
     private InviteCodeAdapter adapter;
+
 
     private InviteCodesDialogListener inviteCodesDialogListener;
     public interface InviteCodesDialogListener {
@@ -50,10 +54,6 @@ public class InviteCodesDialog extends AppCompatDialogFragment {
     public InviteCodesDialog(Constants.Role role, InviteCodesDialogListener listener) {
         this.role = role;
         this.inviteCodesDialogListener = listener;
-    }
-
-    public void setInviteCodes(ArrayList<String> inviteCodes) {
-        this.inviteCodes = inviteCodes;
     }
 
     private InputInviteCodeDialog.InputIndividualDialogListener inputInviteCodeDialogListener =
@@ -81,17 +81,14 @@ public class InviteCodesDialog extends AppCompatDialogFragment {
 
         View view = View.inflate(getActivity(), R.layout.dialog_invite_code, null);
 
-        EmptySupportedRecyclerView recyclerView = view.findViewById(R.id.invite_code_recycler_view);
+        recyclerView = view.findViewById(R.id.invite_code_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         adapter = new InviteCodeAdapter();
         adapter.setInviteCodes(inviteCodes);
         recyclerView.setAdapter(adapter);
+        placeHolderView = view.findViewById(R.id.invite_code_empty_view);
 
-        TextView placeHolderView = view.findViewById(R.id.invite_code_empty_view);
-        if (inviteCodes.isEmpty()) {
-            recyclerView.setPlaceHolderView(placeHolderView);
-        }
 
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
             private final Drawable icon =
@@ -115,7 +112,7 @@ public class InviteCodesDialog extends AppCompatDialogFragment {
                 int pos = viewHolder.getAdapterPosition();
                 adapter.removeInviteCodeAt(pos);
 
-                if (inviteCodes.size()==0) {
+                if (inviteCodes.isEmpty()) {
                     recyclerView.setPlaceHolderView(placeHolderView);
                 }
             }
@@ -205,6 +202,37 @@ public class InviteCodesDialog extends AppCompatDialogFragment {
             });
 
         return builder.create();
+    }
+
+    private void loadInviteCodes() {
+        if (role==Constants.Role.ATTENDEE) {
+//            AsyncTask.execute(() -> new AuthRequestBuilder(getActivity())
+//                .attachToken(Constants.TOKEN_ACCESS)
+//                .setCallback(new RequestsCallback() {
+//                    @Override
+//                    public void onAttendeePartiesListSuccess(Set<String> codeWords) {
+//                        adapter.setInviteCodes(codeWords);
+//                        if (codeWords.isEmpty()) {
+//
+//                            recyclerView.setPlaceHolderView(placeHolderView);
+//                        } else {
+//
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onFailure(int errorCode) {
+//
+//                    }
+//                }))
+//                .attendeeGetCodeWords();
+
+        } else if (role==Constants.Role.MANAGER) {
+
+
+        } else {
+            throw new RuntimeException("Invite Code Dialog can only be used for Roles: Attendee, Host");
+        }
     }
 
     private void showInputInviteCodeDialog() {

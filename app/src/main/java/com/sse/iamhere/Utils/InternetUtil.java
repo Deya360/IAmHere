@@ -12,7 +12,8 @@ import java.net.Socket;
 
 public class InternetUtil {
     public interface InternetResponse {
-        void connectionState(boolean connected);
+        void isConnected();
+        void notConnected();
     }
 
     private InternetResponse internetResponse;
@@ -20,14 +21,14 @@ public class InternetUtil {
         this.internetResponse = internetResponse;
     }
 
-    public void hasInternetConnection(Activity context) {
-        hasInternetConnection((Context)context);
+    public InternetUtil hasInternetConnection(Activity context) {
+        return hasInternetConnection((Context)context);
     }
 
-    public void hasInternetConnection(Context context) {
+    public InternetUtil hasInternetConnection(Context context) {
 //        TOD: remove temporary override
 //        if (Build.FINGERPRINT.contains("generic")) {
-//            internetResponse.connectionState(true);
+//            internetResponse.isConnected();
 //            return;
 //        }
 
@@ -41,17 +42,17 @@ public class InternetUtil {
             new InternetAccessCheck(internet -> {
                 //Callback
                 if (internet) {
-                    internetResponse.connectionState(true);
+                    internetResponse.isConnected();
 
                 } else {
-                    internetResponse.connectionState(false);
-
+                    internetResponse.notConnected();
                 }
             });
-            return;
+            return this;
         }
 
-        internetResponse.connectionState(false);
+        internetResponse.notConnected();
+        return this;
     }
 }
 

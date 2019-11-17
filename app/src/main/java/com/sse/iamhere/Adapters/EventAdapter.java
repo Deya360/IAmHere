@@ -9,14 +9,15 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.sse.iamhere.Data_depreciated.Entitites.Subject;
 import com.sse.iamhere.R;
+import com.sse.iamhere.Server.Body.SubjectData;
+import com.sse.iamhere.Subclasses.OnSingleClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder> {
-    private List<Subject> subjects = new ArrayList<>();
+    private List<SubjectData> subjects = new ArrayList<>();
 
     public interface EventAdapterListener {
         void onClick(int subjectId);
@@ -27,7 +28,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
         this.eventAdapterListener = eal;
     }
 
-    public void setSubjects(List<Subject> subjects) {
+    public void setSubjects(List<SubjectData> subjects) {
         this.subjects = subjects;
         notifyDataSetChanged();
     }
@@ -40,6 +41,13 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
             super(itemView);
             this.nameTv = itemView.findViewById(R.id.event_nameTv);
             this.descTv = itemView.findViewById(R.id.event_descTv);
+
+            itemView.setOnClickListener(new OnSingleClickListener() {
+                @Override
+                public void onSingleClick(View v) {
+                    eventAdapterListener.onClick(EventHolder.this.getAdapterPosition());
+                }
+            });
         }
     }
 
@@ -54,11 +62,11 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
 
     @Override
     public void onBindViewHolder(@NonNull EventHolder holder, int pos) {
-        final Subject currentResult = subjects.get(pos);
+        final SubjectData currentEvent = subjects.get(pos);
 
-        holder.nameTv.setText(currentResult.getName());
+        holder.nameTv.setText(currentEvent.getName());
 
-        String description = currentResult.getDescription();
+        String description = currentEvent.getDescription();
         if (!TextUtils.isEmpty(description)) {
             holder.descTv.setVisibility(View.VISIBLE);
             holder.descTv.setText(description);

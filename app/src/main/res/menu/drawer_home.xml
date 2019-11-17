@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:showIn="navigation_view">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <group
         android:id="@+id/nav_group_accounts"
@@ -31,18 +29,29 @@
     </group>
 
     <group
-        android:id="@+id/nav_group_others">
+        android:id="@+id/nav_group_role_specific">
         <item
-            android:id="@+id/nav_settings"
-            android:icon="@drawable/ic_settings_dark_grey_24dp"
-            android:title="@string/nav_settings_title"
-            />
+            android:id="@+id/nav_all_events"
+            android:icon="@drawable/ic_events_dark_grey_24dp"
+            android:title="@string/nav_all_events"/>
 
         <item
             android:id="@+id/nav_invite_codes"
             android:icon="@drawable/ic_invite_codes_dark_grey_24dp"
             android:title="@string/nav_invite_codes_title"/>
+    </group>
 
+    <group
+        android:id="@+id/nav_group_others">
+        <item
+            android:id="@+id/nav_account"
+            android:icon="@drawable/ic_role_dark_grey_24dp"
+            android:title="@string/nav_account_title"/>
+
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_settings_dark_grey_24dp"
+            android:title="@string/nav_settings_title"/>
     </group>
 
 </menu>

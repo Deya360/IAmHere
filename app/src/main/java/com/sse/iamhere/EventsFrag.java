@@ -20,41 +20,38 @@ import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.appeaser.sublimepickerlibrary.helpers.SublimeOptions;
+import com.google.android.material.snackbar.Snackbar;
 import com.sse.iamhere.Adapters.EventAdapter;
-import com.sse.iamhere.Data_depreciated.Entitites.Subject;
-import com.sse.iamhere.Data_depreciated.VM.SubjectViewModel;
 import com.sse.iamhere.Dialogs.DatePickerFragment;
+import com.sse.iamhere.Server.Body.SubjectData;
+import com.sse.iamhere.Server.RequestBuilder;
+import com.sse.iamhere.Server.RequestsCallback;
 import com.sse.iamhere.Subclasses.EmptySupportedRecyclerView;
 import com.sse.iamhere.Subclasses.OnSingleClickListener;
 import com.sse.iamhere.Subclasses.RepeatListener;
+import com.sse.iamhere.Utils.Constants;
 
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.observers.DisposableSingleObserver;
-import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.DisposableSubscriber;
+import java.util.Objects;
+import java.util.Set;
 
 import static com.sse.iamhere.Utils.CalendarUtils.getNextDay;
 import static com.sse.iamhere.Utils.CalendarUtils.getPrvDay;
 import static com.sse.iamhere.Utils.CalendarUtils.getStringDate;
 import static com.sse.iamhere.Utils.CalendarUtils.isSameDay;
 import static com.sse.iamhere.Utils.CalendarUtils.trimTime;
+import static com.sse.iamhere.Utils.Constants.TOKEN_ACCESS;
 
 public class EventsFrag extends Fragment {
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private EmptySupportedRecyclerView recyclerView;
-    private Parcelable savedRecyclerLayoutState;
 
     private Button datePrvIv;
     private Button dateNxtIv;
@@ -62,29 +59,13 @@ public class EventsFrag extends Fragment {
 
     private Calendar currentDate;
     private EventAdapter adapter;
+    private Parcelable savedRecyclerLayoutState;
+
+    private boolean isDataRefreshing = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_events, container, false);
-
-        //Swipe to refresh layout setup
-        mSwipeRefreshLayout = rootView.findViewById(R.id.events_swipe_refreshLy);
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                if (!mSwipeRefreshLayout.isRefreshing()) {
-                    populateTestData(currentDate.getTime());
-                }
-                //TODO: implement
-            }
-        });
-        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary,
-                android.R.color.holo_green_dark,
-                android.R.color.holo_orange_dark,
-                android.R.color.holo_blue_dark);
-
-        return rootView;
+        return inflater.inflate(R.layout.fragment_events, container, false);
     }
 
     @Override
@@ -109,86 +90,28 @@ public class EventsFrag extends Fragment {
 
         setupUI();
         initDatePanel(view);
-        populateTestData(currentDate.getTime());
+        populateEvents(currentDate.getTime());
     }
 
-    /*
-    * Temporary method to populate list from local database //
-    * TODO: link with server using http request
-    * */
-    private void populateTestData(Date date) {
-        SubjectViewModel subjectViewModel = ViewModelProviders.of(getActivity()).get(SubjectViewModel.class);
-
-//        subjectViewModel.deleteAll()
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(new DisposableCompletableObserver() {
-//                    @Override
-//                    public void onComplete() {
-//
-//                    }
-//
-//                    @Override
-//                    public void onError(Throwable e) {
-//
-//                    }
-//                });
-
-        Subject[] subjectz = {
-            new Subject("Accounting & Finance", "cool description" ,"07112019"),
-            new Subject("Business & Management Studies", "not cool description" , "07112019"),
-            new Subject("Law", "" , "07112019"),
-            new Subject("Business & Management Studies", "random very very long description that seems to never ever ever end, you thought that was it, nope, yup, it keeps on going, and on, and on, and on....." , "08112019"),
-            new Subject("Management Studies", "" , "08112019")
-        };
-
-        subjectViewModel.insert(subjectz)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(new DisposableSingleObserver<long[]>() {
-                @Override
-                public void onSuccess(long[] longs) {
-
-                }
-
-                @Override
-                public void onError(Throwable e) {
-
-                }
-            });
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyyyy", Locale.getDefault());
-        dateFormat.format(currentDate.getTime());
-
-        subjectViewModel.getAllByDate(dateFormat.format(currentDate.getTime()))
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .filter(subjects -> {
-                adapter.setSubjects(subjects);
-                mSwipeRefreshLayout.setRefreshing(false);
-                if (recyclerView.getLayoutManager()!=null && savedRecyclerLayoutState!=null)
-                    recyclerView.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
-                if(subjects.isEmpty()) {
-                    recyclerView.setPlaceHolderView(getActivity().findViewById(R.id.events_empty_view));
-                }
-
-                return !subjects.isEmpty();
-            }).subscribe(new DisposableSubscriber<List<Subject>>() {
-            @Override
-            public void onNext(List<Subject> subjects) {
-            }
-
-            @Override
-            public void onError(Throwable t) {
-            }
-
-            @Override
-            public void onComplete() {
-            }
-        });
-    }
 
     private void setupUI() {
+        Objects.requireNonNull(getActivity()).setTitle(R.string.fragment_events_title);
+
+        // Setup of swipe to refresh layout
+        mSwipeRefreshLayout = getActivity().findViewById(R.id.events_swipe_refreshLy);
+
+        mSwipeRefreshLayout.setOnRefreshListener(() -> {
+            if (!isDataRefreshing) {
+                isDataRefreshing = true;
+                populateEvents(currentDate.getTime());
+            }
+        });
+
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary,
+                android.R.color.holo_green_dark,
+                android.R.color.holo_orange_dark,
+                android.R.color.holo_blue_dark);
+
         // Initial setup of recycler view
         recyclerView = getActivity().findViewById(R.id.events_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -201,8 +124,8 @@ public class EventsFrag extends Fragment {
         });
         recyclerView.setAdapter(adapter);
 
-        ProgressBar emptyTextView = getActivity().findViewById(R.id.events_empty_progress_view);
-        recyclerView.setEmptyView(emptyTextView);
+        ProgressBar progressView = getActivity().findViewById(R.id.events_progress_view);
+        recyclerView.setEmptyView(progressView);
     }
 
 
@@ -214,12 +137,12 @@ public class EventsFrag extends Fragment {
 
         datePrvIv.setOnTouchListener(new RepeatListener(300, 125, v -> {
             selectDate(getPrvDay(currentDate));
-            populateTestData(currentDate.getTime());
+            populateEvents(currentDate.getTime());
         }));
 
         dateNxtIv.setOnTouchListener(new RepeatListener(300, 125, v -> {
             selectDate(getNextDay(currentDate));
-            populateTestData(currentDate.getTime());
+            populateEvents(currentDate.getTime());
         }));
 
         ImageView dateCalTv = view.findViewById(R.id.events_date_calIv);
@@ -241,8 +164,6 @@ public class EventsFrag extends Fragment {
     }
 
     private void showDatePickerDialog() {
-        Calendar cal;
-
         SublimeOptions options = new SublimeOptions();
 
         options.setCanPickDateRange(false);
@@ -299,6 +220,47 @@ public class EventsFrag extends Fragment {
     public void onClose(Calendar selectedDate) {
         if (selectedDate!=null) {
             selectDate(trimTime(selectedDate));
+            populateEvents(currentDate.getTime());
+        }
+    }
+
+
+    private void populateEvents(Date date) {
+        RequestBuilder rb = new RequestBuilder()
+            .setCallback(new RequestsCallback() {
+                @Override
+                public void onHostGetEventsByDateSuccess(Set<SubjectData> subjectData) {
+                    adapter.setSubjects(new ArrayList<>(subjectData));
+                    isDataRefreshing = false;
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    if (recyclerView.getLayoutManager()!=null && savedRecyclerLayoutState!=null)
+                        recyclerView.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
+                    if(subjectData.isEmpty()) {
+                        recyclerView.setPlaceHolderView(getActivity().findViewById(R.id.events_empty_view));
+                    }
+                }
+
+                @Override
+                public void onFailure(int errorCode) {
+                    if (errorCode== Constants.RQM_EC.NO_INTERNET_CONNECTION) {
+                        showInfoSnackbar(getString(R.string.splash_connectionTv_label), Snackbar.LENGTH_LONG);
+
+                    } else {
+                        showInfoSnackbar(getString(R.string.msg_server_error), Snackbar.LENGTH_LONG);
+                    }
+                }
+            });
+        rb.checkInternet(getContext()).attachToken(getContext(), TOKEN_ACCESS);
+        rb.callRequest(() -> rb.hostGetEventsByDate(date.getTime()));
+    }
+
+    private void showInfoSnackbar(String msg, int duration) {
+        if (getActivity()!=null) {
+            if (getActivity().getWindow().getDecorView().isShown()) {
+                if (!TextUtils.isEmpty(msg)) {
+                    Snackbar.make(getActivity().findViewById(R.id.home_mainLy), msg, duration).show();
+                }
+            }
         }
     }
 
