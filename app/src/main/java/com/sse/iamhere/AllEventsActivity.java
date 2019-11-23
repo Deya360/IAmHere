@@ -1,5 +1,6 @@
 package com.sse.iamhere;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.text.TextUtils;
@@ -76,9 +77,7 @@ public class AllEventsActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.all_events_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        adapter = new EventAdapter(subjectId -> {
-            // on click of item in the events list
-        });
+        adapter = new EventAdapter(this::startEventDetailActivity);
         recyclerView.setAdapter(adapter);
 
         ProgressBar progressView = findViewById(R.id.all_events_progress_view);
@@ -90,19 +89,21 @@ public class AllEventsActivity extends AppCompatActivity {
             .setCallback(new RequestsCallback() {
                 @Override
                 public void onHostEventsListSuccess(Set<SubjectData> subjectData) {
+                    super.onHostEventsListSuccess(subjectData);
                     adapter.setSubjects(new ArrayList<>(subjectData));
                     isDataRefreshing = false;
                     mSwipeRefreshLayout.setRefreshing(false);
-                    if (recyclerView.getLayoutManager()!=null && savedRecyclerLayoutState!=null)
+                    if (recyclerView.getLayoutManager() != null && savedRecyclerLayoutState != null)
                         recyclerView.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
-                    if(subjectData.isEmpty()) {
+                    if (subjectData.isEmpty()) {
                         recyclerView.setPlaceHolderView(findViewById(R.id.all_events_empty_view));
                     }
                 }
 
                 @Override
                 public void onFailure(int errorCode) {
-                    if (errorCode== Constants.RQM_EC.NO_INTERNET_CONNECTION) {
+                    super.onFailure(errorCode);
+                    if (errorCode == Constants.RQM_EC.NO_INTERNET_CONNECTION) {
                         showInfoSnackbar(getString(R.string.splash_connectionTv_label), Snackbar.LENGTH_LONG);
 
                     } else {
@@ -117,9 +118,18 @@ public class AllEventsActivity extends AppCompatActivity {
     private void showInfoSnackbar(String msg, int duration) {
         if (getWindow().getDecorView().isShown()) {
             if (!TextUtils.isEmpty(msg)) {
-                Snackbar.make(findViewById(R.id.home_mainLy), msg, duration).show();
+                Snackbar.make(findViewById(android.R.id.content), msg, duration).show();
             }
         }
+    }
+
+    private void startEventDetailActivity(SubjectData subjectData, int eventId) {
+        Bundle bundle = new Bundle();
+        bundle.putInt("eventId", eventId);
+        bundle.putParcelable("subjectData", subjectData);
+        Intent intent = new Intent(this, EventDetailsActivity.class);
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 
     @Override

@@ -8,8 +8,14 @@
         android:id="@+id/invite_code_nameTv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp" />
+        android:padding="5dp"
+
+        android:fontFamily="@font/pt_serif"
+        android:textSize="20sp"
+        android:textColor="@color/black"
+        android:background="@drawable/border_trans_back_b"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

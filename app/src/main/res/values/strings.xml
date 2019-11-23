@@ -6,6 +6,8 @@
     <string name="fragment_events_title">My Events</string>
     <string name="fragment_parties_title">My Parties</string>
     <string name="activity_all_events_title">All Events</string>
+    <string name="activity_event_details_title">Event Details</string>
+
     <string name="activity_account_events_title">Account</string>
 
 
@@ -15,6 +17,9 @@
     <string name="fragment_input_invite_code_dialog_tag" translatable="false">input_invite_code_dialogTag</string>
     <string name="fragment_invite_code_dialog_tag" translatable="false">invite_code_dialogTag</string>
     <string name="fragment_date_picker_dialog_tag" translatable="false">date_picker_dialogTag</string>
+    <string name="fragment_event_details_tag" translatable="false">EventDetailsFragmentTag</string>
+    <string name="fragment_visits_tag" translatable="false">VisitsFragmentTag</string>
+
 
 
     <string name="splash_get_started_label">Get Started</string>
@@ -103,9 +108,9 @@
 
 
     <string name="invite_code_addBtn_label">Add New Code</string>
-    <string name="invite_code_empty_view_label">No Invite Codes to show!</string>
-    <string name="invite_code_infoTv_attendee_label">You can join Parties by adding here Invite Codes given to you by the Party Manager.</string>
-    <string name="invite_code_infoTv_host_label">You can join Events by adding here Invite Codes given to you by the Event creator.</string>
+    <string name="invite_code_empty_view_label">You haven\'t added any invite codes yet!</string>
+    <string name="invite_code_infoTv_attendee_label">Invite codes are used to join Parties. Add any invite codes given to you below. To remove an existing invite code, simply swipe it away.</string>
+    <string name="invite_code_infoTv_host_label">Invite codes are used to join Events. Add any invite codes given to you below. To remove an existing invite code, simply swipe it away.</string>
     <string name="input_invite_code_nameEt_label">Code</string>
 
 
@@ -129,10 +134,12 @@
     <string name="account_email_help">You will be able to recover your account password via this Email.</string>
 
 
-
     <string name="msg_unknown_error">The app has encountered an unknown error :(</string>
     <string name="msg_server_error">Oops, there was a internal server error, please try again later</string>
     <string name="msg_authentication_aborted">Authentication aborted</string>
+    <string name="msg_invite_code_added">Invite code added to account</string>
+    <string name="msg_invite_code_removed">Invite code removed from account</string>
+    <string name="msg_invite_code_duplicate">This invite code already exists.</string>
 
 
 </resources>

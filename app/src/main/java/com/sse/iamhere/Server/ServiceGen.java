@@ -1,10 +1,12 @@
 package com.sse.iamhere.Server;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -84,6 +86,19 @@ public class ServiceGen {
 
                 if (!httpClient.interceptors().contains(authInterceptor)) {
                     httpClient.addInterceptor(authInterceptor);
+                }
+
+                Interceptor prohibitedInterceptor = chain -> {
+                    Response mainResponse = chain.proceed(chain.request());
+                    if (mainResponse.code() == 401 || mainResponse.code() == 403) {
+                        Log.e("ServiceGen", "We got a 403/401!!!!"); //todo: implement properly
+                    }
+
+                    return mainResponse;
+                };
+
+                if (!httpClient.interceptors().contains(prohibitedInterceptor)) {
+                    httpClient.addInterceptor(prohibitedInterceptor);
                 }
             }
 

@@ -5,7 +5,9 @@ import com.sse.iamhere.Server.Body.CredentialData;
 import com.sse.iamhere.Server.Body.PartyData;
 import com.sse.iamhere.Server.Body.SubjectData;
 import com.sse.iamhere.Server.Body.TokenData;
+import com.sse.iamhere.Server.Body.VisitData;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -14,6 +16,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.HTTP;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
@@ -99,7 +102,7 @@ public interface Requests {
      */
     @POST("app/participator/code_words")
     @Headers({"Accept: application/json"})
-    Call<ResponseBody> attendeeSetCodeWords(@Query("code_words") List<String> codeWords);
+    Call<ResponseBody> attendeeSetCodeWords(@Body List<String> codeWords);
 
     /**
      * Must supply:<p>
@@ -107,7 +110,7 @@ public interface Requests {
      */
     @DELETE("app/participator/code_words")
     @Headers({"Accept: application/json"})
-    Call<ResponseBody> attendeeRemoveCodeWords(@Query("code_words") List<String> codeWords);
+    Call<ResponseBody> attendeeRemoveCodeWords(@Body List<String> codeWords);
     //endregion
 
     //region Attendee - Invites
@@ -166,7 +169,7 @@ public interface Requests {
      * Must supply:<p>
      * //@Header("access_token") String accessToken
      */
-    @POST("app/host/create_qr_token")
+    @GET("app/host/create_qr_token")
     Call<ResponseBody> hostCreateQRCode(@Query("subject_id") Integer eventId);
 
     /**
@@ -182,15 +185,16 @@ public interface Requests {
      */
     @POST("app/host/code_words")
     @Headers({"Accept: application/json"})
-    Call<ResponseBody> hostSetCodeWords(@Query("code_words") List<String> codeWords);
+    Call<ResponseBody> hostSetCodeWords(@Body List<String> codeWords);
 
     /**
      * Must supply:<p>
      * //@Header("access_token") String accessToken
      */
-    @DELETE("app/host/code_words")
+//    @DELETE("app/host/code_words")
+    @HTTP(method = "DELETE", path = "app/host/code_words", hasBody = true)
     @Headers({"Accept: application/json"})
-    Call<ResponseBody> hostRemoveCodeWords(@Query("code_words") List<String> codeWords);
+    Call<ResponseBody> hostRemoveCodeWords(@Body List<String> codeWords);
 
     //endregion
 
@@ -217,7 +221,7 @@ public interface Requests {
      */
     @POST("app/host/join_subject")
     Call<ResponseBody> hostJoinEvent(@Query("subject_id") Integer eventId,
-                               @Query("code_word") String codeWord);
+                                    @Query("code_word") String codeWord);
 
 
     /**
@@ -251,6 +255,16 @@ public interface Requests {
      */
     @GET("app/host/get_all_parties")
     Call<Set<PartyData>> hostPartiesList();
+
+    /**
+     * Must supply:<p>
+     * //@Header("access_token") String accessToken
+     */
+    @POST("app/host/list_of_visit_times")
+    @Headers({"Accept: application/json"})
+    Call<Set<VisitData>> hostGetAttendance(@Query("subject_id") Integer eventId,
+                                           @Query("timestamp") long timestamp,
+                                           @Body ArrayList<Integer> partyIds);
     //endregion
     //endregion
 }

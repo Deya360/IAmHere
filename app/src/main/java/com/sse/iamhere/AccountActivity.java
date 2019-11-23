@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -55,12 +56,12 @@ import static com.sse.iamhere.Utils.Constants.TOKEN_REFRESH;
 
 public class AccountActivity extends AppCompatActivity {
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    ImageView editApplyIv;
-    TextInputEditText nameEt;
-    TextInputEditText emailEt;
-    TextInputLayout emailLy;
-    ShimmerFrameLayout placeholderLy;
-    LinearLayout detailsLy;
+    private ImageView editApplyIv;
+    private TextInputEditText nameEt;
+    private TextInputEditText emailEt;
+    private TextInputLayout emailLy;
+    private ShimmerFrameLayout placeholderLy;
+    private LinearLayout detailsLy;
 
     private Constants.Role role;
     private CredentialData loadedCredentialData;
@@ -145,20 +146,20 @@ public class AccountActivity extends AppCompatActivity {
                             .attachToken(TOKEN_REFRESH)
                             .setCallback(new RequestsCallback() {
                                 @Override
-                                public void onLogoutSuccess() {
-                                    try {
-                                        PreferencesUtil.setToken(AccountActivity.this, null, role);
-                                        finishActivity(true);
+                                public void onComplete(boolean failed, Integer failCode) {
+                                    if (!failed) {
+                                        try {
+                                            PreferencesUtil.setToken(AccountActivity.this, null, role);
+                                            finishActivity(true);
+                                            return;
 
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                        onFailure(Constants.RQM_EC.TOKEN_STORE_FAIL);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                            failCode = Constants.RQM_EC.TOKEN_STORE_FAIL;
+                                        }
                                     }
-                                }
 
-                                @Override
-                                public void onFailure(int errorCode) {
-                                    if (errorCode== Constants.RQM_EC.TOKEN_STORE_FAIL) {
+                                    if (failCode == Constants.RQM_EC.TOKEN_STORE_FAIL) {
                                         showInfoSnackbar(getString(R.string.msg_unknown_error), Snackbar.LENGTH_LONG);
 
                                     } else {
@@ -265,29 +266,32 @@ public class AccountActivity extends AppCompatActivity {
             .setCallback(new RequestsCallback() {
                 @Override
                 public void onGetCredentialsSuccess(CredentialData credentialData) {
+                    super.onGetCredentialsSuccess(credentialData);
                     loadedCredentialData = credentialData;
+
                     String name = credentialData.getName();
                     nameEt.setText(name);
                     updateAvatar(name);
                     emailEt.setText(credentialData.getEmail());
-
-                    editApplyIv.setEnabled(true);
-                    isDataRefreshing = false;
-                    mSwipeRefreshLayout.setRefreshing(false);
-
-                    hideShimmer();
                 }
 
                 @Override
-                public void onFailure(int errorCode) {
-                    editApplyIv.setEnabled(false);
-                    placeholderLy.stopShimmer();
+                public void onComplete(boolean failed, Integer failCode) {
+                    isDataRefreshing = false;
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    editApplyIv.setEnabled(!failed);
 
-                    if (errorCode== Constants.RQM_EC.NO_INTERNET_CONNECTION) {
-                        showInfoSnackbar(getString(R.string.splash_connectionTv_label), Snackbar.LENGTH_LONG);
+                    if (failed) {
+                        if (failCode == Constants.RQM_EC.NO_INTERNET_CONNECTION) {
+                            showInfoSnackbar(getString(R.string.splash_connectionTv_label), Snackbar.LENGTH_LONG);
+
+                        } else {
+                            showInfoSnackbar(getString(R.string.msg_server_error), Snackbar.LENGTH_LONG);
+                        }
+                        stopShimmer();
 
                     } else {
-                        showInfoSnackbar(getString(R.string.msg_server_error), Snackbar.LENGTH_LONG);
+                        hideShimmer();
                     }
                 }
             });
@@ -353,27 +357,26 @@ public class AccountActivity extends AppCompatActivity {
                 loadingPb.setVisibility(View.VISIBLE);
 
                 RequestBuilder rb = new RequestBuilder()
-                    .setCallback(new RequestsCallback() {
+                .setCallback(new RequestsCallback() {
                     @Override
-                    public void onSetCredentialsSuccess(String string) {
-                        toggleEditMode();
-                        editApplyIv.setEnabled(true);
-                        changesMade = true;
+                    public void onComplete(boolean failed, Integer failCode) {
+                        if (failed) {
+                            if (failCode == Constants.RQM_EC.NO_INTERNET_CONNECTION) {
+                                showInfoSnackbar(getString(R.string.splash_connectionTv_label), Snackbar.LENGTH_LONG);
 
-                        loadingPb.setVisibility(View.GONE);
-                    }
+                            } else {
+                                showInfoSnackbar(getString(R.string.msg_server_error), Snackbar.LENGTH_LONG);
+                            }
 
-                    @Override
-                    public void onFailure(int errorCode) {
-                        Drawable progressDrawable = loadingPb.getProgressDrawable().mutate();
-                        progressDrawable.setColorFilter(Color.parseColor("#C62828"), android.graphics.PorterDuff.Mode.SRC_IN);
-                        loadingPb.setProgressDrawable(progressDrawable);
-
-                        if (errorCode== Constants.RQM_EC.NO_INTERNET_CONNECTION) {
-                            showInfoSnackbar(getString(R.string.splash_connectionTv_label), Snackbar.LENGTH_LONG);
+                            Drawable progressDrawable = loadingPb.getProgressDrawable().mutate();
+                            progressDrawable.setColorFilter(Color.parseColor("#C62828"), android.graphics.PorterDuff.Mode.SRC_IN);
+                            loadingPb.setProgressDrawable(progressDrawable);
 
                         } else {
-                            showInfoSnackbar(getString(R.string.msg_server_error), Snackbar.LENGTH_LONG);
+                            toggleEditMode();
+                            editApplyIv.setEnabled(true);
+                            changesMade = true;
+                            loadingPb.setVisibility(View.GONE);
                         }
                     }
                 });
@@ -424,6 +427,10 @@ public class AccountActivity extends AppCompatActivity {
         detailsLy.setVisibility(View.GONE);
     }
 
+    private void stopShimmer() {
+        new Handler().postDelayed(placeholderLy::stopShimmer,2500);
+    }
+
     private void hideShimmer() {
         placeholderLy.setVisibility(View.GONE);
         detailsLy.setVisibility(View.VISIBLE);
@@ -432,7 +439,7 @@ public class AccountActivity extends AppCompatActivity {
     private void showInfoSnackbar(String msg, int duration) {
         if (getWindow().getDecorView().isShown()) {
             if (!TextUtils.isEmpty(msg)) {
-                Snackbar.make(findViewById(R.id.home_mainLy), msg, duration).show();
+                Snackbar.make(findViewById(android.R.id.content), msg, duration).show();
             }
         }
     }

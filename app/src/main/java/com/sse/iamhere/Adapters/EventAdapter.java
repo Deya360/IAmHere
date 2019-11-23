@@ -20,7 +20,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
     private List<SubjectData> subjects = new ArrayList<>();
 
     public interface EventAdapterListener {
-        void onClick(int subjectId);
+        void onClick(SubjectData subjectData, int eventId);
     }
 
     private EventAdapterListener eventAdapterListener;
@@ -45,7 +45,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
             itemView.setOnClickListener(new OnSingleClickListener() {
                 @Override
                 public void onSingleClick(View v) {
-                    eventAdapterListener.onClick(EventHolder.this.getAdapterPosition());
+                eventAdapterListener.onClick(subjects.get(getAdapterPosition()), subjects.get(getAdapterPosition()).getId());
                 }
             });
         }

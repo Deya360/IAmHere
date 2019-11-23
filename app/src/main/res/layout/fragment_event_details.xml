@@ -1,0 +1,66 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/event_details_startDateTv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="15dp"
+
+        android:textColor="@android:color/black"
+        android:textSize="20sp"
+        android:fontFamily="@font/roboto_slab_light"
+        android:textStyle="bold"
+
+        tools:visibility="visible"
+        android:text="Start Date: "
+        android:background="@drawable/border_light_grey_back_bt"/>
+
+    <TextView
+        android:id="@+id/event_details_finishDateTv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="15dp"
+
+        android:textColor="@android:color/black"
+        android:textSize="20sp"
+        android:fontFamily="@font/roboto_slab_light"
+        android:textStyle="bold"
+
+        tools:visibility="visible"
+        android:text="Finish Date: "
+        android:background="@drawable/border_light_grey_back_bt"/>
+
+    <TextView
+        android:id="@+id/event_details_inviteCodeTv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="15dp"
+
+        android:textColor="@android:color/black"
+        android:textSize="20sp"
+        android:fontFamily="@font/roboto_slab_light"
+        android:textStyle="bold"
+
+        tools:visibility="visible"
+        android:text="Invite Code: "
+        android:background="@drawable/border_light_grey_back_bt"/>
+
+    <TextView
+        android:id="@+id/event_details_hostsTv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="15dp"
+
+        android:textColor="@android:color/black"
+        android:textSize="20sp"
+        android:fontFamily="@font/roboto_slab_light"
+        android:textStyle="bold"
+
+        tools:visibility="visible"
+        android:text="Hosts: "
+        android:background="@drawable/border_light_grey_back_bt"/>
+</LinearLayout>

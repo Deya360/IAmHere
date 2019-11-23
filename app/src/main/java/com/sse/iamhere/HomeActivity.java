@@ -5,7 +5,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -46,17 +45,12 @@ import com.sse.iamhere.Utils.InternetUtil;
 import com.sse.iamhere.Utils.PreferencesUtil;
 import com.sse.iamhere.Utils.TextFormatter;
 
-import java.util.ArrayList;
-
 import static com.sse.iamhere.Utils.Constants.ACCOUNT_RQ;
 import static com.sse.iamhere.Utils.Constants.AUTHENTICATION_RELOG_RQ;
 import static com.sse.iamhere.Utils.Constants.AUTHENTICATION_RQ;
 import static com.sse.iamhere.Utils.Constants.DEBUG_MODE;
-import static com.sse.iamhere.Utils.Constants.INVITE_CODES_TEMP;
 import static com.sse.iamhere.Utils.Constants.TOKEN_ACCESS;
 import static com.sse.iamhere.Utils.Constants.TOKEN_REFRESH;
-import static com.sse.iamhere.Utils.PreferencesUtil.getStringArrayPrefByName;
-import static com.sse.iamhere.Utils.PreferencesUtil.setStringArrayByName;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -124,18 +118,6 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         startBackgroundServices(1000*10);
-
-
-        new Handler().postDelayed(this::test, 5000);
-
-    }
-
-    private void test () {
-        if (getWindow().getDecorView().isShown()) {
-            Log.d("test","can show");
-        } else {
-            Log.d("test","cant show");
-        }
     }
 
     private void startBackgroundServices(int delayInMilli) {
@@ -151,7 +133,7 @@ public class HomeActivity extends AppCompatActivity {
 
             @Override
             public void notConnected() {
-                showInfoSnackbar(getString(R.string.splash_connectionTv_label), Snackbar.LENGTH_LONG);
+                showInfoSnackbar("Debug: No Internet Connection", Snackbar.LENGTH_LONG);
             }
         }).hasInternetConnection(this);
     }
@@ -165,12 +147,14 @@ public class HomeActivity extends AppCompatActivity {
                         .setCallback(new RequestsCallback() {
                             @Override
                             public void onCheckSuccess(CheckData checkResult) {
+                                super.onCheckSuccess(checkResult);
                                 startBackgroundSessionValidityCheck(checkResult.getRegisteredStatusByRole(role));
                             }
 
                             @Override
                             public void onFailure(int errorCode) {
                                 //Todo: implement properly: add relog dialog (role not constrained)
+                                super.onFailure(errorCode);
                                 showInfoSnackbar("Debug: Couldn't get user account for role", Snackbar.LENGTH_LONG);
                             }
                         })
@@ -207,6 +191,10 @@ public class HomeActivity extends AppCompatActivity {
                     }
                 }
             });
+    }
+
+    private void startBackgroundInviteCheck() {
+
     }
 
 
@@ -371,6 +359,7 @@ public class HomeActivity extends AppCompatActivity {
                 .setCallback(new RequestsCallback() {
                     @Override
                     public void onGetCredentialsSuccess(CredentialData credentialData) {
+                        super.onGetCredentialsSuccess(credentialData);
                         String name = credentialData.getName();
 
                         View navHeaderView = sideNav.getHeaderView(0);
@@ -394,7 +383,8 @@ public class HomeActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(int errorCode) {
-                        if (errorCode== Constants.RQM_EC.NO_INTERNET_CONNECTION) {
+                        super.onFailure(errorCode);
+                        if (errorCode == Constants.RQM_EC.NO_INTERNET_CONNECTION) {
                             showInfoSnackbar(getString(R.string.splash_connectionTv_label), Snackbar.LENGTH_LONG);
 
                         } else {
@@ -487,6 +477,7 @@ public class HomeActivity extends AppCompatActivity {
                                 .setCallback(new RequestsCallback() {
                                     @Override
                                     public void onCheckSuccess(CheckData checkResult) {
+                                        super.onCheckSuccess(checkResult);
                                         startActivityForResult(getAuthActivityIntent(currentUser,
                                                 checkResult.getRegisteredStatusByRole(newRole),
                                                 newRole, false, AUTHENTICATION_RQ), AUTHENTICATION_RQ);
@@ -494,6 +485,7 @@ public class HomeActivity extends AppCompatActivity {
 
                                     @Override
                                     public void onFailure(int errorCode) {
+                                        super.onFailure(errorCode);
                                         changeRoleFailure(actionView, getString(R.string.msg_server_error));
                                     }
                                 })
@@ -587,22 +579,8 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void showInviteCodeDialog() {
-        InviteCodesDialog inviteCodesDialog = new InviteCodesDialog(role, new InviteCodesDialog.InviteCodesDialogListener() {
-            @Override
-            public void onPositiveButton(ArrayList<String> individuals) {
-                setStringArrayByName(HomeActivity.this, INVITE_CODES_TEMP, individuals);
-            }
-
-            @Override
-            public void onDismiss() {
-
-            }
-        });
-
-        ArrayList<String> arr = getStringArrayPrefByName(this, INVITE_CODES_TEMP, "");
-
-        FragmentManager fm = getSupportFragmentManager();
-        inviteCodesDialog.show(fm, getString(R.string.fragment_invite_code_dialog_tag));
+        InviteCodesDialog inviteCodesDialog = new InviteCodesDialog();
+        inviteCodesDialog.show(getSupportFragmentManager(), getString(R.string.fragment_invite_code_dialog_tag));
     }
 
     private void showInfoSnackbar(String msg, int duration) {
@@ -623,6 +601,13 @@ public class HomeActivity extends AppCompatActivity {
 
         } else {
             Toast.makeText(HomeActivity.this, getString(R.string.msg_unknown_error), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /* This method is a callback of the InviteCodeDialog fragment */
+    public void onInviteCodeDialogDismissed(boolean updated) {
+        if (updated) {
+            AsyncTask.execute(this::startBackgroundInviteCheck);
         }
     }
 

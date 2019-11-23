@@ -1,10 +1,13 @@
 package com.sse.iamhere.Server;
 
+import androidx.annotation.CallSuper;
+
 import com.sse.iamhere.Server.Body.CheckData;
 import com.sse.iamhere.Server.Body.CredentialData;
 import com.sse.iamhere.Server.Body.PartyData;
 import com.sse.iamhere.Server.Body.SubjectData;
 import com.sse.iamhere.Server.Body.TokenData;
+import com.sse.iamhere.Server.Body.VisitData;
 
 import java.util.List;
 import java.util.Set;
@@ -85,54 +88,111 @@ interface HostGetPartiesByEventIdCallback {
 interface HostPartiesListCallback {
     void onHostPartiesListSuccess(Set<PartyData> partyData);
 }
+interface HostGetAttendanceCallback {
+    void onHostGetAttendanceSuccess(Set<VisitData> visits);
+}
 
 
-
-interface GeneralFailureCallback {
+interface FailureCallback {
     void onFailure(int errorCode);
+}
+interface CompleteCallback {
+    void onComplete(boolean failed, Integer failCode);
 }
 
 public class RequestsCallback implements
-        GeneralFailureCallback, RegisterCallback, LoginCallback, LogoutCallback, RefreshCallback, CheckCallback,
+        FailureCallback, CompleteCallback,
+        RegisterCallback, LoginCallback, LogoutCallback, RefreshCallback, CheckCallback,
         GetCredentialsCallback, SetCredentialsCallback, QRCodeCallback,
         GetCodeWordsCallback, SetCodeWordsCallback, RemoveCodeWordsCallback,
         FindPartyCallback, FindAllPartiesCallback, JoinPartyCallback,
         AttendeePartiesListCallback,
         FindEventCallback, FindAllEventsCallback, JoinEventCallback,
-        HostEventsListCallback, HostGetEventsByDateCallback, HostGetPartiesByEventIdCallback, HostPartiesListCallback{
+        HostEventsListCallback, HostGetEventsByDateCallback, HostGetPartiesByEventIdCallback, HostPartiesListCallback,
+        HostGetAttendanceCallback {
 
-    @Override public void onRegisterSuccess() {}
-    @Override public void onLoginSuccess() {}
-    @Override public void onRefreshSuccess(TokenData renewedTokenData) {}
-    @Override public void onCheckSuccess(CheckData checkResult) {}
-    @Override public void onLogoutSuccess() {}
+    @CallSuper @Override public void onRegisterSuccess() {
+		onComplete(false, null);
+	}
+    @CallSuper @Override public void onLoginSuccess() {
+        onComplete(false, null);
+    }
+    @CallSuper @Override public void onRefreshSuccess(TokenData renewedTokenData) {
+		onComplete(false, null);	
+}
+    @CallSuper @Override public void onCheckSuccess(CheckData checkResult) {
+		onComplete(false, null);
+	}
+    @CallSuper @Override public void onLogoutSuccess() {
+		onComplete(false, null);
+	}
 
-    @Override public void onGetCredentialsSuccess(CredentialData credentialData) {}
-    @Override public void onSetCredentialsSuccess(String string) {}
+    @CallSuper @Override public void onGetCredentialsSuccess(CredentialData credentialData) {
+		onComplete(false, null);
+	}
+    @CallSuper @Override public void onSetCredentialsSuccess(String string) {
+		onComplete(false, null);
+	}
 
-    @Override public void onQRCodeSuccess(String string) {}
+    @CallSuper @Override public void onQRCodeSuccess(String string) {
+		onComplete(false, null);
+	}
 
-    @Override public void onGetCodeWordsSuccess(List<String> string) {}
-    @Override public void onSetCodeWordsSuccess(String string) {}
-    @Override public void onRemoveCodeWordsSuccess(String string) {}
+    @CallSuper @Override public void onGetCodeWordsSuccess(List<String> codes) {
+		onComplete(false, null);
+	}
+    @CallSuper @Override public void onSetCodeWordsSuccess(String msg) {
+		onComplete(false, null);
+	}
+    @CallSuper @Override public void onRemoveCodeWordsSuccess(String msg) {
+		onComplete(false, null);
+	}
 
-    @Override public void onFindPartySuccess(Set<PartyData> partyData) {}
-    @Override public void onFindAllPartiesSuccess(Set<PartyData> partyData) {}
-    @Override public void onJoinPartySuccess(String string) {}
+    @CallSuper @Override public void onFindPartySuccess(Set<PartyData> partyData) {
+		onComplete(false, null);
+	}
+    @CallSuper @Override public void onFindAllPartiesSuccess(Set<PartyData> partyData) {
+		onComplete(false, null);
+	}
+    @CallSuper @Override public void onJoinPartySuccess(String string) {
+		onComplete(false, null);
+	}
 
-    @Override public void onAttendeePartiesListSuccess(Set<PartyData> partyData) {}
+    @CallSuper @Override public void onAttendeePartiesListSuccess(Set<PartyData> partyData) {
+		onComplete(false, null);
+	}
 
-    @Override public void onFindEventSuccess(Set<SubjectData> subjectData) {}
-    @Override public void onFindAllEventsSuccess(Set<SubjectData> subjectData) {}
-    @Override public void onJoinEventSuccess(String string) {}
+    @CallSuper @Override public void onFindEventSuccess(Set<SubjectData> subjectData) {
+		onComplete(false, null);
+	}
+    @CallSuper @Override public void onFindAllEventsSuccess(Set<SubjectData> subjectData) {
+		onComplete(false, null);
+	}
+    @CallSuper @Override public void onJoinEventSuccess(String string) {
+		onComplete(false, null);
+	}
 
-    @Override public void onHostEventsListSuccess(Set<SubjectData> subjectData) {}
-    @Override public void onHostGetEventsByDateSuccess(Set<SubjectData> subjectData) {}
-    @Override public void onHostGetPartiesByEventIdSuccess(Set<PartyData> partyData) {}
-    @Override public void onHostPartiesListSuccess(Set<PartyData> partyData) {}
+    @CallSuper @Override public void onHostEventsListSuccess(Set<SubjectData> subjectData) {
+		onComplete(false, null);
+	}
+    @CallSuper @Override public void onHostGetEventsByDateSuccess(Set<SubjectData> subjectData) {
+		onComplete(false, null);
+	}
+    @CallSuper @Override public void onHostGetPartiesByEventIdSuccess(Set<PartyData> partyData) {
+		onComplete(false, null);
+	}
+    @CallSuper @Override public void onHostPartiesListSuccess(Set<PartyData> partyData) {
+		onComplete(false, null);
+	}
+    @CallSuper @Override public void onHostGetAttendanceSuccess(Set<VisitData> visits) {
+		onComplete(false, null);
+	}
 
+    @CallSuper @Override public void onFailure(int errorCode) {
+        onComplete(true, errorCode);
+    }
 
-    @Override public void onFailure(int errorCode) {}
+    @Override public void onComplete(boolean failed, Integer failCode) { }
 }
 
 

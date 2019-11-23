@@ -55,7 +55,7 @@ public class PartyAdapter extends RecyclerView.Adapter<PartyAdapter.PartyHolder>
             itemView.setOnClickListener(new OnSingleClickListener() {
                 @Override
                 public void onSingleClick(View v) {
-                    partyAdapterListener.onClick(PartyHolder.this.getAdapterPosition());
+                partyAdapterListener.onClick(Integer.parseInt(parties.get(getAdapterPosition()).getPartyId()));
                 }
             });
         }

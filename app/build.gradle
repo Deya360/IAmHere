@@ -51,6 +51,11 @@ dependencies {
     //QR code scanner
     implementation 'com.dlazaro66.qrcodereaderview:qrcodereaderview:2.0.3'
 
+    //Slide up panel
+    implementation 'com.sothree.slidinguppanel:library:3.4.0'
+
+    //QR Code creator
+    implementation 'com.github.kenglxn.QRGen:android:2.6.0'
 
     //Room
     implementation 'androidx.room:room-runtime:2.1.0'

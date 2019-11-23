@@ -9,11 +9,13 @@ import androidx.annotation.Nullable;
 import com.sse.iamhere.Server.Body.CredentialData;
 import com.sse.iamhere.Server.Body.PartyData;
 import com.sse.iamhere.Server.Body.SubjectData;
+import com.sse.iamhere.Server.Body.VisitData;
 import com.sse.iamhere.Utils.Constants;
 import com.sse.iamhere.Utils.InternetUtil;
 import com.sse.iamhere.Utils.PreferencesUtil;
 
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -603,7 +605,7 @@ public class RequestBuilder {
                     Log.i("RequestBuilder",
                             String.format("hostSetCodeWords:onResponse - Code: %d\nMsg: %s",
                                     response.code(), extract(response.errorBody(), response.message())));
-
+                    
                     if (response.code() == HttpURLConnection.HTTP_CONFLICT) {
                         getCallback().onFailure(Constants.RQM_EC.CODE_WORDS_USER_NOT_FOUND);
                     } else {
@@ -855,6 +857,33 @@ public class RequestBuilder {
             public void onFailure(@NonNull Call<Set<PartyData>> call, @NonNull Throwable t) {
                 Log.i("RequestBuilder", "hostPartiesList:onFailure - Msg: " + t.getMessage());
                 getCallback().onFailure(Constants.RQM_EC.HOST_GET_PARTIES_UNKNOWN);
+            }
+        });
+    }
+    /**
+     * Must supply Access Token
+     */
+    public void hostGetAttendance(Integer eventId, long timestamp, ArrayList<Integer> partyIds) {
+        requestsI.hostGetAttendance(eventId, timestamp, partyIds).enqueue(new Callback<Set<VisitData>>() {
+            @Override
+            public void onResponse(@NonNull Call<Set<VisitData>> call, @NonNull Response<Set<VisitData>> response) {
+                if (response.isSuccessful()) {
+                    Log.i("RequestBuilder", "hostGetAttendance:onResponse - Code: " + response.code());
+                    getCallback().onHostGetAttendanceSuccess(response.body());
+
+                } else {
+                    Log.i("RequestBuilder",
+                            String.format("hostGetAttendance:onResponse - Code: %d\nMsg: %s",
+                                    response.code(), extract(response.errorBody(), response.message())));
+
+                    getCallback().onFailure(Constants.RQM_EC.HOST_GET_ATTENDANCE_UNKNOWN);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Set<VisitData>> call, @NonNull Throwable t) {
+                Log.i("RequestBuilder", "hostGetAttendance:onFailure - Msg: " + t.getMessage());
+                getCallback().onFailure(Constants.RQM_EC.HOST_GET_ATTENDANCE_UNKNOWN);
             }
         });
     }

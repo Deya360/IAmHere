@@ -1,6 +1,7 @@
 package com.sse.iamhere;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -118,8 +119,9 @@ public class EventsFrag extends Fragment {
 
         adapter = new EventAdapter(new EventAdapter.EventAdapterListener() {
             @Override
-            public void onClick(int subjectId) {
+            public void onClick(SubjectData subjectData, int subjectId) {
                 // on click of item in the events list
+                startEventDetailActivity(subjectData, subjectId);
             }
         });
         recyclerView.setAdapter(adapter);
@@ -230,23 +232,27 @@ public class EventsFrag extends Fragment {
             .setCallback(new RequestsCallback() {
                 @Override
                 public void onHostGetEventsByDateSuccess(Set<SubjectData> subjectData) {
+                    super.onHostGetEventsByDateSuccess(subjectData);
                     adapter.setSubjects(new ArrayList<>(subjectData));
-                    isDataRefreshing = false;
-                    mSwipeRefreshLayout.setRefreshing(false);
-                    if (recyclerView.getLayoutManager()!=null && savedRecyclerLayoutState!=null)
+                    if (recyclerView.getLayoutManager() != null && savedRecyclerLayoutState != null)
                         recyclerView.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
-                    if(subjectData.isEmpty()) {
+                    if (subjectData.isEmpty()) {
                         recyclerView.setPlaceHolderView(getActivity().findViewById(R.id.events_empty_view));
                     }
                 }
 
                 @Override
-                public void onFailure(int errorCode) {
-                    if (errorCode== Constants.RQM_EC.NO_INTERNET_CONNECTION) {
-                        showInfoSnackbar(getString(R.string.splash_connectionTv_label), Snackbar.LENGTH_LONG);
+                public void onComplete(boolean failed, Integer failCode) {
+                    isDataRefreshing = false;
+                    mSwipeRefreshLayout.setRefreshing(false);
 
-                    } else {
-                        showInfoSnackbar(getString(R.string.msg_server_error), Snackbar.LENGTH_LONG);
+                    if (failed) {
+                        if (failCode== Constants.RQM_EC.NO_INTERNET_CONNECTION) {
+                            showInfoSnackbar(getString(R.string.splash_connectionTv_label), Snackbar.LENGTH_LONG);
+
+                        } else {
+                            showInfoSnackbar(getString(R.string.msg_server_error), Snackbar.LENGTH_LONG);
+                        }
                     }
                 }
             });
@@ -264,6 +270,15 @@ public class EventsFrag extends Fragment {
         }
     }
 
+    private void startEventDetailActivity(SubjectData subjectData, int eventId) {
+        Bundle bundle = new Bundle();
+        bundle.putInt("eventId", eventId);
+        bundle.putParcelable("subjectData", subjectData);
+        Intent intent = new Intent(getActivity(), EventDetailsActivity.class);
+        intent.putExtras(bundle);
+        startActivity(intent);
+    }
+
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -272,10 +287,5 @@ public class EventsFrag extends Fragment {
         if (mListState!=null) {
             outState.putParcelable("mListState", mListState.onSaveInstanceState());
         }
-    }
-
-    @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
     }
 }

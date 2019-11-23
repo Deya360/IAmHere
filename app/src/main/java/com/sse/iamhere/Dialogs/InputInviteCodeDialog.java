@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
@@ -45,18 +46,27 @@ public class InputInviteCodeDialog extends AppCompatDialogFragment {
         inputEt.setText(name);
         inputEt.setOnFocusChangeListener((v, hasFocus) -> {
             if (getActivity()!=null) {
-                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.showSoftInput(v, InputMethodManager.SHOW_IMPLICIT);
+                View view = getActivity().getCurrentFocus();
+                if (view != null) {
+                    InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.showSoftInput(v, InputMethodManager.SHOW_IMPLICIT);
+                }
             }
+        });
+
+        inputEt.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                onOkPressed();
+                dismiss();
+            }
+            return false;
         });
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
             .setTitle("Add Code")
             .setView(inputInvolvedView)
             .setPositiveButton("Ok", (dialog, which) -> {
-                if (!inputEt.getText().toString().isEmpty()) {
-                    inputIndividualDialogListener.onPositiveButton(inputEt.getText().toString());
-                }
+                onOkPressed();
             })
             .setNegativeButton("Cancel",null)
             .setOnDismissListener(dialog -> {
@@ -65,6 +75,19 @@ public class InputInviteCodeDialog extends AppCompatDialogFragment {
         );
 
         return builder.create();
+    }
+
+    private void onOkPressed() {
+        if (!inputEt.getText().toString().isEmpty()) {
+            if (getActivity()!=null) {
+                View view = getActivity().getCurrentFocus();
+                if (view != null) {
+                    InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
+            }
+            inputIndividualDialogListener.onPositiveButton(inputEt.getText().toString());
+        }
     }
 
     @Override

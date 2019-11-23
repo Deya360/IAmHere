@@ -302,6 +302,7 @@ public class VerificationAdapter extends PagerAdapter {
                             .setCallback(new RequestsCallback() {
                                 @Override
                                 public void onCheckSuccess(CheckData checkResult) {
+                                    super.onCheckSuccess(checkResult);
                                     continueBtn2.setProgress(100);
                                     boolean isRegistered = checkResult.isRegistered();
                                     verificationAdapterListener.onContinue(isRegistered, phoneFormatted, phone);
@@ -310,9 +311,10 @@ public class VerificationAdapter extends PagerAdapter {
 
                                 @Override
                                 public void onFailure(int errorCode) {
+                                    super.onFailure(errorCode);
                                     continueBtn2.setProgress(-1);
-                                    processing = false;
                                     verificationAdapterListener.onError(Constants.RQM_EC.NO_INTERNET_CONNECTION);
+                                    processing = false;
                                 }
                             })
                             .check(uuid);

@@ -63,6 +63,7 @@ public class TokenProvider {
                                 .setCallback(new RequestsCallback() {
                                     @Override
                                     public void onRefreshSuccess(TokenData renewedTokenData) {
+                                        super.onRefreshSuccess(renewedTokenData);
                                         try {
                                             PreferencesUtil.setToken(context, renewedTokenData, role);
                                             callback.onSuccess(type, renewedTokenData.getAccessToken());
@@ -75,6 +76,7 @@ public class TokenProvider {
 
                                     @Override
                                     public void onFailure(int errorCode) {
+                                        super.onFailure(errorCode);
                                         callback.onFailure(errorCode);
                                     }
                                 })

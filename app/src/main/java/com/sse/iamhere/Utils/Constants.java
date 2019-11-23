@@ -18,7 +18,6 @@ public class Constants {
 
     // Setting names
     public static final String IS_FIRST_TIME = "IS_FIRST_TIME";
-    public static final String INVITE_CODES_TEMP = "INVITE_CODES_TEMP";
     public static final String IS_AUTHORIZED = "IS_AUTHORIZED";
 
     public static final String ROLE_TYPE = "ROLE_TYPE";
@@ -87,6 +86,9 @@ public class Constants {
         public static final int HOST_GET_PARTIES_BY_EVENT_ID_USER_NOT_FOUND = 1702; //conflict
 
         public static final int HOST_GET_PARTIES_UNKNOWN = 1801;
+
+        public static final int HOST_GET_ATTENDANCE_UNKNOWN = 1901;
+
     }
 
 

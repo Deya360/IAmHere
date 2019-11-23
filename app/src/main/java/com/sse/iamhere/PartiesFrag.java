@@ -101,23 +101,27 @@ public class PartiesFrag extends Fragment {
             .setCallback(new RequestsCallback() {
                 @Override
                 public void onHostPartiesListSuccess(Set<PartyData> partyData) {
+                    super.onHostPartiesListSuccess(partyData);
                     adapter.setParties(new ArrayList<>(partyData));
-                    isDataRefreshing = false;
-                    mSwipeRefreshLayout.setRefreshing(false);
-                    if (recyclerView.getLayoutManager()!=null && savedRecyclerLayoutState!=null)
+                    if (recyclerView.getLayoutManager() != null && savedRecyclerLayoutState != null)
                         recyclerView.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
-                    if(partyData.isEmpty()) {
+                    if (partyData.isEmpty()) {
                         recyclerView.setPlaceHolderView(getActivity().findViewById(R.id.parties_empty_view));
                     }
                 }
 
                 @Override
-                public void onFailure(int errorCode) {
-                    if (errorCode== Constants.RQM_EC.NO_INTERNET_CONNECTION) {
-                        showInfoSnackbar(getString(R.string.splash_connectionTv_label), Snackbar.LENGTH_LONG);
+                public void onComplete(boolean failed, Integer failCode) {
+                    isDataRefreshing = false;
+                    mSwipeRefreshLayout.setRefreshing(false);
 
-                    } else {
-                        showInfoSnackbar(getString(R.string.msg_server_error), Snackbar.LENGTH_LONG);
+                    if (failed) {
+                        if (failCode== Constants.RQM_EC.NO_INTERNET_CONNECTION) {
+                            showInfoSnackbar(getString(R.string.splash_connectionTv_label), Snackbar.LENGTH_LONG);
+
+                        } else {
+                            showInfoSnackbar(getString(R.string.msg_server_error), Snackbar.LENGTH_LONG);
+                        }
                     }
                 }
             });

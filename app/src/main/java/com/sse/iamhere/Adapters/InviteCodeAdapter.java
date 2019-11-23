@@ -20,14 +20,13 @@ public class InviteCodeAdapter extends RecyclerView.Adapter<InviteCodeAdapter.In
 
     }
 
+    public List<String> getInviteCodes() {
+        return inviteCodes;
+    }
+
     public void setInviteCodes(List<String> inviteCodes) {
         this.inviteCodes = inviteCodes;
         notifyDataSetChanged();
-    }
-
-    public void removeInviteCodeAt(int position) {
-        inviteCodes.remove(position);
-        notifyItemRemoved(position);
     }
 
     class InviteCodeHolder extends RecyclerView.ViewHolder {

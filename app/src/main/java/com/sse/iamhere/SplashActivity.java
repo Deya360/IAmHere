@@ -200,11 +200,13 @@ public class SplashActivity extends AppCompatActivity {
                     .setCallback(new RequestsCallback() {
                         @Override
                         public void onCheckSuccess(CheckData checkResult) {
+                            super.onCheckSuccess(checkResult);
                             startAuthenticationActivity(checkResult.isRegistered());
                         }
 
                         @Override
                         public void onFailure(int errorCode) {
+                            super.onFailure(errorCode);
                             Toast.makeText(SplashActivity.this, getString(R.string.msg_server_error), Toast.LENGTH_LONG).show();
                         }
                     })

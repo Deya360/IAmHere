@@ -298,43 +298,44 @@ public class AuthenticationActivity extends AppCompatActivity {
                 new AuthRequestBuilder(this).attachToken(TOKEN_NONE)
                     .setCallback(new RequestsCallback() {
                         @Override
-                        public void onRegisterSuccess() {
-                            continueBtn.setProgress(100);
-                            isProcessing=false;
+                        public void onComplete(boolean failed, Integer failCode) {
+                            isProcessing = false;
 
-                            PreferencesUtil.setRole(AuthenticationActivity.this, getSelectedRole());
+                            if (failed) {
+                                continueBtn.setProgress(0);
+                                continueBtn.setText(getString(R.string.auth_titleTv_registration_label));
 
-                            finishActivity(true);
-                        }
+                                String msg;
+                                switch (failCode) {
+                                    case REGISTRATION_USER_EXISTS:
+                                        msg = getString(R.string.auth_registration_user_exists);
+                                        break;
 
-                        @Override
-                        public void onFailure(int errorCode) {
-                            continueBtn.setProgress(0);
-                            continueBtn.setText(getString(R.string.auth_titleTv_registration_label));
-                            isProcessing=false;
+                                    case REGISTRATION_UNKNOWN:
+                                        msg = getString(R.string.auth_registration_unknown);
+                                        break;
 
-                            String msg;
-                            switch (errorCode) {
-                                case REGISTRATION_USER_EXISTS:
-                                    msg = getString(R.string.auth_registration_user_exists);
-                                    break;
+                                    case TOKEN_STORE_FAIL:
+                                        msg = "Internal Error: Failed to store Auth data";
+                                        break;
 
-                                case REGISTRATION_UNKNOWN:
-                                    msg = getString(R.string.auth_registration_unknown);
-                                    break;
+                                    default:
+                                    case LOGIN_BAD_ROLE:
+                                    case LOGIN_BAD_PHONE:
+                                        msg = "An internal error occurred: " + failCode;
+                                }
 
-                                case TOKEN_STORE_FAIL:
-                                    msg = "Internal Error: Failed to store Auth data";
-                                    break;
+                                Snackbar.make(findViewById(android.R.id.content),
+                                        msg, Snackbar.LENGTH_INDEFINITE).show();
 
-                                default:
-                                case LOGIN_BAD_ROLE:
-                                case LOGIN_BAD_PHONE:
-                                    msg = "An internal error occurred: " + errorCode;
+                            } else {
+                                continueBtn.setProgress(100);
+                                isProcessing = false;
+
+                                PreferencesUtil.setRole(AuthenticationActivity.this, getSelectedRole());
+
+                                finishActivity(true);
                             }
-
-                            Snackbar.make(findViewById(android.R.id.content),
-                                    msg, Snackbar.LENGTH_INDEFINITE).show();
                         }
                     })
                     .register(uuid, text(passwordEt.getText()), getSelectedRole());
@@ -358,46 +359,43 @@ public class AuthenticationActivity extends AppCompatActivity {
                 new AuthRequestBuilder(this).attachToken(TOKEN_NONE)
                     .setCallback(new RequestsCallback() {
                         @Override
-                        public void onLoginSuccess() {
-                            continueBtn.setProgress(100);
-                            isProcessing=false; //release lock (although not needed as activity will finish)
+                        public void onComplete(boolean failed, Integer failCode) {
+                            isProcessing = false; //release lock (although not needed as activity will finish)
 
-                            // Save role to prefs
-                            PreferencesUtil.setRole(AuthenticationActivity.this, getSelectedRole());
+                            if (failed) {
+                                continueBtn.setProgress(0);
+                                continueBtn.setText(getString(R.string.auth_titleTv_login_label));
 
-                            finishActivity(true);
-                        }
+                                String msg;
+                                switch (failCode) {
+                                    case LOGIN_USER_NOT_FOUND:
+                                        msg = getString(R.string.auth_login_wrong_password);
+                                        break;
 
-                        @Override
-                        public void onFailure(int errorCode) {
-                            // reset button ui
-                            continueBtn.setProgress(0);
-                            continueBtn.setText(getString(R.string.auth_titleTv_login_label));
+                                    case LOGIN_UNKNOWN:
+                                        msg = getString(R.string.auth_login_unknown);
+                                        break;
 
-                            isProcessing=false; //release lock (although not needed as activity will finish)
+                                    case TOKEN_STORE_FAIL:
+                                        msg = "Internal Error: Failed to store Auth data";
+                                        break;
 
-                            String msg;
-                            switch (errorCode) {
-                                case LOGIN_USER_NOT_FOUND:
-                                    msg = getString(R.string.auth_login_wrong_password);
-                                    break;
+                                    default:
+                                    case LOGIN_BAD_ROLE:
+                                    case LOGIN_BAD_PHONE:
+                                        msg = "An internal error occurred: " + failCode;
+                                }
 
-                                case LOGIN_UNKNOWN:
-                                    msg = getString(R.string.auth_login_unknown);
-                                    break;
+                                Snackbar.make(findViewById(android.R.id.content),
+                                        msg, Snackbar.LENGTH_INDEFINITE).show();
 
-                                case TOKEN_STORE_FAIL:
-                                    msg = "Internal Error: Failed to store Auth data";
-                                    break;
+                            } else {
+                                continueBtn.setProgress(100);
 
-                                default:
-                                case LOGIN_BAD_ROLE:
-                                case LOGIN_BAD_PHONE:
-                                    msg = "An internal error occurred: " + errorCode;
+                                // Save role to prefs
+                                PreferencesUtil.setRole(AuthenticationActivity.this, getSelectedRole());
+                                finishActivity(true);
                             }
-
-                            Snackbar.make(findViewById(android.R.id.content),
-                                    msg, Snackbar.LENGTH_INDEFINITE).show();
                         }
                     })
                     .login(uuid, text(passwordEt.getText()), getSelectedRole());
