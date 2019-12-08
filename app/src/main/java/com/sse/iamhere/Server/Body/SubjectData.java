@@ -64,6 +64,36 @@ public class SubjectData implements Parcelable {
         startDate = in.readLong();
         finishDate = in.readLong();
         codeWord = in.readString();
+        hosts = in.createTypedArrayList(HostBrief.CREATOR);
+        parties = in.createTypedArrayList(PartyBrief.CREATOR);
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        if (id == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(id);
+        }
+        dest.writeString(name);
+        if (plan == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(plan);
+        }
+        dest.writeString(description);
+        dest.writeLong(startDate);
+        dest.writeLong(finishDate);
+        dest.writeString(codeWord);
+        dest.writeTypedList(hosts);
+        dest.writeTypedList(parties);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<SubjectData> CREATOR = new Creator<SubjectData>() {
@@ -150,29 +180,4 @@ public class SubjectData implements Parcelable {
         this.parties = parties;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        if (id == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeInt(id);
-        }
-        dest.writeString(name);
-        if (plan == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeInt(plan);
-        }
-        dest.writeString(description);
-        dest.writeLong(startDate);
-        dest.writeLong(finishDate);
-        dest.writeString(codeWord);
-    }
 }

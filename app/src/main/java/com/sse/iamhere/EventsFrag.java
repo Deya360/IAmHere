@@ -9,12 +9,14 @@ import android.os.Parcelable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.SoundEffectConstants;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,6 +28,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.appeaser.sublimepickerlibrary.helpers.SublimeOptions;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.material.snackbar.Snackbar;
 import com.sse.iamhere.Adapters.EventAdapter;
 import com.sse.iamhere.Dialogs.DatePickerFragment;
@@ -43,16 +46,18 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
 
-import static com.sse.iamhere.Utils.CalendarUtils.getNextDay;
-import static com.sse.iamhere.Utils.CalendarUtils.getPrvDay;
-import static com.sse.iamhere.Utils.CalendarUtils.getStringDate;
-import static com.sse.iamhere.Utils.CalendarUtils.isSameDay;
-import static com.sse.iamhere.Utils.CalendarUtils.trimTime;
+import static com.sse.iamhere.Utils.CalendarUtil.getNextDay;
+import static com.sse.iamhere.Utils.CalendarUtil.getPrvDay;
+import static com.sse.iamhere.Utils.CalendarUtil.getStringDate;
+import static com.sse.iamhere.Utils.CalendarUtil.isSameDay;
+import static com.sse.iamhere.Utils.CalendarUtil.trimTime;
 import static com.sse.iamhere.Utils.Constants.TOKEN_ACCESS;
 
 public class EventsFrag extends Fragment {
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private EmptySupportedRecyclerView recyclerView;
+    private ShimmerFrameLayout placeholderLy;
+    private FrameLayout contentLy;
 
     private Button datePrvIv;
     private Button dateNxtIv;
@@ -119,15 +124,15 @@ public class EventsFrag extends Fragment {
 
         adapter = new EventAdapter(new EventAdapter.EventAdapterListener() {
             @Override
-            public void onClick(SubjectData subjectData, int subjectId) {
+            public void onClick(SubjectData eventData, int eventId) {
                 // on click of item in the events list
-                startEventDetailActivity(subjectData, subjectId);
+                startEventDetailActivity(eventData, eventId);
             }
         });
         recyclerView.setAdapter(adapter);
 
-        ProgressBar progressView = getActivity().findViewById(R.id.events_progress_view);
-        recyclerView.setEmptyView(progressView);
+        placeholderLy = getActivity().findViewById(R.id.events_placeholderLy);
+        contentLy = getActivity().findViewById(R.id.events_contentLy);
     }
 
 
@@ -137,13 +142,26 @@ public class EventsFrag extends Fragment {
         dateNxtIv = view.findViewById(R.id.events_date_nxtBtn);
         dateStrTv = view.findViewById(R.id.events_date_dateStrTv);
 
+        dateStrTv.setOnClickListener(new OnSingleClickListener() {
+            @Override
+            public void onSingleClick(View v) {
+                Calendar today = Calendar.getInstance();
+                selectDate(trimTime(today));
+                populateEvents(currentDate.getTime());
+            }
+        });
+
         datePrvIv.setOnTouchListener(new RepeatListener(300, 125, v -> {
+            datePrvIv.playSoundEffect(SoundEffectConstants.CLICK);
             selectDate(getPrvDay(currentDate));
+            recyclerView.removeAllViewsInLayout();
             populateEvents(currentDate.getTime());
         }));
 
         dateNxtIv.setOnTouchListener(new RepeatListener(300, 125, v -> {
+            datePrvIv.playSoundEffect(SoundEffectConstants.CLICK);
             selectDate(getNextDay(currentDate));
+            recyclerView.removeAllViewsInLayout();
             populateEvents(currentDate.getTime());
         }));
 
@@ -188,10 +206,10 @@ public class EventsFrag extends Fragment {
 
     private void selectDate(Calendar date) {
         currentDate = date;
-        dateStrTv.setText(getStringDate(date));
+        dateStrTv.setText(getStringDate(date, getActivity()));
 
         if (isSameDay(date, Calendar.getInstance())) {
-            deActivateArrow(datePrvIv);
+//            deActivateArrow(datePrvIv);
             activateArrow(dateNxtIv);
 
         } else {
@@ -228,17 +246,22 @@ public class EventsFrag extends Fragment {
 
 
     private void populateEvents(Date date) {
+        showShimmer();
+
         RequestBuilder rb = new RequestBuilder()
             .setCallback(new RequestsCallback() {
                 @Override
-                public void onHostGetEventsByDateSuccess(Set<SubjectData> subjectData) {
-                    super.onHostGetEventsByDateSuccess(subjectData);
-                    adapter.setSubjects(new ArrayList<>(subjectData));
+                public void onHostGetEventsByDateSuccess(Set<SubjectData> eventData) {
+                    super.onHostGetEventsByDateSuccess(eventData);
+                    adapter.setEvents(new ArrayList<>(eventData));
                     if (recyclerView.getLayoutManager() != null && savedRecyclerLayoutState != null)
                         recyclerView.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
-                    if (subjectData.isEmpty()) {
+                    if (eventData.isEmpty()) {
                         recyclerView.setPlaceHolderView(getActivity().findViewById(R.id.events_empty_view));
                     }
+
+                    if (getActivity()!=null)
+                        showInfoToast(getString(R.string.msg_updated), Toast.LENGTH_SHORT);
                 }
 
                 @Override
@@ -246,18 +269,30 @@ public class EventsFrag extends Fragment {
                     isDataRefreshing = false;
                     mSwipeRefreshLayout.setRefreshing(false);
 
-                    if (failed) {
+                    if (failed && getActivity()!=null) {
                         if (failCode== Constants.RQM_EC.NO_INTERNET_CONNECTION) {
-                            showInfoSnackbar(getString(R.string.splash_connectionTv_label), Snackbar.LENGTH_LONG);
+                            showInfoSnackbar(getString(R.string.splash_connectionTv_label), 9000);
 
                         } else {
-                            showInfoSnackbar(getString(R.string.msg_server_error), Snackbar.LENGTH_LONG);
+                            showInfoSnackbar(getString(R.string.msg_server_error), 5000);
                         }
                     }
+                    hideShimmer();
                 }
             });
         rb.checkInternet(getContext()).attachToken(getContext(), TOKEN_ACCESS);
         rb.callRequest(() -> rb.hostGetEventsByDate(date.getTime()));
+    }
+
+    private void showShimmer() {
+        placeholderLy.startShimmer();
+        placeholderLy.setVisibility(View.VISIBLE);
+        contentLy.setVisibility(View.GONE);
+    }
+
+    private void hideShimmer() {
+        placeholderLy.setVisibility(View.GONE);
+        contentLy.setVisibility(View.VISIBLE);
     }
 
     private void showInfoSnackbar(String msg, int duration) {
@@ -270,10 +305,21 @@ public class EventsFrag extends Fragment {
         }
     }
 
-    private void startEventDetailActivity(SubjectData subjectData, int eventId) {
+    private void showInfoToast(String msg, int duration) {
+        if (getActivity()!=null) {
+            if (getActivity().getWindow().getDecorView().isShown()) {
+                if (!TextUtils.isEmpty(msg)) {
+                    Toast.makeText(getActivity(), msg, duration).show();
+                }
+            }
+        }
+    }
+
+    private void startEventDetailActivity(SubjectData eventData, int eventId) {
         Bundle bundle = new Bundle();
         bundle.putInt("eventId", eventId);
-        bundle.putParcelable("subjectData", subjectData);
+        bundle.putParcelable("eventData", eventData);
+        bundle.putLong("eventDate", currentDate.getTimeInMillis());
         Intent intent = new Intent(getActivity(), EventDetailsActivity.class);
         intent.putExtras(bundle);
         startActivity(intent);

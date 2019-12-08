@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".EventsFrag">
 
     <LinearLayout
@@ -32,8 +32,6 @@
                 android:layout_weight="0.1"
                 android:layout_height="wrap_content"
                 android:background="@drawable/ic_keyboard_arrow_left_black_48dp"
-                android:backgroundTint="#77616161"
-                android:enabled="false"
 
                 android:clickable="true"
                 android:focusable="true"
@@ -52,6 +50,11 @@
                 android:textColor="@color/black"
                 android:textStyle="bold"
                 android:textAlignment="center"
+
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:tooltipText="Set to Today"
 
                 tools:text="Monday, 14 September" />
 
@@ -77,61 +80,156 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:foreground="?attr/selectableItemBackground"
-                android:contentDescription="@string/events_date_calIv_desc" />
+                android:contentDescription="@string/date_picker_desc" />
 
         </LinearLayout>
 
-        <FrameLayout
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/events_swipe_refreshLy"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/events_empty_view"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="70dp"
+                android:layout_height="wrap_content">
 
-                android:fontFamily="@font/bree_serif"
-                android:text="@string/events_empty_view_label"
-                android:textAlignment="center"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-
-                tools:visibility="visible"
-                android:visibility="gone" />
-
-            <ProgressBar
-                android:id="@+id/events_progress_view"
-                android:layout_width="75dp"
-                android:layout_height="75dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="70dp"
-
-                android:visibility="visible" />
-
-            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-                android:id="@+id/events_swipe_refreshLy"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <com.sse.iamhere.Subclasses.EmptySupportedRecyclerView
-                    android:id="@+id/events_recycler_view"
+                <com.facebook.shimmer.ShimmerFrameLayout
+                    android:id="@+id/events_placeholderLy"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:clipToPadding="false"
-                    android:paddingBottom="92dp"
-                    android:scrollbars="vertical"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
 
-                    tools:listitem="@layout/item_event">
+                    app:shimmer_base_alpha="0.2"
+                    app:shimmer_dropoff="5"
+                    app:shimmer_repeat_delay="1200"
+                    app:shimmer_duration="50"
+                    app:shimmer_repeat_mode="restart"
+                    app:shimmer_tilt="65"
+                    android:visibility="gone"
+                    tools:visibility="visible">
 
-                </com.sse.iamhere.Subclasses.EmptySupportedRecyclerView>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:orientation="vertical" >
 
-            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="10dp"
 
-        </FrameLayout>
+                            android:orientation="vertical" >
 
+                            <View
+                                android:layout_width="170dp"
+                                android:layout_height="27dp"
+                                android:layout_marginBottom="8dp"
+                                android:background="#B6B4B4" />
+
+                            <View
+                                android:layout_width="300dp"
+                                android:layout_height="22dp"
+                                android:layout_marginBottom="4dp"
+                                android:background="#DDDDDD" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="10dp"
+
+                            android:orientation="vertical" >
+
+                            <View
+                                android:layout_width="120dp"
+                                android:layout_height="27dp"
+                                android:layout_marginBottom="8dp"
+                                android:background="#B6B4B4" />
+
+                            <View
+                                android:layout_width="240dp"
+                                android:layout_height="22dp"
+                                android:layout_marginBottom="4dp"
+                                android:background="#DDDDDD" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="10dp"
+
+                            android:orientation="vertical" >
+
+                            <View
+                                android:layout_width="110dp"
+                                android:layout_height="27dp"
+                                android:layout_marginBottom="12dp"
+                                android:background="#B6B4B4" />
+
+                            <View
+                                android:layout_width="280dp"
+                                android:layout_height="22dp"
+                                android:layout_marginBottom="4dp"
+                                android:background="#DDDDDD" />
+
+                            <View
+                                android:layout_width="150dp"
+                                android:layout_height="22dp"
+                                android:layout_marginBottom="7dp"
+                                android:background="#DDDDDD" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </com.facebook.shimmer.ShimmerFrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/events_contentLy"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/events_empty_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="130dp"
+                        android:padding="14dp"
+
+                        android:fontFamily="@font/bree_serif"
+                        android:text="@string/events_empty_view_label"
+                        android:textAlignment="center"
+                        android:textSize="24sp"
+                        android:textColor="#5B000000"
+
+                        tools:visibility="visible"
+                        android:visibility="gone" />
+
+                    <com.sse.iamhere.Subclasses.EmptySupportedRecyclerView
+                        android:id="@+id/events_recycler_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:clipToPadding="false"
+                        android:scrollbars="vertical"
+
+                        tools:listitem="@layout/item_event">
+
+                    </com.sse.iamhere.Subclasses.EmptySupportedRecyclerView>
+
+                </FrameLayout>
+
+            </FrameLayout>
+
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     </LinearLayout>
-
-
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

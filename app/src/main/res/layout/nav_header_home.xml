@@ -9,7 +9,7 @@
     android:padding="16dp"
     android:theme="@style/ThemeOverlay.AppCompat.Dark"
     android:background="?side_nav_header_back"
-    tools:background="@drawable/side_nav_bar_attendee">
+    tools:background="@drawable/side_nav_bar_manager">
 
     <LinearLayout
         android:layout_width="0dp"

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/scanner_complete_stateTv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:gravity="center_horizontal"
+        android:paddingTop="30dp"
+        android:paddingBottom="10dp"
+
+        android:text="@string/scanner_complete_stateTv_success"
+        tools:text="@string/scanner_complete_stateTv_fail"
+        android:textColor="#C3313131"
+        android:textSize="22sp"
+        android:fontFamily="@font/bree_serif"
+
+        android:background="@drawable/border_trans_back_thick_t"
+        android:backgroundTint="@color/green_complete"
+        tools:backgroundTint="@color/colorError"/>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="1"
+        android:layout_marginBottom="20dp"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/scanner_complete_retryBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginEnd="60dp"
+
+            android:text="@string/scanner_complete_retryBtn_label"
+            android:textColor="@color/white"
+            android:fontFamily="@font/pt_serif_bold"
+
+            android:backgroundTint="?colorAccent"
+            android:visibility="gone"
+            tools:visibility="visible"/>
+
+        <Button
+            android:id="@+id/scanner_complete_returnBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_toEndOf="@id/scanner_complete_retryBtn"
+            android:layout_alignWithParentIfMissing="true"
+
+            android:text="@string/scanner_complete_returnBtn_label"
+            android:textColor="@color/white"
+            android:fontFamily="@font/pt_serif_bold"
+
+            android:backgroundTint="?colorAccent" />
+
+    </RelativeLayout>
+
+</LinearLayout>

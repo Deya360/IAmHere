@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -24,6 +25,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.os.ConfigurationCompat;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.facebook.shimmer.ShimmerFrameLayout;
@@ -41,12 +43,12 @@ import com.sse.iamhere.Server.RequestsCallback;
 import com.sse.iamhere.Subclasses.OnSingleClickListener;
 import com.sse.iamhere.Utils.Constants;
 import com.sse.iamhere.Utils.InternetUtil;
+import com.sse.iamhere.Utils.LocaleUtil;
 import com.sse.iamhere.Utils.PreferencesUtil;
 import com.sse.iamhere.Utils.TextFormatter;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -59,6 +61,7 @@ public class AccountActivity extends AppCompatActivity {
     private ImageView editApplyIv;
     private TextInputEditText nameEt;
     private TextInputEditText emailEt;
+    private CheckBox showEmailChk;
     private TextInputLayout emailLy;
     private ShimmerFrameLayout placeholderLy;
     private LinearLayout detailsLy;
@@ -81,6 +84,10 @@ public class AccountActivity extends AppCompatActivity {
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         setContentView(R.layout.activity_account);
 
+        LocaleUtil.setConfigLang(this);
+
+        overridePendingTransition(R.anim.push_up_in, R.anim.none);
+
         if (savedInstanceState!=null) {
             changesMade = savedInstanceState.getBoolean("changesMade");
             wasInEditMode = savedInstanceState.getBoolean("wasInEditMode");
@@ -89,7 +96,6 @@ public class AccountActivity extends AppCompatActivity {
             }
         }
 
-        overridePendingTransition(R.anim.push_up_in, R.anim.none);
         setupUI();
 
         populateLocalData();
@@ -103,12 +109,11 @@ public class AccountActivity extends AppCompatActivity {
 
     @SuppressLint("ClickableViewAccessibility")
     private void setupUI() {
-        setTitle(R.string.activity_account_events_title);
+        setTitle(R.string.activity_account_title);
 
         Toolbar toolbar = findViewById(R.id.account_toolbar);
         setSupportActionBar(toolbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-
 
         // Setup of swipe to refresh layout
         mSwipeRefreshLayout = findViewById(R.id.account_swipe_refreshLy);
@@ -131,6 +136,7 @@ public class AccountActivity extends AppCompatActivity {
         editApplyIv = findViewById(R.id.account_edit_applyIv);
         nameEt = findViewById(R.id.account_nameEt);
         emailEt = findViewById(R.id.account_emailEt);
+        showEmailChk = findViewById(R.id.account_show_emailChk);
         placeholderLy = findViewById(R.id.account_placeholderLy);
         detailsLy = findViewById(R.id.account_detailsLy);
 
@@ -160,10 +166,10 @@ public class AccountActivity extends AppCompatActivity {
                                     }
 
                                     if (failCode == Constants.RQM_EC.TOKEN_STORE_FAIL) {
-                                        showInfoSnackbar(getString(R.string.msg_unknown_error), Snackbar.LENGTH_LONG);
+                                        showInfoSnackbar(getString(R.string.msg_unknown_error), 5000);
 
                                     } else {
-                                        showInfoSnackbar(getString(R.string.msg_server_error), Snackbar.LENGTH_LONG);
+                                        showInfoSnackbar(getString(R.string.msg_server_error), 5000);
                                     }
                                 }
                             })
@@ -172,7 +178,7 @@ public class AccountActivity extends AppCompatActivity {
 
                     @Override
                     public void notConnected() {
-                        showInfoSnackbar(getString(R.string.splash_connectionTv_label), Snackbar.LENGTH_LONG);
+                        showInfoSnackbar(getString(R.string.splash_connectionTv_label), 5000);
                     }
                 }).hasInternetConnection(AccountActivity.this);
             });
@@ -207,8 +213,11 @@ public class AccountActivity extends AppCompatActivity {
                 String email = emailEt.getText().toString().trim();
                 if (email.length() == 0) {
                     emailLy.setError(null);
+                    if (editMode) showEmailChk.setEnabled(false);
 
                 } else {
+                    if (editMode) showEmailChk.setEnabled(true);
+
                     if (isEmailValid(email)) {
                         emailLy.setError(null);
                     } else {
@@ -273,6 +282,12 @@ public class AccountActivity extends AppCompatActivity {
                     nameEt.setText(name);
                     updateAvatar(name);
                     emailEt.setText(credentialData.getEmail());
+
+                    if (credentialData.isEmailHidden()!=null) {
+                        showEmailChk.setChecked(!Boolean.parseBoolean(credentialData.isEmailHidden()));
+                    } else {
+                        showEmailChk.setChecked(false);
+                    }
                 }
 
                 @Override
@@ -283,10 +298,10 @@ public class AccountActivity extends AppCompatActivity {
 
                     if (failed) {
                         if (failCode == Constants.RQM_EC.NO_INTERNET_CONNECTION) {
-                            showInfoSnackbar(getString(R.string.splash_connectionTv_label), Snackbar.LENGTH_LONG);
+                            showInfoSnackbar(getString(R.string.splash_connectionTv_label), 5000);
 
                         } else {
-                            showInfoSnackbar(getString(R.string.msg_server_error), Snackbar.LENGTH_LONG);
+                            showInfoSnackbar(getString(R.string.msg_server_error), 5000);
                         }
                         stopShimmer();
 
@@ -317,7 +332,7 @@ public class AccountActivity extends AppCompatActivity {
                 Calendar joinedCal = Calendar.getInstance();
                 joinedCal.setTimeInMillis(md.getCreationTimestamp());
 
-                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", ConfigurationCompat.getLocales(getResources().getConfiguration()).get(0));
 
                 joinedTv.setText(String.format("%s %s", getString(R.string.account_joinedTv_label), sdf.format(joinedCal.getTime())));
                 joinedTv.setVisibility(View.VISIBLE);
@@ -325,7 +340,8 @@ public class AccountActivity extends AppCompatActivity {
 
         } else {
             //Todo: implement properly: add verify phone dialog
-            showInfoSnackbar("Debug: Couldn't get firebase user", Snackbar.LENGTH_LONG);
+            if (Constants.DEBUG_MODE)
+                showInfoSnackbar("Debug: Couldn't get firebase user", 3000);
         }
 
         TextView roleTv = findViewById(R.id.account_roleTv);
@@ -340,13 +356,19 @@ public class AccountActivity extends AppCompatActivity {
             boolean updated = false;
             CredentialData updatedCredentialData = new CredentialData();
             String name = nameEt.getText().toString().trim();
-            if (!loadedCredentialData.getName().equals(name)) {
+            if (loadedCredentialData.getName()!=null && !loadedCredentialData.getName().equals(name)) {
                 updatedCredentialData.setName(name);
                 updated = true;
             }
 
-            if (!loadedCredentialData.getEmail().equals(email)) {
+            if (loadedCredentialData.getEmail()!=null && !loadedCredentialData.getEmail().equals(email)) {
                 updatedCredentialData.setEmail(email);
+                updated = true;
+            }
+
+            String emailVisibility = String.valueOf(!showEmailChk.isChecked());
+            if (loadedCredentialData.isEmailHidden()!=null && !loadedCredentialData.isEmailHidden().equals(emailVisibility)) {
+                updatedCredentialData.setEmailVisibility(emailVisibility);
                 updated = true;
             }
 
@@ -362,10 +384,10 @@ public class AccountActivity extends AppCompatActivity {
                     public void onComplete(boolean failed, Integer failCode) {
                         if (failed) {
                             if (failCode == Constants.RQM_EC.NO_INTERNET_CONNECTION) {
-                                showInfoSnackbar(getString(R.string.splash_connectionTv_label), Snackbar.LENGTH_LONG);
+                                showInfoSnackbar(getString(R.string.splash_connectionTv_label), 5000);
 
                             } else {
-                                showInfoSnackbar(getString(R.string.msg_server_error), Snackbar.LENGTH_LONG);
+                                showInfoSnackbar(getString(R.string.msg_server_error), 5000);
                             }
 
                             Drawable progressDrawable = loadingPb.getProgressDrawable().mutate();
@@ -417,6 +439,7 @@ public class AccountActivity extends AppCompatActivity {
 
         nameEt.setEnabled(editMode);
         emailEt.setEnabled(editMode);
+        showEmailChk.setEnabled(editMode);
         editApplyIv.setImageResource(drawableRes);
 
     }
@@ -485,7 +508,6 @@ public class AccountActivity extends AppCompatActivity {
             outState.putParcelable("loadedCredentialData", loadedCredentialData);
         }
         outState.putBoolean("changesMade", changesMade);
-
     }
 }
 

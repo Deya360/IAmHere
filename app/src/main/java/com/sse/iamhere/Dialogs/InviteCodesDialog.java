@@ -205,9 +205,9 @@ public class InviteCodesDialog extends AppCompatDialogFragment {
     private AlertDialog createDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder
-            .setTitle("Invite Codes")
+            .setTitle(getString(R.string.nav_invite_codes_title))
             .setView(view)
-            .setPositiveButton("Done", (dialog, which) -> {
+            .setPositiveButton(getString(R.string.invite_code_doneBtn_label), (dialog, which) -> {
                 finishDialog();
             })
             .setOnDismissListener(dialog -> {
@@ -249,10 +249,10 @@ public class InviteCodesDialog extends AppCompatDialogFragment {
                     if (failed) {
                         stopShimmer();
                         if (failCode == Constants.RQM_EC.NO_INTERNET_CONNECTION) {
-                            showInfoSnackbar(getString(R.string.splash_connectionTv_label), Snackbar.LENGTH_LONG);
+                            showInfoSnackbar(getString(R.string.splash_connectionTv_label), 5000);
 
                         } else {
-                            showInfoSnackbar(getString(R.string.msg_server_error), Snackbar.LENGTH_LONG);
+                            showInfoSnackbar(getString(R.string.msg_server_error), 5000);
                         }
 
                     } else {
@@ -278,14 +278,15 @@ public class InviteCodesDialog extends AppCompatDialogFragment {
                 public void onComplete(boolean failed, Integer failCode) {
                     if (failed) {
                         if (failCode == Constants.RQM_EC.NO_INTERNET_CONNECTION) {
-                            showInfoSnackbar(getString(R.string.splash_connectionTv_label), Snackbar.LENGTH_LONG);
+                            showInfoSnackbar(getString(R.string.splash_connectionTv_label), 5000);
 
                         } else {
-                            showInfoSnackbar(getString(R.string.msg_server_error), Snackbar.LENGTH_LONG);
+                            showInfoSnackbar(getString(R.string.msg_server_error), 5000);
                         }
 
                     } else {
-                        showInfoSnackbar(getString(R.string.msg_invite_code_added), Snackbar.LENGTH_LONG);
+                        dataChanged = true;
+                        showInfoSnackbar(getString(R.string.msg_invite_code_added), 3000);
                         loadInviteCodes();
                     }
                 }
@@ -308,14 +309,15 @@ public class InviteCodesDialog extends AppCompatDialogFragment {
                     public void onComplete(boolean failed, Integer failCode) {
                         if (failed) {
                             if (failCode == Constants.RQM_EC.NO_INTERNET_CONNECTION) {
-                                showInfoSnackbar(getString(R.string.splash_connectionTv_label), Snackbar.LENGTH_LONG);
+                                showInfoSnackbar(getString(R.string.splash_connectionTv_label), 5000);
 
                             } else {
-                                showInfoSnackbar(getString(R.string.msg_server_error), Snackbar.LENGTH_LONG);
+                                showInfoSnackbar(getString(R.string.msg_server_error), 5000);
                             }
                         } else {
-                            showInfoSnackbar(getString(R.string.msg_invite_code_removed), Snackbar.LENGTH_LONG);
+                            showInfoSnackbar(getString(R.string.msg_invite_code_removed), 3000);
                             loadInviteCodes();
+                            dataChanged = true;
                         }
                     }
                 });
@@ -399,7 +401,7 @@ public class InviteCodesDialog extends AppCompatDialogFragment {
                         addInviteCode(name);
 
                     } else {
-                        showInfoSnackbar(getString(R.string.msg_invite_code_duplicate), Snackbar.LENGTH_LONG);
+                        showInfoSnackbar(getString(R.string.msg_invite_code_duplicate), 4000);
                     }
                 }
 

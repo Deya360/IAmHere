@@ -4,26 +4,44 @@
 
     <string name="activity_home_title">Home</string>
     <string name="fragment_events_title">My Events</string>
+    <string name="fragment_home_title">Home</string>
     <string name="fragment_parties_title">My Parties</string>
     <string name="activity_all_events_title">All Events</string>
+    <string name="activity_my_parties_title">My Parties</string>
     <string name="activity_event_details_title">Event Details</string>
+    <string name="activity_party_details_title">Party Details</string>
 
-    <string name="activity_account_events_title">Account</string>
+    <string name="activity_account_title">Account</string>
+    <string name="activity_settings_title">Settings</string>
 
 
     <string name="fragment_events_tag" translatable="false">EventsFragmentTag</string>
+    <string name="fragment_home_tag" translatable="false">HomeFragmentTag</string>
+    <string name="fragment_visits_tag" translatable="false">VisitsFragmentTag</string>
     <string name="fragment_parties_tag" translatable="false">PartiesFragmentTag</string>
     <string name="fragment_relog_dialog_tag" translatable="false">RelogDialogFragmentTag</string>
-    <string name="fragment_input_invite_code_dialog_tag" translatable="false">input_invite_code_dialogTag</string>
-    <string name="fragment_invite_code_dialog_tag" translatable="false">invite_code_dialogTag</string>
-    <string name="fragment_date_picker_dialog_tag" translatable="false">date_picker_dialogTag</string>
+    <string name="fragment_input_invite_code_dialog_tag" translatable="false">InoutInviteCodeDialogTag</string>
+    <string name="fragment_invite_code_dialog_tag" translatable="false">InviteCodeDialogTag</string>
+    <string name="fragment_send_announcement_dialog_tag" translatable="false">SendAnnouncementDialogTag</string>
+    <string name="fragment_date_picker_dialog_tag" translatable="false">DatePickerDialogTag</string>
     <string name="fragment_event_details_tag" translatable="false">EventDetailsFragmentTag</string>
-    <string name="fragment_visits_tag" translatable="false">VisitsFragmentTag</string>
+    <string name="fragment_visits_inner_tag" translatable="false">VisitsIFragmentTag</string>
 
+
+    <string name="transition_item_layout" translatable="false">ItemLayoutTransition</string>
+    <string name="transition_member_count_tv" translatable="false">MemberCountTvTransition</string>
+    <string name="transition_member_count_iv" translatable="false">MemberCountIvTransition</string>
+    <string name="transition_name_tv" translatable="false">MemberNameTvTransition</string>
+    <string name="transition_desc_tv" translatable="false">MemberDescTvTransition</string>
 
 
     <string name="splash_get_started_label">Get Started</string>
+    <string name="splash_connection_checking">Checking…</string>
+    <string name="splash_connection_fail">No Connection</string>
+    <string name="splash_connection_success">Connected!</string>
+
     <string name="splash_connectionTv_label">Couldn\'t connect to the Internet</string>
+
     <string name="splash_retryBtn_label">Retry</string>
 
 
@@ -32,7 +50,7 @@
     <string name="onboard_host_label">Host</string>
     <string name="onboard_host_desc_label">Hold sessions, track attendance and keep in touch with your attendees.</string>
     <string name="onboard_attendee_label">Attendee</string>
-    <string name="onboard_attendee_desc_label">Мark your presence and track attendance, discover new sessions and stay updated with your current ones.</string>
+    <string name="onboard_attendee_desc_label">Мark your presence and track attendance, discover new events and stay updated with your current ones.</string>
     <string name="onboard_done_label">Finish</string>
 
 
@@ -64,17 +82,18 @@
 
     <string name="auth_titleTv_registration_label">Registration</string>
     <string name="auth_subtitleTv_registration_label">You will need to create a password for your account.</string>
-    <string name="auth_subtitleTv_remote_registration_label_prefix">You will need to register for a</string>
-    <string name="auth_subtitleTv_remote_registration_label_prefix_attendee_extra">n</string>
-    <string name="auth_subtitleTv_remote_registration_label_suffix">account to continue.</string>
+    <string name="auth_subtitleTv_remote_registration_label_manager">You will need to register for a Manager account to continue.</string>
+    <string name="auth_subtitleTv_remote_registration_label_host">You will need to register for a Host account to continue.</string>
+    <string name="auth_subtitleTv_remote_registration_label_attendee">You will need to register for an Attendee account to continue.</string>
     <string name="auth_continueBtn_registration_label_normal">Register</string>
     <string name="auth_continueBtn_registration_label_progress">Registering…</string>
     <string name="auth_continueBtn_registration_label_complete">Success!</string>
 
     <string name="auth_titleTv_login_label">Login</string>
     <string name="auth_subtitleTv_login_label">Welcome back!, enter your password to continue.</string>
-    <string name="auth_subtitleTv_remote_login_label_prefix">Enter the password to your</string>
-    <string name="auth_subtitleTv_remote_login_label_suffix">account to continue.</string>
+    <string name="auth_subtitleTv_remote_login_label_manager">Enter the password to your Manager account to continue.</string>
+    <string name="auth_subtitleTv_remote_login_label_host">Enter the password to your Host account to continue.</string>
+    <string name="auth_subtitleTv_remote_login_label_attendee">Enter the password to your Attendee account to continue.</string>
     <string name="auth_continueBtn_login_label">Login</string>
     <string name="auth_continueBtn_login_label_progress">Logging in…</string>
     <string name="auth_continueBtn_login_label_complete">Success!</string>
@@ -102,44 +121,111 @@
     <string name="nav_settings_title">Settings</string>
     <string name="nav_invite_codes_title">Invite Codes</string>
     <string name="nav_account_title">Account</string>
+    <string name="nav_my_parties_title">My Parties</string>
+    <string name="nav_common_title">Common</string>
 
     <string name="bnav_host_events_label">Events</string>
     <string name="bnav_host_parties_label">Parties</string>
-
+    <string name="bnav_nav_attendee_visits_label">Visits</string>
+    <string name="bnav_nav_attendee_home_label">Home</string>
 
     <string name="invite_code_addBtn_label">Add New Code</string>
-    <string name="invite_code_empty_view_label">You haven\'t added any invite codes yet!</string>
+    <string name="invite_code_empty_view_label">No Invite Codes to show!</string>
     <string name="invite_code_infoTv_attendee_label">Invite codes are used to join Parties. Add any invite codes given to you below. To remove an existing invite code, simply swipe it away.</string>
     <string name="invite_code_infoTv_host_label">Invite codes are used to join Events. Add any invite codes given to you below. To remove an existing invite code, simply swipe it away.</string>
+    <string name="invite_code_doneBtn_label">Done</string>
+    <string name="input_invite_code_title">Add Code</string>
+    <string name="input_invite_code_okBtn">OK</string>
+    <string name="input_invite_code_cancelBtn">Cancel</string>
     <string name="input_invite_code_nameEt_label">Code</string>
 
 
-    <string name="events_date_today_label">Today</string>
-    <string name="events_date_tom_label">Tomorrow</string>
-    <string name="events_empty_view_label">There aren\'t any events to show!</string>
-    <string name="events_date_calIv_desc">Date Picker</string>
+    <string name="date_picker_desc">Date Picker</string>
 
-    <string name="parties_empty_view_label">You aren\'t a part of any party!</string>
+    <string name="parties_empty_view_label">You aren\'t a part of any Party yet!</string>
 
-    <string name="all_events_empty_view_label">You aren\'t a part of any Events!</string>
+    <string name="all_events_empty_view_label">You haven\'t joined any Events yet!</string>
+    <string name="my_parties_empty_view_label">You haven\'t joined any Parties yet!</string>
+    <string name="events_empty_view_label">There aren\'t any Events to show</string>
 
 
     <string name="account_nameEt_label">Name</string>
     <string name="account_emailEt_label">Email</string>
+    <string name="account_show_emailChk_label">Show email publicly on my profile</string>
     <string name="account_logoutIv_label">Logout</string>
     <string name="account_edit_applyIv_label">Edit/Apply</string>
-    <string name="account_details_headerTv_label">Details</string>
+    <string name="account_details_headerTv_label">About</string>
     <string name="account_joinedTv_label">Joined:</string>
     <string name="account_bad_email">Invalid Email</string>
     <string name="account_email_help">You will be able to recover your account password via this Email.</string>
 
+    <string name="event_details_startDateTv_label">Start Date</string>
+    <string name="event_details_finishDateTv_label">Finish Date</string>
+    <string name="event_details_hostsTv_label">Hosts:</string>
+    <string name="event_details_partiesTv_label">Parties:</string>
+    <string name="event_details_inviteCodeTv_label">Invite Code</string>
+    <string name="event_details_tabLy_info">Information</string>
+    <string name="event_details_tabLy_who_is_here">Who Is Here?</string>
+    <string name="event_details_dragView_qrcode_label">QR Code</string>
+    <string name="event_details_dragView_error_label">Failed to generate QRCode</string>
+
+    <string name="action_actions_label">Actions</string>
+    <string name="action_announcement_label">Send Announcement</string>
+    <string name="action_leave_dlg_msg">Are you sure?</string>
+    <string name="action_leave_party_label">Leave Party</string>
+    <string name="action_leave_event_label">Leave Event</string>
+
+    <string name="visitsI_item_visit_header_arrowIv_desc">Collapse/Expand section</string>
+    <string name="visitsI_last_update_prefixTv_label">Last update:\u0020</string>
+    <string name="visitsI_updateIv_desc">Update visits list</string>
+    <string name="visitsI_empty_view_label">No one is here yet!</string>
+
+    <string name="settings_group_general_label">General</string>
+    <string name="settings_lang_titleTv">Language</string>
+    <string name="settings_lang_subtitleTv_prefix">App language is set to</string>
 
     <string name="msg_unknown_error">The app has encountered an unknown error :(</string>
     <string name="msg_server_error">Oops, there was a internal server error, please try again later</string>
     <string name="msg_authentication_aborted">Authentication aborted</string>
     <string name="msg_invite_code_added">Invite code added to account</string>
     <string name="msg_invite_code_removed">Invite code removed from account</string>
-    <string name="msg_invite_code_duplicate">This invite code already exists.</string>
+    <string name="msg_invite_code_duplicate">This invite code already exists</string>
+    <string name="msg_updated">Updated</string>
+
+
+    <string name="feed_dissmis">Great!</string>
+    <string name="feed_prefix">You have joined</string>
+    <string name="feed_suffix">using an invite code.</string>
+
+    <string name="scanner_infoTv_label">To register your visit, point the camera at the QRCode on the Hosts device</string>
+    <string name="scanner_progress_msg">Registering your visit…</string>
+    <string name="scanner_complete_stateTv_success">Registration Successful!</string>
+    <string name="scanner_complete_stateTv_fail">Registration Failed!</string>
+    <string name="scanner_complete_retryBtn_label">Try Again</string>
+    <string name="scanner_complete_returnBtn_label">Return</string>
+    <string name="scanner_return_msg">\"Registration in progress, please wait\"</string>
+
+
+
+    <string name="today">Today</string>
+    <string name="user_details_title">User details</string>
+    <string name="user_details_name">Name</string>
+    <string name="user_details_email">Email</string>
+    <string name="send_ann_cancelBtn_label">Cancel</string>
+    <string name="send_ann_sendBtn_label">Send</string>
+    <string name="send_ann_bodyEt_label">Announcement</string>
+    <string name="send_ann_wait_msg">Please wait, the announcement is being sent.</string>
+    <string name="send_ann_success_msg">The announcement was sent successfully</string>
+    <string name="send_ann_doneBtn_label">Done</string>
+    <string name="send_ann_sending_msg">Sending…</string>
+    <string name="invite_code_infoTv_label">The announcement will appear as a notification on the devices of all members in this event.</string>
+    <string name="permission_title">Permission required</string>
+    <string name="permission_message">The application requires Camera permissions to be able to scan QRCodes.\\n\\n</string>
+    <string name="permission_disabled_msg">Camera permission has been disabled from settings</string>
+    <string name="permission_disabled_action">Open Settings</string>
+    <string name="homef_date_dateStrTv_desc">Set to Today</string>
+    <string name="party_details_member_count_labelTv_label">Members</string>
+    <string name="event_details_qrCodeIv_label">QRCode</string>
 
 
 </resources>

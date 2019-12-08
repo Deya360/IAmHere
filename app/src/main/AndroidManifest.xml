@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.sse.iamhere">
 
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
     <application
         android:allowBackup="true"
         android:fullBackupContent="true"
@@ -12,12 +16,26 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".PartyDetailsActivity"
+            android:theme="@style/AppThemeHost" />
+        <activity
+            android:name=".SettingsActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/NoActionBarLight"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name=".EventDetailsActivity"
-            android:theme="@style/AppThemeHost"/>
+            android:theme="@style/AppThemeHost" />
         <activity android:name=".AccountActivity" />
         <activity
             android:name=".AllEventsActivity"
             android:theme="@style/AppThemeHost" />
+        <activity
+            android:name=".MyPartiesActivity"
+            android:theme="@style/AppThemeAttendee" />
+        <activity
+            android:name=".AttendeeEventDetailsActivity"
+            android:theme="@style/AppThemeAttendee" />
         <activity
             android:name=".HomeActivity"
             android:label="@string/activity_home_title"
@@ -45,13 +63,9 @@
             android:name=".OnboardActivity"
             android:theme="@style/TransparentStatusBar" />
         <activity android:name=".MainActivity_depreciated" />
-
+        <activity android:name=".ScannerActivity" />
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
     </application>
-    <uses-permission android:name="android.permission.VIBRATE" />
-
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-
 </manifest>

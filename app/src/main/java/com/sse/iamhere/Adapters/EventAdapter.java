@@ -17,10 +17,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder> {
-    private List<SubjectData> subjects = new ArrayList<>();
+    private List<SubjectData> events = new ArrayList<>();
 
     public interface EventAdapterListener {
-        void onClick(SubjectData subjectData, int eventId);
+        void onClick(SubjectData eventData, int eventId);
     }
 
     private EventAdapterListener eventAdapterListener;
@@ -28,8 +28,8 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
         this.eventAdapterListener = eal;
     }
 
-    public void setSubjects(List<SubjectData> subjects) {
-        this.subjects = subjects;
+    public void setEvents(List<SubjectData> events) {
+        this.events = events;
         notifyDataSetChanged();
     }
 
@@ -45,7 +45,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
             itemView.setOnClickListener(new OnSingleClickListener() {
                 @Override
                 public void onSingleClick(View v) {
-                eventAdapterListener.onClick(subjects.get(getAdapterPosition()), subjects.get(getAdapterPosition()).getId());
+                eventAdapterListener.onClick(events.get(getAdapterPosition()), events.get(getAdapterPosition()).getId());
                 }
             });
         }
@@ -62,7 +62,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
 
     @Override
     public void onBindViewHolder(@NonNull EventHolder holder, int pos) {
-        final SubjectData currentEvent = subjects.get(pos);
+        final SubjectData currentEvent = events.get(pos);
 
         holder.nameTv.setText(currentEvent.getName());
 
@@ -77,6 +77,6 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
 
     @Override
     public int getItemCount() {
-        return subjects.size();
+        return events.size();
     }
 }

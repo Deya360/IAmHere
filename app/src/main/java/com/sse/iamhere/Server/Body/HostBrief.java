@@ -3,6 +3,8 @@ package com.sse.iamhere.Server.Body;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Objects;
+
 public class HostBrief implements Parcelable {
     private String id;
     private String name;
@@ -54,5 +56,19 @@ public class HostBrief implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(id);
         dest.writeString(name);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        HostBrief hostBrief = (HostBrief) o;
+        return Objects.equals(id, hostBrief.id) &&
+                Objects.equals(name, hostBrief.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
     }
 }

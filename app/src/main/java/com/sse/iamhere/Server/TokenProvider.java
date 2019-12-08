@@ -47,10 +47,14 @@ public class TokenProvider {
         TokenPair tokenPair = getTokenPair(context, type, role);
 
         boolean valid = isTokenValid(tokenPair.getExpiry());
-        if (valid) {
+        if (valid && !PreferencesUtil.isFlag403()) {
             callback.onSuccess(type, tokenPair.getToken());
 
         } else {
+            if (PreferencesUtil.isFlag403()) {
+                ServiceGen.resetCachedServices();
+            }
+
             if (type==TOKEN_ACCESS) {
                 // Renew using refresh token
                 getUsableToken(context, TOKEN_REFRESH, role, new TokenProviderCallback() {
@@ -58,14 +62,15 @@ public class TokenProvider {
                     public void onSuccess(int token_type, String token) {
                         if (token_type==TOKEN_REFRESH && !TextUtils.isEmpty(token)) {
                             //call to renew
-
                             new AuthRequestBuilder(context)
                                 .setCallback(new RequestsCallback() {
                                     @Override
                                     public void onRefreshSuccess(TokenData renewedTokenData) {
                                         super.onRefreshSuccess(renewedTokenData);
+//                                        Log.e("ServiceGen", renewedTokenData.toString());
                                         try {
                                             PreferencesUtil.setToken(context, renewedTokenData, role);
+                                            PreferencesUtil.setFlag403(false);
                                             callback.onSuccess(type, renewedTokenData.getAccessToken());
 
                                         } catch (Exception e) {

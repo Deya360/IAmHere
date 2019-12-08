@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_attendee_home"
+        android:icon="@drawable/ic_home_white_24dp"
+        android:title="@string/bnav_nav_attendee_home_label" />
+
+
+    <item
+        android:id="@+id/nav_attendee_visits"
+        android:icon="@drawable/ic_attendance_white_24dp"
+        android:title="@string/bnav_nav_attendee_visits_label" />
 
 </menu>

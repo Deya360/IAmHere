@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,11 +30,17 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.sergivonavi.materialbanner.Banner;
 import com.sse.iamhere.Dialogs.InviteCodesDialog;
 import com.sse.iamhere.Dialogs.ReLogDialog;
+import com.sse.iamhere.POJO.Feed;
+import com.sse.iamhere.POJO.FeedItem;
 import com.sse.iamhere.Server.AuthRequestBuilder;
 import com.sse.iamhere.Server.Body.CheckData;
 import com.sse.iamhere.Server.Body.CredentialData;
+import com.sse.iamhere.Server.Body.PartyData;
+import com.sse.iamhere.Server.Body.SubjectData;
 import com.sse.iamhere.Server.RequestBuilder;
 import com.sse.iamhere.Server.RequestsCallback;
 import com.sse.iamhere.Server.TokenProvider;
@@ -42,13 +49,21 @@ import com.sse.iamhere.Subclasses.OnSingleClickListener;
 import com.sse.iamhere.Subclasses.OnSingleClickNavListener;
 import com.sse.iamhere.Utils.Constants;
 import com.sse.iamhere.Utils.InternetUtil;
+import com.sse.iamhere.Utils.LocaleUtil;
 import com.sse.iamhere.Utils.PreferencesUtil;
 import com.sse.iamhere.Utils.TextFormatter;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Set;
 
 import static com.sse.iamhere.Utils.Constants.ACCOUNT_RQ;
 import static com.sse.iamhere.Utils.Constants.AUTHENTICATION_RELOG_RQ;
 import static com.sse.iamhere.Utils.Constants.AUTHENTICATION_RQ;
 import static com.sse.iamhere.Utils.Constants.DEBUG_MODE;
+import static com.sse.iamhere.Utils.Constants.Role.ATTENDEE;
+import static com.sse.iamhere.Utils.Constants.Role.HOST;
+import static com.sse.iamhere.Utils.Constants.SETTINGS_RQ;
 import static com.sse.iamhere.Utils.Constants.TOKEN_ACCESS;
 import static com.sse.iamhere.Utils.Constants.TOKEN_REFRESH;
 
@@ -60,6 +75,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private Constants.Role role;
     private boolean isRoleDropdownExpanded;
+    private boolean isFeedBannerShown = false;
     private int currentBottomNavItemId;
     private SparseArray<Fragment.SavedState> savedStateSA = new SparseArray<>();
 
@@ -74,6 +90,8 @@ public class HomeActivity extends AppCompatActivity {
         //Theme must be set before setContentView
         role = PreferencesUtil.getRole(this, Constants.Role.NONE);
         setTheme(role.getTheme());
+
+        LocaleUtil.setConfigLang(this);
 
         setContentView(R.layout.activity_home);
         setTitle(getString(R.string.activity_home_title));
@@ -112,12 +130,20 @@ public class HomeActivity extends AppCompatActivity {
             changingRole = savedInstanceState.getBoolean("changingRole");
             menuItemId = savedInstanceState.getInt("menuItemId");
 
+            if (savedInstanceState.getBoolean("isFeedBannerShown")) {
+                unLoadFeed();
+            }
+
             if (changingRole) {
                 sideNav.getMenu().findItem(menuItemId).getActionView().setVisibility(View.VISIBLE);
             }
         }
 
         startBackgroundServices(1000*10);
+
+        if (DEBUG_MODE) {
+            new Handler().postDelayed(this::startBackgroundInviteCheck, 2000);
+        }
     }
 
     private void startBackgroundServices(int delayInMilli) {
@@ -133,7 +159,9 @@ public class HomeActivity extends AppCompatActivity {
 
             @Override
             public void notConnected() {
-                showInfoSnackbar("Debug: No Internet Connection", Snackbar.LENGTH_LONG);
+                if (DEBUG_MODE) {
+                    showInfoSnackbar("Debug: No Internet Connection", 5000);
+                }
             }
         }).hasInternetConnection(this);
     }
@@ -155,18 +183,21 @@ public class HomeActivity extends AppCompatActivity {
                             public void onFailure(int errorCode) {
                                 //Todo: implement properly: add relog dialog (role not constrained)
                                 super.onFailure(errorCode);
-                                showInfoSnackbar("Debug: Couldn't get user account for role", Snackbar.LENGTH_LONG);
+                                if (DEBUG_MODE)
+                                    showInfoSnackbar("Debug: Couldn't get user account for role", 3000);
                             }
                         })
                         .check(currentUser.getUid());
                 });
             } else {
                 //Todo: implement properly: add verify phone dialog
-                showInfoSnackbar("Debug: Couldn't get firebase user", Snackbar.LENGTH_LONG);
+                if (DEBUG_MODE)
+                    showInfoSnackbar("Debug: Couldn't get firebase user", 3000);
             }
         } else {
             //Todo: implement properly: add relog dialog (role not constrained)
-            showInfoSnackbar("Debug: Couldn't get role", Snackbar.LENGTH_LONG);
+            if (DEBUG_MODE)
+                showInfoSnackbar("Debug: Couldn't get role", 3000);
         }
     }
     private void startBackgroundSessionValidityCheck(boolean isRegistered) {
@@ -176,6 +207,7 @@ public class HomeActivity extends AppCompatActivity {
             new TokenProvider.TokenProviderCallback() {
                 @Override
                 public void onSuccess(int token_type, String token) {
+                    startBackgroundInviteCheck();
                     //don't need to do anything all is good,
                     // perhaps in future we add a timer to repeat this chain of checks again every n seconds
                 }
@@ -192,10 +224,125 @@ public class HomeActivity extends AppCompatActivity {
                 }
             });
     }
-
     private void startBackgroundInviteCheck() {
+        RequestBuilder rb = new RequestBuilder()
+            .setCallback(new RequestsCallback() {
+                @Override
+                public void onFindAllPartiesSuccess(Set<PartyData> partyDataSet) {
+                    super.onFindAllPartiesSuccess(partyDataSet);
 
+                    for (PartyData partyData : partyDataSet) {
+                        joinParty(partyData);
+                    }
+
+                    if (partyDataSet.isEmpty()) {
+                        runOnUiThread(() -> unLoadFeed());
+                    }
+                }
+
+                @Override
+                public void onFindAllEventsSuccess(Set<SubjectData> eventDataSet) {
+                    super.onFindAllEventsSuccess(eventDataSet);
+
+                    for (SubjectData eventData : eventDataSet) {
+                        joinEvent(eventData);
+                    }
+
+                    if (eventDataSet.isEmpty()) {
+                        runOnUiThread(() -> unLoadFeed());
+                    }
+                }
+            });
+        rb.checkInternet(this).attachToken(this, TOKEN_ACCESS);
+
+        switch (role) {
+            case ATTENDEE: rb.callRequest(rb::attendeeFindAllParties); break;
+            case HOST: rb.callRequest(rb::hostFindAllEvents); break;
+        }
     }
+
+    private void joinParty(PartyData partyData) {
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult()!=null) {
+                        String deviceToken = task.getResult().getToken();
+
+                        if (!TextUtils.isEmpty(deviceToken)) {
+                            joinParty(partyData, deviceToken);
+                        } else {
+                            joinParty(partyData, "");
+                        }
+
+                        if (DEBUG_MODE) { //TODO REMOVE DEBUG
+                            Log.d("IIT", task.getResult().getToken());
+                        }
+                    }
+                });
+    }
+
+    private void joinParty(PartyData partyData, String deiceToken) {
+        RequestBuilder rb = new RequestBuilder()
+            .setCallback(new RequestsCallback() {
+                @Override
+                public void onJoinPartySuccess(String string) {
+                    super.onJoinPartySuccess(string);
+
+                    String msg = String.format("%s %s %s",
+                                               getString(R.string.feed_prefix),
+                                               partyData.getPartyName(),
+                                               getString(R.string.feed_suffix));
+                    removeInviteCode(new FeedItem(partyData.getPartyId(), msg), partyData.getCodeWord(), ATTENDEE);
+                }
+            });
+        rb.checkInternet(this).attachToken(this, TOKEN_ACCESS);
+        rb.callRequest(() -> {rb.attendeeJoinParty(Integer.parseInt(partyData.getPartyId()), partyData.getCodeWord(), deiceToken);});
+    }
+
+    private void joinEvent(SubjectData eventData) {
+        RequestBuilder rb = new RequestBuilder()
+                .setCallback(new RequestsCallback() {
+                    @Override
+                    public void onJoinEventSuccess(String string) {
+                        super.onJoinEventSuccess(string);
+
+                        String msg = String.format("%s %s %s",
+                                                   getString(R.string.feed_prefix),
+                                                   eventData.getName(),
+                                                   getString(R.string.feed_suffix));
+                        removeInviteCode(new FeedItem(String.valueOf(eventData.getId()), msg), eventData.getCodeWord(), HOST);
+                    }
+                });
+        rb.checkInternet(this).attachToken(this, TOKEN_ACCESS);
+        rb.callRequest(() -> {rb.hostJoinEvent(eventData.getId(), eventData.getCodeWord());});
+    }
+    private void removeInviteCode(FeedItem feedItem, String code, Constants.Role intendedRole) {
+        RequestBuilder rb = new RequestBuilder()
+                .setCallback(new RequestsCallback() {
+                    @Override
+                    public void onRemoveCodeWordsSuccess(String msg) {
+                        super.onRemoveCodeWordsSuccess(msg);
+
+                        Feed feed = PreferencesUtil.getFeed(HomeActivity.this, intendedRole.getFeedType());
+
+                        if (feed.addItem(feedItem)) {
+                            PreferencesUtil.storeFeed(HomeActivity.this, role.getFeedType(), feed);
+
+                            runOnUiThread(() -> unLoadFeed());
+                        }
+                    }
+                });
+        rb.checkInternet(this).attachToken(this, TOKEN_ACCESS);
+
+        if (intendedRole!=role) {
+            return;
+        }
+
+        switch (role) {
+            case ATTENDEE: rb.callRequest(() -> rb.attendeeRemoveCodeWords(new ArrayList<>(Collections.singletonList(code)))); break;
+            case HOST: rb.callRequest(() -> rb.hostRemoveCodeWords(new ArrayList<>(Collections.singletonList(code)))); break;
+        }
+    }
+
 
 
     private void setupSideNavContent(Bundle savedInstanceState) {
@@ -209,7 +356,7 @@ public class HomeActivity extends AppCompatActivity {
         headerAvatarLy.setOnClickListener(new OnSingleClickListener() {
             @Override
             public void onSingleClick(View v) {
-                startAccountActivity();
+            startAccountActivity();
             }
         });
 
@@ -257,7 +404,7 @@ public class HomeActivity extends AppCompatActivity {
                                 actionView = menuItem.getActionView();
                                 actionView.setVisibility(View.VISIBLE);
                                 menuItemId = menuItem.getItemId();
-                                changeRole(Constants.Role.ATTENDEE, actionView);
+                                changeRole(ATTENDEE, actionView);
                             }
                             return false;
 
@@ -266,7 +413,7 @@ public class HomeActivity extends AppCompatActivity {
                                 actionView = menuItem.getActionView();
                                 actionView.setVisibility(View.VISIBLE);
                                 menuItemId = menuItem.getItemId();
-                                changeRole(Constants.Role.HOST, actionView);
+                                changeRole(HOST, actionView);
                             }
                             return false;
 
@@ -292,7 +439,11 @@ public class HomeActivity extends AppCompatActivity {
                             return true;
 
                         case R.id.nav_settings:
-                            //TODO: Implement
+                            startSettingsActivity();
+                            return true;
+
+                        case R.id.nav_my_parties:
+                            startPartiesActivity();
                             return true;
                     }
                 }
@@ -305,7 +456,11 @@ public class HomeActivity extends AppCompatActivity {
         inviteCodesMIt.setVisible(role!=Constants.Role.MANAGER);
 
         MenuItem allEventsMIt = sideNav.getMenu().findItem(R.id.nav_all_events);
-        allEventsMIt.setVisible(role==Constants.Role.HOST);
+        allEventsMIt.setVisible(role==HOST);
+
+        MenuItem myPartiesMIt = sideNav.getMenu().findItem(R.id.nav_my_parties);
+        myPartiesMIt.setVisible(role==ATTENDEE);
+
 
         Toolbar toolbar = findViewById(R.id.home_toolbar);
         setSupportActionBar(toolbar);
@@ -316,9 +471,9 @@ public class HomeActivity extends AppCompatActivity {
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        // here we check that if the activity was started with the "changeRole" extra (role was changed) and so we
-        // open the drawer and expand role dropdown on activity start
         if (getIntent().getExtras()!=null && savedInstanceState==null) {
+            // here we check that if the activity was started with the "changeRole" extra (role was changed) and so we
+            // open the drawer and expand role dropdown on activity start
             if (getIntent().getExtras().getBoolean("changeRole", false)) {
                 drawer.openDrawer(GravityCompat.START);
                 dropdownOnClickListener.onClick(dropdownIv,false);
@@ -326,6 +481,12 @@ public class HomeActivity extends AppCompatActivity {
                 Toast.makeText(this,
                         getString(R.string.home_role_change_toast) + " " + getString(role.toStringRes()),
                         Toast.LENGTH_LONG).show();
+            }
+
+            // here we check that if the activity was started with the "changeLanguage" extra (language was changed) and so we
+            // open the drawer on activity start
+            if (getIntent().getExtras().getBoolean("changeLanguage", false)) {
+                drawer.openDrawer(GravityCompat.START);
             }
         }
 
@@ -338,6 +499,8 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
+
+
     private void setupBottomNav() {
         bottomNav = findViewById(R.id.home_bottomNav);
         bottomNav.setOnNavigationItemSelectedListener(item -> {
@@ -347,6 +510,13 @@ public class HomeActivity extends AppCompatActivity {
                     return true;
                 case R.id.nav_host_parties:
                     swapFragments(item.getItemId(), getResources().getString(R.string.fragment_parties_tag));
+                    return true;
+                case R.id.nav_attendee_home:
+                    swapFragments(item.getItemId(), getResources().getString(R.string.fragment_home_tag));
+                    return true;
+
+                case R.id.nav_attendee_visits:
+                    swapFragments(item.getItemId(), getResources().getString(R.string.fragment_visits_tag));
                     return true;
             }
             return false;
@@ -385,10 +555,10 @@ public class HomeActivity extends AppCompatActivity {
                     public void onFailure(int errorCode) {
                         super.onFailure(errorCode);
                         if (errorCode == Constants.RQM_EC.NO_INTERNET_CONNECTION) {
-                            showInfoSnackbar(getString(R.string.splash_connectionTv_label), Snackbar.LENGTH_LONG);
+                            showInfoSnackbar(getString(R.string.splash_connectionTv_label), 5000);
 
                         } else {
-                            showInfoSnackbar(getString(R.string.msg_server_error), Snackbar.LENGTH_LONG);
+                            showInfoSnackbar(getString(R.string.msg_server_error), 5000);
                         }
                     }
                 });
@@ -412,7 +582,7 @@ public class HomeActivity extends AppCompatActivity {
         } else {
             switch (role) {
                 case ATTENDEE:
-
+                    swapFragments(R.id.nav_attendee_home, getResources().getString(R.string.fragment_home_tag));
                     break;
                 case HOST:
                     swapFragments(R.id.nav_host_events, getResources().getString(R.string.fragment_events_tag));
@@ -436,6 +606,8 @@ public class HomeActivity extends AppCompatActivity {
         switch (actionId) {
             case R.id.nav_host_events: fragment = new EventsFrag(); break;
             case R.id.nav_host_parties: fragment = new PartiesFrag(); break;
+            case R.id.nav_attendee_home: fragment = new HomeFrag(); break;
+            case R.id.nav_attendee_visits: fragment = new VisitsFrag(); break;
             default: throw new RuntimeException("HomeActivity:createFragment No fragment found for actionId: " + actionId);
         }
 
@@ -508,7 +680,7 @@ public class HomeActivity extends AppCompatActivity {
         changingRole = false;
         actionView.setVisibility(View.GONE);
         drawer.closeDrawer(GravityCompat.START);
-        showInfoSnackbar(errorMsg, Snackbar.LENGTH_LONG);
+        showInfoSnackbar(errorMsg, 5000);
     }
 
     private void preformRoleSwitch(Constants.Role newRole) {
@@ -538,29 +710,22 @@ public class HomeActivity extends AppCompatActivity {
         bundle.putInt("returnRequestCode", requestCode);
 
 
-        String description = "";
+        String description;
         if (isRegistered) {
-            description = getString(R.string.auth_subtitleTv_remote_login_label_prefix) + " " +
-                    getString(role.toStringRes()) + " " + getString(R.string.auth_subtitleTv_remote_login_label_suffix);
-
+            switch (role) {
+                case HOST: description = getString(R.string.auth_subtitleTv_remote_login_label_host); break;
+                case ATTENDEE: description = getString(R.string.auth_subtitleTv_remote_login_label_attendee); break;
+                case MANAGER: description = getString(R.string.auth_subtitleTv_remote_login_label_manager); break;
+                default: throw new RuntimeException("getAuthActivityIntent: Unsupported role");
+            }
         } else {
             switch (role) {
-                case HOST:
-                case MANAGER:
-                    description = getString(R.string.auth_subtitleTv_remote_registration_label_prefix) + " " +
-                            getString(role.toStringRes()) + " "
-                            + getString(R.string.auth_subtitleTv_remote_registration_label_suffix);
-                    break;
-
-                case ATTENDEE:
-                    description = getString(R.string.auth_subtitleTv_remote_registration_label_prefix) +
-                            getString(R.string.auth_subtitleTv_remote_registration_label_prefix_attendee_extra) + " " +
-                            getString(role.toStringRes()) + " "
-                            + getString(R.string.auth_subtitleTv_remote_registration_label_suffix);
-                    break;
+                case HOST: description = getString(R.string.auth_subtitleTv_remote_registration_label_host); break;
+                case ATTENDEE: description = getString(R.string.auth_subtitleTv_remote_registration_label_attendee); break;
+                case MANAGER: description = getString(R.string.auth_subtitleTv_remote_registration_label_manager); break;
+                default: throw new RuntimeException("getAuthActivityIntent: Unsupported role");
             }
         }
-
 
         bundle.putString("customDescription", description);
         intent = new Intent(HomeActivity.this, AuthenticationActivity.class);
@@ -578,9 +743,19 @@ public class HomeActivity extends AppCompatActivity {
         startActivityForResult(intent, Constants.ACCOUNT_RQ);
     }
 
+    private void startSettingsActivity() {
+        Intent intent = new Intent(HomeActivity.this, SettingsActivity.class);
+        startActivityForResult(intent, Constants.SETTINGS_RQ);
+    }
+
     private void showInviteCodeDialog() {
         InviteCodesDialog inviteCodesDialog = new InviteCodesDialog();
         inviteCodesDialog.show(getSupportFragmentManager(), getString(R.string.fragment_invite_code_dialog_tag));
+    }
+
+    private void startPartiesActivity() {
+        Intent intent = new Intent(HomeActivity.this, MyPartiesActivity.class);
+        startActivity(intent);
     }
 
     private void showInfoSnackbar(String msg, int duration) {
@@ -588,6 +763,41 @@ public class HomeActivity extends AppCompatActivity {
             if (!TextUtils.isEmpty(msg)) {
                 Snackbar.make(findViewById(R.id.home_mainLy), msg, duration).show();
             }
+        }
+    }
+
+
+    private void unLoadFeed() {
+        Feed feed = PreferencesUtil.getFeed(HomeActivity.this, role.getFeedType());
+        if (feed.hasItems()) {
+            if (!isFeedBannerShown) {
+                FeedItem item = feed.getTopItem();
+                showBanner(item.getMsg(), R.drawable.ic_add_user_group_dark_grey_24dp, () -> {
+                    Feed feed1 = PreferencesUtil.getFeed(HomeActivity.this, role.getFeedType());
+                    if (feed1.removeItem(item)) {
+                        PreferencesUtil.storeFeed(HomeActivity.this, role.getFeedType(), feed1);
+                    }
+
+                    new Handler().postDelayed(() -> runOnUiThread(this::unLoadFeed), 1000);
+                });
+            }
+        }
+    }
+    private void showBanner(String msg, int iconRes, Runnable onDismiss) {
+        if (getWindow().getDecorView().isShown()) {
+            isFeedBannerShown = true;
+            Banner banner = findViewById(R.id.home_banner);
+            ImageView bannerIv = findViewById(R.id.home_bannerIv);
+            bannerIv.setVisibility(View.VISIBLE);
+            banner.setMessage(msg);
+            banner.setIcon(iconRes);
+            banner.setRightButton(R.string.feed_dissmis, banner1 -> {
+                isFeedBannerShown = false;
+                banner.dismiss();
+                bannerIv.setVisibility(View.GONE);
+                onDismiss.run();
+            });
+            banner.show();
         }
     }
 
@@ -607,7 +817,11 @@ public class HomeActivity extends AppCompatActivity {
     /* This method is a callback of the InviteCodeDialog fragment */
     public void onInviteCodeDialogDismissed(boolean updated) {
         if (updated) {
-            AsyncTask.execute(this::startBackgroundInviteCheck);
+            if (drawer.isDrawerOpen(GravityCompat.START)) {
+                drawer.closeDrawer(GravityCompat.START);
+
+                AsyncTask.execute(this::startBackgroundInviteCheck);
+            }
         }
     }
 
@@ -649,7 +863,6 @@ public class HomeActivity extends AppCompatActivity {
                     if (isLogout) {
                         restart();
 
-
                     } else {
                         boolean updateNeeded = data.getBooleanExtra("updateNeeded",false);
                         if (updateNeeded) {
@@ -659,12 +872,46 @@ public class HomeActivity extends AppCompatActivity {
                 }
             }
         }
+
+        // receives result from settings saying whether activity needs to be recreated
+        if (requestCode==SETTINGS_RQ) {
+            if (resultCode==RESULT_OK) {
+                if (data!=null) {
+                    boolean languageChanged = data.getBooleanExtra("languageChanged",false);
+                    if (languageChanged) {
+                        refresh();
+                    }
+                }
+            }
+        }
+    }
+
+    private void refresh() {
+        Intent intent = new Intent(HomeActivity.this, HomeActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putBoolean("changeLanguage", true);
+        intent.putExtras(bundle);
+        startActivity(intent);
+        finish();
     }
 
     private void restart() {
         Intent intent = new Intent(HomeActivity.this, SplashActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    @Override
+    public void onActivityReenter(int resultCode, Intent data) {
+        if (bottomNav.getSelectedItemId() == R.id.nav_host_parties) {
+            Fragment fragment = getSupportFragmentManager().findFragmentByTag(getString(R.string.fragment_parties_tag));
+            if (fragment instanceof PartiesFrag) {
+                ((PartiesFrag)fragment).onActivityReenter(resultCode, data);
+                return;
+            }
+        }
+
+        super.onActivityReenter(resultCode, data);
     }
 
     @Override
@@ -683,7 +930,7 @@ public class HomeActivity extends AppCompatActivity {
 //        } else if (role == Constants.Role.ATTENDEE && bottomNav.getSelectedItemId() != R.id.nav_host_events) {
 //            bottomNav.setSelectedItemId(R.id.nav_host_events);
 
-        } else if (role == Constants.Role.HOST && bottomNav.getSelectedItemId() != R.id.nav_host_events) {
+        } else if (role == HOST && bottomNav.getSelectedItemId() != R.id.nav_host_events) {
             bottomNav.setSelectedItemId(R.id.nav_host_events);
 
 //        } else if (role == Constants.Role.MANAGER && bottomNav.getSelectedItemId() != R.id.nav_host_events) {
@@ -707,5 +954,6 @@ public class HomeActivity extends AppCompatActivity {
 
         outState.putBoolean("changingRole", changingRole);
         outState.putInt("menuItemId", menuItemId);
+        outState.putBoolean("isFeedBannerShown", isFeedBannerShown);
     }
 }

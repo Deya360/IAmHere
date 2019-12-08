@@ -13,7 +13,7 @@ https://www.freepik.com/free-vector/geometric-grey-background_1255865.htm
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="?attr/actionBarSize"
         android:background="@drawable/backg_collapsable_toolbar"
         app:elevation="0dp"
         android:theme="@style/AppTheme.AppBarOverlay">
@@ -21,189 +21,247 @@ https://www.freepik.com/free-vector/geometric-grey-background_1255865.htm
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/event_details_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="match_parent"
             android:background="#800093A8"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <com.sothree.slidinguppanel.SlidingUpPanelLayout
+    <com.sse.iamhere.Subclasses.CustomSwipeToRefresh
+        android:id="@+id/event_details_swipe_refreshLy"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="bottom"
+        android:layout_height="wrap_content"
 
-        app:umanoPanelHeight="?attr/actionBarSize"
-        app:umanoShadowHeight="0dp"
-        app:umanoOverlay="true"
-        app:umanoClipPanel="false"
-        app:umanoDragView="@+id/dragView"
-        app:umanoFadeColor="#99757575"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        android:layout_marginTop="?android:attr/actionBarSize">
-
-        <!-- MAIN CONTENT -->
-        <androidx.coordinatorlayout.widget.CoordinatorLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:weightSum="1">
 
-            <com.google.android.material.appbar.AppBarLayout
+            <com.sothree.slidinguppanel.SlidingUpPanelLayout
+                android:id="@+id/event_details_slidingLy"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:background="@drawable/backg_collapsable_toolbar"
-                app:elevation="0dp"
-                android:theme="@style/AppTheme.AppBarOverlay">
+                android:layout_weight="1"
+                android:layout_height="0dp"
+                android:gravity="bottom"
 
-                <com.google.android.material.appbar.CollapsingToolbarLayout
+                app:umanoPanelHeight="?attr/actionBarSize"
+                app:umanoShadowHeight="0dp"
+                app:umanoOverlay="true"
+                app:umanoClipPanel="false"
+                app:umanoDragView="@+id/event_details_dragView"
+                app:umanoFadeColor="#99757575"
+                app:umanoScrollableView="@id/event_details_dragView"
+
+                android:visibility="visible">
+
+                <!-- MAIN CONTENT -->
+                <androidx.coordinatorlayout.widget.CoordinatorLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent">
 
-                    app:titleEnabled="false"
-                    app:contentScrim="@color/colorHostPrimary"
-                    app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed|snap">
+                    <com.google.android.material.appbar.AppBarLayout
+                        android:id="@+id/event_details_appbarLy"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:background="@drawable/backg_collapsable_toolbar"
+                        app:elevation="0dp"
+                        android:theme="@style/AppTheme.AppBarOverlay">
 
-                    <LinearLayout
+                        <com.google.android.material.appbar.CollapsingToolbarLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+
+                            app:titleEnabled="false"
+                            app:contentScrim="#80ECECEC"
+                            app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed|snap">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:weightSum="1"
+                                android:layout_margin="10dp"
+
+                                android:paddingTop="20dp"
+                                android:paddingBottom="16dp"
+                                android:paddingStart="20dp"
+                                android:paddingEnd="20dp"
+
+                                android:background="@drawable/projector_screen"
+                                android:elevation="10dp">
+
+                                <TextView
+                                    android:id="@+id/event_details_nameTv"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_above="@+id/event_details_descTv"
+                                    android:layout_alignTop="@id/event_details_descTv"
+                                    android:layout_alignParentTop="true"
+
+                                    android:fontFamily="@font/bree_serif"
+                                    android:includeFontPadding="false"
+                                    android:textAlignment="center"
+                                    android:textColor="@color/black"
+                                    app:autoSizeMaxTextSize="40sp"
+                                    app:autoSizeMinTextSize="20sp"
+                                    app:autoSizeStepGranularity="2sp"
+                                    app:autoSizeTextType="uniform"
+                                    tools:text="Information" />
+
+                                <TextView
+                                    android:id="@+id/event_details_descTv"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="5dp"
+                                    android:layout_above="@id/event_details_dateTv"
+                                    android:gravity="bottom"
+                                    tools:text="Some long text"
+
+                                    android:fontFamily="@font/pt_serif"
+                                    android:textAlignment="center"
+                                    android:textColor="@color/black"
+                                    android:textSize="18sp"
+                                    android:includeFontPadding="false"
+                                    android:maxLines="2"
+                                    android:ellipsize="end"/>
+
+                                <TextView
+                                    android:id="@+id/event_details_dateTv"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentBottom="true"
+                                    android:ellipsize="end"
+
+                                    android:fontFamily="@font/boogaloo"
+                                    android:maxLines="2"
+                                    android:textAlignment="center"
+                                    android:textColor="@color/black"
+                                    android:textSize="18sp"
+
+                                    tools:text="12-10-2019" />
+
+                            </RelativeLayout>
+
+                        </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+                    </com.google.android.material.appbar.AppBarLayout>
+
+                    <androidx.core.widget.NestedScrollView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_margin="10dp"
-                        android:orientation="vertical"
 
-                        android:padding="25dp"
-                        android:background="@drawable/projector_screen"
-                        android:elevation="10dp">
+                        android:background="@color/grey_200"
+                        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-                        <TextView
-                            android:id="@+id/event_details_nameTv"
-                            android:layout_width="match_parent"
-                            android:layout_height="55dp"
-
-                            tools:text="Information"
-                            android:textAlignment="center"
-                            android:textColor="@color/black"
-                            android:fontFamily="@font/bree_serif"
-                            android:includeFontPadding="false"
-                            app:autoSizeTextType="uniform"
-                            app:autoSizeMinTextSize="20sp"
-                            app:autoSizeMaxTextSize="40sp"
-                            app:autoSizeStepGranularity="2sp"
-                            android:background="@drawable/border_trans_back_thick_b"/>
-
-                        <TextView
-                            android:id="@+id/event_details_descTv"
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            tools:text="Some long text"
+                            android:orientation="vertical">
 
-                            android:textAlignment="center"
-                            android:textColor="@color/black"
-                            android:textSize="18sp"
+                            <com.google.android.material.tabs.TabLayout
+                                android:id="@+id/event_details_tabLy"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:minHeight="?attr/actionBarSize"
+                                android:background="@drawable/border_white_back_b"
+                                app:tabTextAppearance="@style/CustomTabLayoutTextAppearance">
 
-                            android:maxLines="2"
-                            android:ellipsize="end"/>
+                                <com.google.android.material.tabs.TabItem
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/event_details_tabLy_info"/>
 
+                                <com.google.android.material.tabs.TabItem
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/event_details_tabLy_who_is_here"/>
 
-                    </LinearLayout>
+                            </com.google.android.material.tabs.TabLayout>
 
-                </com.google.android.material.appbar.CollapsingToolbarLayout>
+                            <androidx.coordinatorlayout.widget.CoordinatorLayout
+                                android:id="@+id/event_details_contentLy"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="70dp"/>
 
-            </com.google.android.material.appbar.AppBarLayout>
+                        </LinearLayout>
 
-            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                    </androidx.core.widget.NestedScrollView>
 
-                android:background="@color/grey_200"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+                </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
+                <!-- SLIDING LAYOUT -->
                 <LinearLayout
+                    android:id="@+id/event_details_dragView"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.7"
+                    android:elevation="7dp"
                     android:orientation="vertical">
 
-                    <com.google.android.material.tabs.TabLayout
-                        android:id="@+id/event_details_tabLy"
+                    <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:minHeight="?attr/actionBarSize"
-                        android:background="@color/white"
-                        app:tabTextAppearance="@style/CustomTabLayoutTextAppearance">
+                        android:layout_height="?attr/actionBarSize"
+                        android:background="@drawable/backg_rounded_rec_t">
 
-                        <com.google.android.material.tabs.TabItem
+                        <TextView
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Event Information"/>
+                            android:layout_height="?attr/actionBarSize"
+                            android:layout_centerInParent="true"
+                            android:padding="7dp"
 
-                        <com.google.android.material.tabs.TabItem
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Who Is Here?"/>
+                            android:text="@string/event_details_dragView_qrcode_label"
+                            android:fontFamily="@font/oswald"
+                            android:textStyle="bold"
+                            android:textAlignment="center"
+                            android:textColor="@android:color/black"
 
-                    </com.google.android.material.tabs.TabLayout>
+                            android:drawableStart="@drawable/ic_chevron_up_black_outline_24dp"
+                            android:drawableEnd="@drawable/ic_chevron_up_black_outline_24dp"
+                            android:drawablePadding="48dp"
 
-                    <androidx.coordinatorlayout.widget.CoordinatorLayout
-                        android:id="@+id/event_details_contentLy"
+                            android:textSize="24sp" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"/>
+                        android:layout_height="match_parent"
+                        android:background="@color/white">
+
+                        <TextView
+                            android:layout_width="350dp"
+                            android:layout_height="350dp"
+
+                            android:textSize="15sp"
+                            android:fontFamily="@font/roboto_slab"
+                            android:text="@string/event_details_dragView_error_label"
+                            android:gravity="center"
+                            android:layout_centerInParent="true"/>
+
+                        <ImageView
+                            android:id="@+id/event_details_qrCodeIv"
+                            android:layout_width="350dp"
+                            android:layout_height="350dp"
+                            android:layout_centerInParent="true"
+                            android:contentDescription="@string/event_details_qrCodeIv_label" />
+
+                    </RelativeLayout>
+
 
                 </LinearLayout>
 
-            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+            </com.sothree.slidinguppanel.SlidingUpPanelLayout>
 
-        </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
-        <!-- SLIDING LAYOUT -->
-        <LinearLayout
-            android:id="@+id/dragView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="0.7"
-            android:elevation="7dp"
-            android:orientation="vertical">
-
-            <RelativeLayout
+            <androidx.coordinatorlayout.widget.CoordinatorLayout
+                android:id="@+id/event_details_snackbarLy"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="@drawable/backg_rounded_rec_t">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="?attr/actionBarSize"
-                    android:layout_centerInParent="true"
-                    android:padding="7dp"
-
-                    android:text="QR Code"
-                    android:fontFamily="@font/oswald"
-                    android:textStyle="bold"
-                    android:textAlignment="center"
-                    android:textColor="@android:color/black"
-
-                    android:drawableStart="@drawable/ic_chevron_up_black_outline_24dp"
-                    android:drawableEnd="@drawable/ic_chevron_up_black_outline_24dp"
-                    android:drawablePadding="48dp"
-
-                    android:textSize="24sp" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/white">
-
-                <ImageView
-                    android:id="@+id/event_details_qrCodeIv"
-                    android:layout_width="350dp"
-                    android:layout_height="350dp"
-                    android:layout_centerInParent="true">
-
-                </ImageView>
-
-            </RelativeLayout>
-
+                android:layout_height="wrap_content"/>
 
         </LinearLayout>
 
-    </com.sothree.slidinguppanel.SlidingUpPanelLayout>
-
+    </com.sse.iamhere.Subclasses.CustomSwipeToRefresh>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

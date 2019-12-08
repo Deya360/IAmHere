@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat;
 
 import com.codemybrainsout.onboarder.AhoyOnboarderActivity;
 import com.codemybrainsout.onboarder.AhoyOnboarderCard;
+import com.sse.iamhere.Utils.LocaleUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,7 @@ public class OnboardActivity extends AhoyOnboarderActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        LocaleUtil.setConfigLang(this);
         super.onCreate(savedInstanceState);
 
         int activityOrientation = ORIENTATION_PORTRAIT;

@@ -24,8 +24,10 @@ android {
 
 dependencies {
     //Firebase
-    implementation 'com.google.firebase:firebase-auth:19.1.0' //Main Lib
+    implementation 'com.google.firebase:firebase-auth:19.2.0' //Main Lib
     implementation 'com.firebaseui:firebase-ui-auth:4.3.1' //UI Views Lib
+    implementation 'com.google.firebase:firebase-messaging:20.0.1' //FCM
+    implementation 'com.google.firebase:firebase-analytics:17.2.1'
 
     //On-boarding tutorial
     implementation 'com.codemybrainsout.onboarding:onboarder:1.0.4'
@@ -81,6 +83,21 @@ dependencies {
 
     //Floating tooltips
     implementation 'com.github.florent37:viewtooltip:1.2.2'
+
+    //Time ago (pretty time) text view
+    implementation 'com.github.curioustechizen.android-ago:library:1.4.0'
+
+    //pretty time
+    implementation 'org.ocpsoft.prettytime:prettytime:4.0.1.Final'
+
+    //Expandable Recycler View
+    implementation 'com.bignerdranch.android:expandablerecyclerview:3.0.0-RC1'
+
+    //material banner
+    implementation 'com.sergivonavi:materialbanner:1.2.0'
+
+    //WorkManager
+    implementation 'androidx.work:work-runtime:2.2.0'
 
     // Auto-generated
     implementation fileTree(dir: 'libs', include: ['*.jar'])

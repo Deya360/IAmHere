@@ -16,7 +16,9 @@ import com.appeaser.sublimepickerlibrary.helpers.SublimeListenerAdapter;
 import com.appeaser.sublimepickerlibrary.helpers.SublimeOptions;
 import com.appeaser.sublimepickerlibrary.recurrencepicker.SublimeRecurrencePicker;
 import com.sse.iamhere.EventsFrag;
+import com.sse.iamhere.HomeFrag;
 import com.sse.iamhere.R;
+import com.sse.iamhere.VisitsFrag;
 
 public class DatePickerFragment extends DialogFragment {
     @Nullable
@@ -41,12 +43,26 @@ public class DatePickerFragment extends DialogFragment {
 
                     if (getParentFragment() instanceof EventsFrag) {
                         try {
-                            ((EventsFrag)getParentFragment()).onClose(selectedDate.getStartDate());
+                            ((EventsFrag) getParentFragment()).onClose(selectedDate.getStartDate());
                         } catch (Exception e) {
                             throw new ClassCastException("EventsFrag must implement DatePickerDialogListener");
                         }
+                    } else if (getParentFragment() instanceof HomeFrag) {
+                        try {
+                            ((HomeFrag) getParentFragment()).onClose(selectedDate.getStartDate());
+                        } catch (Exception e) {
+                            throw new ClassCastException("HomeFrag must implement DatePickerDialogListener");
+                        }
+
+                    } else if (getParentFragment() instanceof VisitsFrag) {
+                        try {
+                            ((VisitsFrag) getParentFragment()).onClose(selectedDate.getStartDate());
+                        } catch (Exception e) {
+                            throw new ClassCastException("HomeFrag must implement DatePickerDialogListener");
+                        }
+
                     } else {
-                        throw new ClassCastException("DatePickerDialogListener only works with EventsFrag");
+                        throw new ClassCastException("DatePickerDialogListener only works with EventsFrag or HomeFrag");
                     }
                     dismiss();
                 }

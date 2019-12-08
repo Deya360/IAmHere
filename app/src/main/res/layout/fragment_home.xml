@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    android:id="@+id/homef_mainLy"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".HomeFrag">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="4dp"
+            android:paddingBottom="3dp"
+            android:paddingStart="3dp"
+            android:paddingEnd="3dp"
+
+            android:gravity="center_vertical"
+            android:layout_gravity="top"
+            android:orientation="horizontal"
+            android:elevation="5dp"
+
+            android:background="@drawable/border_white_back_thick_b">
+
+            <TextView
+                android:id="@+id/homef_date_dateStrTv"
+                android:layout_width="0dp"
+                android:layout_weight="0.65"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:padding="7dp"
+
+                android:textSize="21sp"
+                android:fontFamily="@font/pt_serif"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:textAlignment="center"
+
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:tooltipText="@string/homef_date_dateStrTv_desc"
+
+                tools:text="Monday, 14 September" />
+
+            <ImageView
+                android:id="@+id/homef_date_calIv"
+                android:layout_width="0dp"
+                android:layout_weight="0.15"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_calendar_black_28dp"
+
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:contentDescription="@string/date_picker_desc" />
+
+        </LinearLayout>
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/homef_swipe_refreshLy"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.facebook.shimmer.ShimmerFrameLayout
+                    android:id="@+id/homef_placeholderLy"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+
+                    app:shimmer_base_alpha="0.2"
+                    app:shimmer_dropoff="5"
+                    app:shimmer_repeat_delay="1200"
+                    app:shimmer_duration="50"
+                    app:shimmer_repeat_mode="restart"
+                    app:shimmer_tilt="65"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:orientation="vertical" >
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="10dp"
+
+                            android:orientation="vertical" >
+
+                            <View
+                                android:layout_width="170dp"
+                                android:layout_height="27dp"
+                                android:layout_marginBottom="8dp"
+                                android:background="#B6B4B4" />
+
+                            <View
+                                android:layout_width="300dp"
+                                android:layout_height="22dp"
+                                android:layout_marginBottom="4dp"
+                                android:background="#DDDDDD" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="10dp"
+
+                            android:orientation="vertical" >
+
+                            <View
+                                android:layout_width="120dp"
+                                android:layout_height="27dp"
+                                android:layout_marginBottom="8dp"
+                                android:background="#B6B4B4" />
+
+                            <View
+                                android:layout_width="240dp"
+                                android:layout_height="22dp"
+                                android:layout_marginBottom="4dp"
+                                android:background="#DDDDDD" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="10dp"
+
+                            android:orientation="vertical" >
+
+                            <View
+                                android:layout_width="110dp"
+                                android:layout_height="27dp"
+                                android:layout_marginBottom="12dp"
+                                android:background="#B6B4B4" />
+
+                            <View
+                                android:layout_width="280dp"
+                                android:layout_height="22dp"
+                                android:layout_marginBottom="4dp"
+                                android:background="#DDDDDD" />
+
+                            <View
+                                android:layout_width="150dp"
+                                android:layout_height="22dp"
+                                android:layout_marginBottom="7dp"
+                                android:background="#DDDDDD" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </com.facebook.shimmer.ShimmerFrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/homef_contentLy"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/homef_empty_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="130dp"
+                        android:padding="14dp"
+
+                        android:fontFamily="@font/bree_serif"
+                        tools:text="Theres nothing to see here!"
+                        android:textAlignment="center"
+                        android:textSize="24sp"
+                        android:textColor="#5B000000"
+
+                        tools:visibility="visible"
+                        android:visibility="gone" />
+
+                    <com.sse.iamhere.Subclasses.EmptySupportedRecyclerView
+                        android:id="@+id/homef_recycler_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:clipToPadding="false"
+                        android:scrollbars="vertical"
+
+                        tools:listitem="@layout/item_event">
+
+                    </com.sse.iamhere.Subclasses.EmptySupportedRecyclerView>
+
+                </FrameLayout>
+
+            </FrameLayout>
+
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/homef_fab"
+        android:layout_gravity="bottom|end"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_alignParentEnd="true"
+        android:tooltipText="@string/app_name"
+
+        app:maxImageSize="32dp"
+        android:elevation="4dp"
+        app:srcCompat="@drawable/ic_visit_white_24dp" />
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

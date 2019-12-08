@@ -2,6 +2,8 @@ package com.sse.iamhere.Server.Body;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.jetbrains.annotations.NotNull;
+
 public class TokenData {
     @SerializedName("access_token")
     private final String accessToken;
@@ -37,5 +39,16 @@ public class TokenData {
 
     public long getRefreshTokenExpiryDate() {
         return refreshTokenExpireDate;
+    }
+
+    @NotNull
+    @Override
+    public String toString() {
+        return "TokenData{" +
+                "accessToken='" + accessToken + '\'' +
+                ", refreshToken='" + refreshToken + '\'' +
+                ", accessTokenExpireDate=" + accessTokenExpireDate +
+                ", refreshTokenExpireDate=" + refreshTokenExpireDate +
+                '}';
     }
 }

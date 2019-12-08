@@ -1,7 +1,8 @@
 package com.sse.iamhere.Server;
 
 import android.text.TextUtils;
-import android.util.Log;
+
+import com.sse.iamhere.Utils.PreferencesUtil;
 
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -90,9 +91,7 @@ public class ServiceGen {
 
                 Interceptor prohibitedInterceptor = chain -> {
                     Response mainResponse = chain.proceed(chain.request());
-                    if (mainResponse.code() == 401 || mainResponse.code() == 403) {
-                        Log.e("ServiceGen", "We got a 403/401!!!!"); //todo: implement properly
-                    }
+                    if (mainResponse.code() == 403) PreferencesUtil.setFlag403(true);
 
                     return mainResponse;
                 };

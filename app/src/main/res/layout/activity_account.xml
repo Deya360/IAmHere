@@ -47,7 +47,7 @@
 
                 android:orientation="horizontal"
                 android:weightSum="1"
-                android:background="@drawable/border_grey_back_thick_b">
+                android:background="@drawable/border_dark_grey_back_thick_b">
 
                 <RelativeLayout
                     android:layout_width="0dp"
@@ -252,6 +252,21 @@
 
                             </com.google.android.material.textfield.TextInputLayout>
 
+                            <CheckBox
+                                android:id="@+id/account_show_emailChk"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="2dp"
+                                android:padding="9dp"
+                                android:enabled="false"
+
+                                android:text="@string/account_show_emailChk_label"
+                                android:fontFamily="@font/pt_serif"
+                                android:includeFontPadding="false"
+                                android:textColor="@android:color/black"
+                                android:textSize="18sp" />
+
                         </LinearLayout>
 
                         <com.facebook.shimmer.ShimmerFrameLayout
@@ -268,7 +283,7 @@
 
                             <LinearLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="154dp"
+                                android:layout_height="200dp"
                                 android:orientation="vertical"
                                 android:paddingTop="5dp"
                                 android:paddingBottom="15dp"
@@ -300,6 +315,13 @@
                                     android:textColor="@android:color/black"
                                     android:textSize="22sp"
                                     android:enabled="false"/>
+
+                                <View
+                                    android:layout_width="245dp"
+                                    android:layout_height="32dp"
+                                    android:layout_marginTop="7dp"
+                                    android:layout_marginStart="5dp"
+                                    android:background="#DDDDDD" />
 
                             </LinearLayout>
 

@@ -19,6 +19,7 @@ import com.sse.iamhere.Server.Body.CheckData;
 import com.sse.iamhere.Server.RequestsCallback;
 import com.sse.iamhere.Utils.Constants;
 import com.sse.iamhere.Utils.InternetUtil;
+import com.sse.iamhere.Utils.LocaleUtil;
 import com.sse.iamhere.Utils.PreferencesUtil;
 import com.sse.iamhere.Utils.TextFormatter;
 
@@ -40,6 +41,7 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        LocaleUtil.setConfigLang(this);
         setContentView(R.layout.activity_splash);
 
         initAuthListener();
@@ -126,21 +128,21 @@ public class SplashActivity extends AppCompatActivity {
 
                 Button retryBtn = findViewById(R.id.splash_retryBtn);
                 retryBtn.setOnClickListener(v -> {
-                            Toast.makeText(SplashActivity.this, "Checking...", Toast.LENGTH_LONG).show();
+                            Toast.makeText(SplashActivity.this, getString(R.string.splash_connection_checking), Toast.LENGTH_LONG).show();
                             retryBtn.setEnabled(false);
 
                             new InternetUtil(new InternetUtil.InternetResponse() {
                                 @Override
                                 public void isConnected() {
                                     retryBtn.setEnabled(true);
-                                    Toast.makeText(SplashActivity.this, "Connected!", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(SplashActivity.this, getString(R.string.splash_connection_success), Toast.LENGTH_LONG).show();
                                     finishSplashActivity();
                                 }
 
                                 @Override
                                 public void notConnected() {
                                     retryBtn.setEnabled(true);
-                                    Toast.makeText(SplashActivity.this, "No Connection", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(SplashActivity.this, getString(R.string.splash_connection_fail), Toast.LENGTH_LONG).show();
                                 }
                             }).hasInternetConnection(SplashActivity.this);
                         }
@@ -223,7 +225,7 @@ public class SplashActivity extends AppCompatActivity {
 
         if (DEBUG_MODE) {
             bundle.putString("phone", DEBUG_PHONE);
-            bundle.putString("phoneFormatted", DEBUG_PHONE);
+            bundle.putString("phoneFormatted", TextFormatter.formatPhone(DEBUG_PHONE));
 
         } else {
             bundle.putString("phone", firebaseAuth.getCurrentUser().getPhoneNumber());

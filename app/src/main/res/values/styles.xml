@@ -6,7 +6,16 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-<!--        <item name="android:colorBackground">@color/colorBackground</item>-->
+
+
+        <item name="android:windowContentTransitions">true</item>
+
+        <item name="android:windowSharedElementsUseOverlay">true</item>
+        <item name="android:windowAllowEnterTransitionOverlap">true</item>
+        <item name="android:windowAllowReturnTransitionOverlap">true</item>
+
+        <item name="android:windowSharedElementEnterTransition">@transition/shared_transition</item>
+        <item name="android:windowSharedElementExitTransition">@transition/shared_transition</item>
     </style>
 
     <style name="NoTitleDialog" parent="@android:style/Theme.Dialog">
@@ -26,6 +35,7 @@
 
         <item name="side_nav_header_back">@drawable/side_nav_bar_attendee</item>
         <item name="bottom_nav_menu">@menu/bnav_home_attendee</item>
+        <item name="sublimePickerStyle">@style/DatePickerDialogThemeAttendee</item>
     </style>
 
     <style name="AppThemeHost" parent="AppTheme">
@@ -41,6 +51,10 @@
 
     <style name="DatePickerDialogThemeHost" parent="SublimePickerStyleLight">
         <item name="colorAccent">@color/colorHostPrimary</item>
+    </style>
+
+    <style name="DatePickerDialogThemeAttendee" parent="SublimePickerStyleLight">
+        <item name="colorAccent">@color/colorAttendeePrimary</item>
     </style>
 
     <style name="AppThemeManager" parent="AppTheme">
@@ -85,6 +99,8 @@
         <item name="colorControlHighlight">?colorPrimaryLight</item>
     </style>
 
+    <style name="BannerMaterialTheme" parent="Theme.MaterialComponents.Light.DarkActionBar"/>
+
     <!-- Auto generated when creating nav drawer -->
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
@@ -98,6 +114,6 @@
     <style name="CustomTabLayoutTextAppearance" parent="TextAppearance.Design.Tab">
         <item name="textAllCaps">false</item>
         <item name="android:fontFamily">@font/bree_serif</item>
-        <item name="android:textSize">17sp</item>
+        <item name="android:textSize">21sp</item>
     </style>
 </resources>

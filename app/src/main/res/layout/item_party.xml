@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
     android:padding="10dp"
 
     android:orientation="horizontal"
@@ -10,7 +11,8 @@
     android:clickable="true"
     android:focusable="true"
     android:foreground="?attr/selectableItemBackground"
-    android:background="@drawable/border_white_back_b">
+    android:background="@drawable/border_white_back_b"
+    android:transitionName="@string/transition_item_layout" >
 
     <FrameLayout
         android:layout_width="wrap_content"
@@ -21,6 +23,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/backg_circle"
+            android:transitionName="@string/transition_member_count_iv"
+
             tools:backgroundTint="#00796B"
             tools:ignore="ContentDescription" />
 
@@ -29,11 +33,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginBottom="2dp"
 
             android:textSize="23sp"
             android:fontFamily="@font/pt_serif_bold"
+            android:includeFontPadding="false"
             android:textColor="@color/white"
+            android:transitionName="@string/transition_member_count_tv"
 
             tools:text="1.5K"/>
     </FrameLayout>
@@ -57,6 +62,7 @@
             android:textColor="@color/black"
             android:maxLines="2"
             android:ellipsize="end"
+            android:transitionName="@string/transition_name_tv"
 
             tools:text="IKBO-02-17"/>
 
@@ -71,6 +77,7 @@
             android:maxLines="3"
             android:ellipsize="end"
             android:justificationMode="inter_word"
+            android:transitionName="@string/transition_desc_tv"
 
             tools:text="Some description for the group"
             />

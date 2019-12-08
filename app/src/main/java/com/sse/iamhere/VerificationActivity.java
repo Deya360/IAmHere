@@ -13,6 +13,9 @@ import com.google.android.material.snackbar.Snackbar;
 import com.sse.iamhere.Adapters.VerificationAdapter;
 import com.sse.iamhere.Subclasses.NoSwipeViewPager;
 import com.sse.iamhere.Utils.Constants;
+import com.sse.iamhere.Utils.LocaleUtil;
+
+import static com.sse.iamhere.Utils.Constants.DEBUG_MODE;
 
 public class VerificationActivity extends AppCompatActivity {
     private int verificationStage = 0;
@@ -26,6 +29,7 @@ public class VerificationActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        LocaleUtil.setConfigLang(this);
         setContentView(R.layout.activity_verification);
 
         if (savedInstanceState!=null) {
@@ -61,7 +65,7 @@ public class VerificationActivity extends AppCompatActivity {
             @Override
             public void onVerificationCodeSent(String phoneFormatted) {
                 Snackbar.make(findViewById(android.R.id.content),
-                        getString(R.string.verifi_on_otp_sent) + phoneFormatted, Snackbar.LENGTH_LONG).show();
+                        getString(R.string.verifi_on_otp_sent) + phoneFormatted, 3000).show();
             }
 
             @Override
@@ -74,7 +78,8 @@ public class VerificationActivity extends AppCompatActivity {
                 switch (errorCode) {
                     case Constants.VerifiEC.REVERIFY_PHONE:
                         //Todo: implement properly: add verify phone dialog
-                        Toast.makeText(VerificationActivity.this, "Debug: Couldn't get firebase user", Toast.LENGTH_LONG).show();
+                        if (DEBUG_MODE)
+                            Toast.makeText(VerificationActivity.this, "Debug: Couldn't get firebase user", Toast.LENGTH_LONG).show();
 
                     case Constants.VerifiEC.VERIFICATION_FAILED:
                     case Constants.VerifiEC.SIGNIN_FAILED:
@@ -83,7 +88,7 @@ public class VerificationActivity extends AppCompatActivity {
                         break;
                     case Constants.RQM_EC.NO_INTERNET_CONNECTION:
                         Snackbar.make(findViewById(android.R.id.content),
-                                getString(R.string.splash_connectionTv_label), Snackbar.LENGTH_LONG).show();
+                                      getString(R.string.splash_connectionTv_label), 5000).show();
                         break;
                 }
             }

@@ -29,6 +29,7 @@ import com.sse.iamhere.Server.AuthRequestBuilder;
 import com.sse.iamhere.Server.RequestsCallback;
 import com.sse.iamhere.Subclasses.OnSingleClickListener;
 import com.sse.iamhere.Utils.Constants;
+import com.sse.iamhere.Utils.LocaleUtil;
 import com.sse.iamhere.Utils.PreferencesUtil;
 
 import java.util.ArrayList;
@@ -121,6 +122,8 @@ public class AuthenticationActivity extends AppCompatActivity {
         if (disallowCancel) {
             setFinishOnTouchOutside(false);
         }
+
+        LocaleUtil.setConfigLang(this);
 
         setContentView(R.layout.activity_authentication);
 
@@ -343,7 +346,8 @@ public class AuthenticationActivity extends AppCompatActivity {
         } else {
             //Todo: implement properly: add verify phone dialog
             isProcessing=false;
-            Toast.makeText(this, "Debug: Couldn't get firebase user", Toast.LENGTH_LONG).show();
+            if (DEBUG_MODE)
+                Toast.makeText(this, "Debug: Couldn't get firebase user", Toast.LENGTH_LONG).show();
         }
     }
     private void onLogin() {
@@ -403,7 +407,8 @@ public class AuthenticationActivity extends AppCompatActivity {
         } else {
             isProcessing=false;
             //Todo: implement properly: add verify phone dialog
-            Toast.makeText(this, "Debug: Couldn't get firebase user", Toast.LENGTH_LONG).show();
+            if (DEBUG_MODE)
+                Toast.makeText(this, "Debug: Couldn't get firebase user", Toast.LENGTH_LONG).show();
         }
     }
 

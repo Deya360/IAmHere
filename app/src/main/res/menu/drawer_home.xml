@@ -26,6 +26,7 @@
             android:icon="@drawable/ic_nav_manager_color_24dp"
             app:showAsAction="ifRoom"
             app:actionLayout="@layout/drawer_home_progress"/>
+
     </group>
 
     <group
@@ -36,22 +37,31 @@
             android:title="@string/nav_all_events"/>
 
         <item
+            android:id="@+id/nav_my_parties"
+            android:icon="@drawable/ic_parties_dark_grey_24dp"
+            android:title="@string/nav_my_parties_title"/>
+
+        <item
             android:id="@+id/nav_invite_codes"
-            android:icon="@drawable/ic_invite_codes_dark_grey_24dp"
+            android:icon="@drawable/ic_add_user_group_dark_grey_24dp"
             android:title="@string/nav_invite_codes_title"/>
     </group>
 
-    <group
-        android:id="@+id/nav_group_others">
-        <item
-            android:id="@+id/nav_account"
-            android:icon="@drawable/ic_role_dark_grey_24dp"
-            android:title="@string/nav_account_title"/>
+    <item android:title="@string/nav_common_title">
+        <menu>
+            <group
+                android:id="@+id/nav_group_others">
+                <item
+                    android:id="@+id/nav_account"
+                    android:icon="@drawable/ic_role_dark_grey_24dp"
+                    android:title="@string/nav_account_title"/>
 
-        <item
-            android:id="@+id/nav_settings"
-            android:icon="@drawable/ic_settings_dark_grey_24dp"
-            android:title="@string/nav_settings_title"/>
-    </group>
+                <item
+                    android:id="@+id/nav_settings"
+                    android:icon="@drawable/ic_settings_dark_grey_24dp"
+                    android:title="@string/nav_settings_title"/>
+            </group>
+        </menu>
+    </item>
 
 </menu>

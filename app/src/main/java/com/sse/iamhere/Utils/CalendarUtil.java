@@ -1,10 +1,13 @@
 package com.sse.iamhere.Utils;
 
+import android.content.Context;
+
+import androidx.core.os.ConfigurationCompat;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Locale;
 
-public class CalendarUtils {
+public class CalendarUtil {
 
     /* Utility method that returns a new calendar object after subtracting one day to it*/
     public static Calendar getPrvDay(Calendar date) {
@@ -29,12 +32,12 @@ public class CalendarUtils {
     }
 
     /* Utility method that returns date in pretty format based on local*/
-    public static String getStringDate(Calendar date) {
+    public static String getStringDate(Calendar date, Context context) {
         SimpleDateFormat sdf;
         if (isThisYear(date)) {
-            sdf = new SimpleDateFormat("EEEE, d MMMM", Locale.getDefault());
+            sdf = new SimpleDateFormat("EEEE, d MMMM", ConfigurationCompat.getLocales(context.getResources().getConfiguration()).get(0));
         } else {
-            sdf = new SimpleDateFormat("EEEE, d MMMM yyyy", Locale.getDefault());
+            sdf = new SimpleDateFormat("EEEE, d MMMM yyyy", ConfigurationCompat.getLocales(context.getResources().getConfiguration()).get(0));
         }
         return sdf.format(date.getTime());
     }

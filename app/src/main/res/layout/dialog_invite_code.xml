@@ -65,95 +65,92 @@
                 android:layout_height="wrap_content"
                 android:layout_above="@id/invite_code_actionsLy">
 
-                <LinearLayout
+                <FrameLayout
                     android:id="@+id/invite_code_viewLy"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
                     android:padding="5dp"
                     android:orientation="vertical"
 
                     android:background="@drawable/border_white_back_thick_b">
 
-                    <FrameLayout
+                    <com.facebook.shimmer.ShimmerFrameLayout
+                        android:id="@+id/invite_code_placeholderLy"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp">
+                        android:padding="10dp"
 
-                        <com.facebook.shimmer.ShimmerFrameLayout
-                            android:id="@+id/invite_code_placeholderLy"
+                        app:shimmer_base_alpha="0.2"
+                        app:shimmer_dropoff="5"
+                        app:shimmer_repeat_delay="1200"
+                        app:shimmer_duration="50"
+                        app:shimmer_repeat_mode="restart"
+                        app:shimmer_tilt="65"
+                        android:visibility="gone"
+                        tools:visibility="gone">
+
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:padding="10dp"
+                            android:orientation="vertical">
 
-                            app:shimmer_base_alpha="0.2"
-                            app:shimmer_dropoff="5"
-                            app:shimmer_repeat_delay="1200"
-                            app:shimmer_duration="50"
-                            app:shimmer_repeat_mode="restart"
-                            app:shimmer_tilt="65"
+                            <View
+                                android:layout_width="190dp"
+                                android:layout_height="24dp"
+                                android:layout_marginBottom="7dp"
+                                android:background="#DDDDDD" />
+
+                            <View
+                                android:layout_width="140dp"
+                                android:layout_height="24dp"
+                                android:layout_marginBottom="7dp"
+                                android:background="#DDDDDD" />
+
+                            <View
+                                android:layout_width="165dp"
+                                android:layout_height="24dp"
+                                android:layout_marginBottom="7dp"
+                                android:background="#DDDDDD" />
+
+                        </LinearLayout>
+
+                    </com.facebook.shimmer.ShimmerFrameLayout>
+
+                    <FrameLayout
+                        android:id="@+id/invite_code_contentLy"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        tools:visibility="visible">
+
+                        <TextView
+                            android:id="@+id/invite_code_empty_view"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="180dp"
+                            android:layout_marginBottom="40dp"
+                            android:padding="14dp"
                             android:visibility="gone"
-                            tools:visibility="gone">
 
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical">
+                            android:fontFamily="@font/bree_serif"
+                            android:text="@string/invite_code_empty_view_label"
+                            android:textAlignment="center"
+                            android:textSize="20sp"
+                            android:textColor="#5B000000"
 
-                                <View
-                                    android:layout_width="190dp"
-                                    android:layout_height="24dp"
-                                    android:layout_marginBottom="7dp"
-                                    android:background="#DDDDDD" />
+                            tools:visibility="visible"/>
 
-                                <View
-                                    android:layout_width="140dp"
-                                    android:layout_height="24dp"
-                                    android:layout_marginBottom="7dp"
-                                    android:background="#DDDDDD" />
-
-                                <View
-                                    android:layout_width="165dp"
-                                    android:layout_height="24dp"
-                                    android:layout_marginBottom="7dp"
-                                    android:background="#DDDDDD" />
-
-                            </LinearLayout>
-
-                        </com.facebook.shimmer.ShimmerFrameLayout>
-
-                        <FrameLayout
-                            android:id="@+id/invite_code_contentLy"
+                        <com.sse.iamhere.Subclasses.EmptySupportedRecyclerView
+                            android:id="@+id/invite_code_recycler_view"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            tools:visibility="visible">
-
-                            <TextView
-                                android:id="@+id/invite_code_empty_view"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="20dp"
-                                android:layout_marginBottom="40dp"
-                                android:visibility="gone"
-
-                                android:fontFamily="@font/bree_serif"
-                                android:text="@string/invite_code_empty_view_label"
-                                android:textAlignment="center"
-                                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-                                tools:visibility="visible"/>
-
-                            <com.sse.iamhere.Subclasses.EmptySupportedRecyclerView
-                                android:id="@+id/invite_code_recycler_view"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:minHeight="120dp"
-                                android:clipToPadding="false"
-                                android:scrollbars="vertical"/>
-
-                        </FrameLayout>
+                            android:minHeight="120dp"
+                            android:clipToPadding="false"
+                            android:scrollbars="vertical"/>
 
                     </FrameLayout>
 
-                </LinearLayout>
+                </FrameLayout>
 
             </com.sse.iamhere.Subclasses.CustomSwipeToRefresh>
 

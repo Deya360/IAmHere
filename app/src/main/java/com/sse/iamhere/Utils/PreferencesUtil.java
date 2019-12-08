@@ -2,28 +2,33 @@ package com.sse.iamhere.Utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.text.TextUtils;
 
 import androidx.security.crypto.EncryptedSharedPreferences;
 import androidx.security.crypto.MasterKeys;
 
 import com.google.gson.Gson;
+import com.sse.iamhere.POJO.Feed;
 import com.sse.iamhere.Server.Body.TokenData;
 import com.sse.iamhere.Server.ServiceGen;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
+import static com.sse.iamhere.Utils.Constants.APP_FEED;
 import static com.sse.iamhere.Utils.Constants.ROLE_TYPE;
 import static com.sse.iamhere.Utils.Constants.SETTINGS_PREFS;
 import static com.sse.iamhere.Utils.Constants.SETTINGS_PREFS_SECRET;
 
 public class PreferencesUtil {
-    // Permissions Util
+    private static boolean flag403;
+    public static boolean isFlag403() {
+        return flag403;
+    }
+    public static void setFlag403(boolean state) {
+        flag403 = state;
+    }
+
     /* Below two functions are used to store in the shared preferences,
         whether a certain permission request was asked before, or if first time*/
     static void firstTimeAskingPermission(Context context, String permission, boolean isFirstTime){
@@ -46,37 +51,24 @@ public class PreferencesUtil {
         sharedPreference.edit().putBoolean(setting, state).apply();
     }
 
-    public static ArrayList<String> getStringArrayPrefByName(Context context, String setting, String defaultString){
-        ArrayList<String> returnArr = new ArrayList<>();
-        String tempStr = context.getSharedPreferences(SETTINGS_PREFS, MODE_PRIVATE).getString(setting, defaultString);
-        if (tempStr!=null && !tempStr.equals("")) {
-            returnArr.addAll(Arrays.asList(tempStr.split("\\s*,\\s*")));
-        }
-        return returnArr;
+
+    public static String getPrefByName(Context context, String setting, String defaultValue){
+        return context.getSharedPreferences(SETTINGS_PREFS, MODE_PRIVATE).getString(setting, defaultValue);
     }
 
-    public static void setStringArrayByName(Context context, String setting, List<String> array){
+    public static void setPrefByName(Context context, String setting, String value){
         SharedPreferences sharedPreference = context.getSharedPreferences(SETTINGS_PREFS, MODE_PRIVATE);
-        sharedPreference.edit().putString(setting, TextUtils.join(",",array)).apply();
+        sharedPreference.edit().putString(setting, value).apply();
     }
 
-//    public static String getPrefByName(Context context, String setting, String defaultValue){
-//        return context.getSharedPreferences(SETTINGS_PREFS, MODE_PRIVATE).getString(setting, defaultValue);
+//    public static int getPrefByName(Context context, String setting, int defaultValue){
+//        return context.getSharedPreferences(SETTINGS_PREFS, MODE_PRIVATE).getInt(setting, defaultValue);
 //    }
 //
-//    public static void setPrefByName(Context context, String setting, String value){
+//    public static void setPrefByName(Context context, String setting, int value){
 //        SharedPreferences sharedPreference = context.getSharedPreferences(SETTINGS_PREFS, MODE_PRIVATE);
-//        sharedPreference.edit().putString(setting, value).apply();
+//        sharedPreference.edit().putInt(setting, value).apply();
 //    }
-
-    public static int getPrefByName(Context context, String setting, int defaultValue){
-        return context.getSharedPreferences(SETTINGS_PREFS, MODE_PRIVATE).getInt(setting, defaultValue);
-    }
-
-    public static void setPrefByName(Context context, String setting, int value){
-        SharedPreferences sharedPreference = context.getSharedPreferences(SETTINGS_PREFS, MODE_PRIVATE);
-        sharedPreference.edit().putInt(setting, value).apply();
-    }
 
     // Methods for obtaining and storing token data in encrypted shared preferences
     public static TokenData getTokenData(Context context, Constants.Role role)
@@ -104,6 +96,7 @@ public class PreferencesUtil {
                 EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         );
         encryptedSharedPrefs.edit().putString(role.getPrefsKey(), new Gson().toJson(tokenData)).apply();
+        ServiceGen.resetCachedServices();
     }
 
     // Methods for getting role
@@ -117,6 +110,7 @@ public class PreferencesUtil {
         SharedPreferences sharedPreference = context.getSharedPreferences(SETTINGS_PREFS, MODE_PRIVATE);
         sharedPreference.edit().putString(ROLE_TYPE,  new Gson().toJson(role)).apply();
         ServiceGen.resetCachedServices();
+        setFlag403(false);
     }
 
     // Convenience methods:
@@ -138,4 +132,32 @@ public class PreferencesUtil {
         }
         return false;
     }
+
+
+    //Methods for getting feed
+    public static Feed getFeed(Context context, int roleType) {
+        String feedPOJO = context.getSharedPreferences(SETTINGS_PREFS, MODE_PRIVATE).getString(APP_FEED + roleType, null);
+        if (feedPOJO==null) return new Feed();
+        else return new Gson().fromJson(feedPOJO, Feed.class);
+    }
+
+    public static void storeFeed(Context context, int roleType, Feed feed) {
+        SharedPreferences sharedPreference = context.getSharedPreferences(SETTINGS_PREFS, MODE_PRIVATE);
+        sharedPreference.edit().putString(APP_FEED + roleType,  new Gson().toJson(feed)).apply();
+    }
+
+    // Array Prefs
+//    public static ArrayList<String> getStringArrayPrefByName(Context context, String setting, String defaultString){
+//        ArrayList<String> returnArr = new ArrayList<>();
+//        String tempStr = context.getSharedPreferences(SETTINGS_PREFS, MODE_PRIVATE).getString(setting, defaultString);
+//        if (tempStr!=null && !tempStr.equals("")) {
+//            returnArr.addAll(Arrays.asList(tempStr.split("\\s*,\\s*")));
+//        }
+//        return returnArr;
+//    }
+//
+//    public static void setStringArrayByName(Context context, String setting, List<String> array){
+//        SharedPreferences sharedPreference = context.getSharedPreferences(SETTINGS_PREFS, MODE_PRIVATE);
+//        sharedPreference.edit().putString(setting, TextUtils.join(",",array)).apply();
+//    }
 }

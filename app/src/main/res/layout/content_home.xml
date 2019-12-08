@@ -21,15 +21,45 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:id="@+id/home_mainLy"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="68dp"
 
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+        <com.sergivonavi.materialbanner.Banner
+            android:id="@+id/home_banner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+
+            tools:visibility="visible"
+            tools:messageText="You have joined AhoyTeam using an invite code."
+            tools:buttonRightText="Dismiss"
+
+            app:icon="@drawable/ic_add_user_group_dark_grey_24dp"
+            android:theme="@style/BannerMaterialTheme"/>
+
+        <ImageView
+            android:id="@+id/home_bannerIv"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/home_banner"
+            android:background="#8B8989"
+            android:visibility="gone"
+            tools:ignore="ContentDescription" />
+
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:id="@+id/home_mainLy"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/home_bannerIv"
+            android:layout_alignWithParentIfMissing="true">
+
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    </RelativeLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/home_bottomNav"

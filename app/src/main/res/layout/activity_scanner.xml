@@ -1,0 +1,58 @@
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:background="@android:color/black">
+
+    <com.dlazaro66.qrcodereaderview.QRCodeReaderView
+        android:id="@+id/scanner_QRCodeReaderView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        android:background="#40000000">
+
+        <TextView
+            android:id="@+id/scanner_infoTv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="220dp"
+            android:padding="8dp"
+            android:layout_gravity="center"
+
+            android:text="@string/scanner_infoTv_label"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:fontFamily="@font/roboto_slab"
+            android:includeFontPadding="false"
+            android:textAlignment="center"
+
+            android:background="#34FFFFFF" />
+
+        <SurfaceView
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:layout_gravity="center"
+            android:background="@drawable/border_scanner_view"/>
+
+        <ImageView
+            android:id="@+id/scanner_returnIv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="15dp"
+            android:src="@drawable/ic_arrow_back_white_28dp"
+            android:contentDescription="@string/scanner_complete_returnBtn_label"
+
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackgroundBorderless"/>
+
+    </FrameLayout>
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

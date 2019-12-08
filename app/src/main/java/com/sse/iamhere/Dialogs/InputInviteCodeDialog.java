@@ -20,7 +20,6 @@ public class InputInviteCodeDialog extends AppCompatDialogFragment {
     private EditText inputEt;
     private String name = "";
 
-
     public InputInviteCodeDialog() { }
 
     private InputIndividualDialogListener inputIndividualDialogListener;
@@ -63,12 +62,12 @@ public class InputInviteCodeDialog extends AppCompatDialogFragment {
         });
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
-            .setTitle("Add Code")
+            .setTitle(getString(R.string.input_invite_code_title))
             .setView(inputInvolvedView)
-            .setPositiveButton("Ok", (dialog, which) -> {
+            .setPositiveButton(getString(R.string.input_invite_code_okBtn), (dialog, which) -> {
                 onOkPressed();
             })
-            .setNegativeButton("Cancel",null)
+            .setNegativeButton(getString(R.string.input_invite_code_cancelBtn),null)
             .setOnDismissListener(dialog -> {
                 inputIndividualDialogListener.onDismiss();
             }

@@ -57,7 +57,7 @@ public class AuthRequestBuilder{
     }
 
     // region Auth requests:
-    public AuthRequestBuilder register(String uuid, String password, Constants.Role role) {
+    public void register(String uuid, String password, Constants.Role role) {
         TokenProvider.getUsableToken(context, tokenType, role, new TokenProvider.TokenProviderCallback() {
             @Override
             public void onSuccess(int token_type, String token) {
@@ -115,9 +115,8 @@ public class AuthRequestBuilder{
                 getCallback().onFailure(errorCode);
             }
         });
-        return this;
     }
-    public AuthRequestBuilder login(String uuid, String password, Constants.Role role) {
+    public void login(String uuid, String password, Constants.Role role) {
         TokenProvider.getUsableToken(context, tokenType, role, new TokenProvider.TokenProviderCallback() {
             @Override
             public void onSuccess(int token_type, String token) {
@@ -175,12 +174,11 @@ public class AuthRequestBuilder{
                 getCallback().onFailure(errorCode);
             }
         });
-        return this;
     }
     /**
      * Must supply Access Token
      */
-    public AuthRequestBuilder logout() {
+    public void logout() {
         TokenProvider.getUsableToken(context, tokenType,
                 PreferencesUtil.getRole(context, Constants.Role.NONE), new TokenProvider.TokenProviderCallback() {
             @Override
@@ -217,9 +215,8 @@ public class AuthRequestBuilder{
             }
         });
 
-        return this;
     }
-    public AuthRequestBuilder refresh(String refreshToken) {
+    public void refresh(String refreshToken) {
         Requests requests = ServiceGen.createService(Requests.class, REQUEST_PREFIX, refreshToken, tokenType);
         Call<TokenData> call = requests.refresh();
 
@@ -244,7 +241,6 @@ public class AuthRequestBuilder{
                 getCallback().onFailure(Constants.RQM_EC.REFRESH_CALL_FAIL);
             }
         });
-        return this;
     }
     public AuthRequestBuilder check(String uuid) {
         TokenProvider.getUsableToken(context, tokenType, null, new TokenProvider.TokenProviderCallback() {

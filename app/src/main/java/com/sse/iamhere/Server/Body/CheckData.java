@@ -17,7 +17,8 @@ public class CheckData {
     }
 
     public boolean isRegistered() {
-        return (found(manager) || found(host) || found(attendee));
+//        return (found(manager) || found(host) || found(attendee));
+        return (found(host) || found(attendee));
     }
 
     public boolean getRegisteredStatusByRole(Constants.Role role) {

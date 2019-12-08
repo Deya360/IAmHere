@@ -7,7 +7,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.sse.iamhere.Server.Body.CredentialData;
+import com.sse.iamhere.Server.Body.PartyBrief;
 import com.sse.iamhere.Server.Body.PartyData;
+import com.sse.iamhere.Server.Body.PartyDataExtra;
 import com.sse.iamhere.Server.Body.SubjectData;
 import com.sse.iamhere.Server.Body.VisitData;
 import com.sse.iamhere.Utils.Constants;
@@ -30,6 +32,7 @@ import static com.sse.iamhere.Utils.Constants.TOKEN_NONE;
 import static com.sse.iamhere.Utils.ServerConstants.REQUEST_PREFIX;
 
 public class RequestBuilder {
+    private static final int FAILED_DEPENDENCY = 424;
     private LinkedList<Runnable> buildQueue = new LinkedList<>() ;
 
     private Requests requestsI;
@@ -135,7 +138,9 @@ public class RequestBuilder {
         runNext();
     }
 
-    // region Attendee requests:
+    //region Attendee
+    //region Attendee - Credentials
+
     /**
      * Must supply Access Token
      */
@@ -149,8 +154,8 @@ public class RequestBuilder {
 
                 } else {
                     Log.i("RequestBuilder",
-                            String.format("attendeeGetCredentials:onResponse - Code: %d\nMsg: %s",
-                                    response.code(), extract(response.errorBody(), response.message())));
+                          String.format("attendeeGetCredentials:onResponse - Code: %d\nMsg: %s",
+                                        response.code(), extract(response.errorBody(), response.message())));
 
                     if (response.code() == HttpURLConnection.HTTP_CONFLICT) {
                         getCallback().onFailure(Constants.RQM_EC.GET_CREDENTIALS_USER_NOT_FOUND);
@@ -180,8 +185,8 @@ public class RequestBuilder {
 
                 } else {
                     Log.i("RequestBuilder",
-                            String.format("attendeeSetCredentials:onResponse - Code: %d\nMsg: %s",
-                                    response.code(), extract(response.errorBody(), response.message())));
+                          String.format("attendeeSetCredentials:onResponse - Code: %d\nMsg: %s",
+                                        response.code(), extract(response.errorBody(), response.message())));
 
                     if (response.code() == HttpURLConnection.HTTP_CONFLICT) {
                         getCallback().onFailure(Constants.RQM_EC.SET_CREDENTIALS_USER_NOT_FOUND);
@@ -200,45 +205,9 @@ public class RequestBuilder {
 
     }
 
-    /**
-     * Must supply Access Token
-     */
-    public void attendeeSubmitQRCode(String qrToken) {
-        requestsI.attendeeSubmitQRCode(qrToken).enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
-                    Log.i("RequestBuilder", "attendeeSubmitQRCode:onResponse - Code: " + response.code());
-                    mCallback.onQRCodeSuccess(extract(response.body(), response.message()));
+    //endregion
 
-                } else {
-                    Log.i("RequestBuilder",
-                            String.format("attendeeSubmitQRCode:onResponse - Code: %d\nMsg: %s",
-                                    response.code(), extract(response.errorBody(), response.message())));
-
-                    switch (response.code()) {
-                        case HttpURLConnection.HTTP_CONFLICT:
-                            getCallback().onFailure(Constants.RQM_EC.QR_CODE_USER_NOT_FOUND);
-                            break;
-
-                        case HttpURLConnection.HTTP_BAD_REQUEST:
-                            getCallback().onFailure(Constants.RQM_EC.QR_CODE_SUBJECT_NOT_FOUND);
-                            break;
-
-                        default:
-                            getCallback().onFailure(Constants.RQM_EC.QR_CODE_UNKNOWN);
-                            break;
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
-                Log.i("RequestBuilder", "attendeeSubmitQRCode:onFailure - Msg: " + t.getMessage());
-                getCallback().onFailure(Constants.RQM_EC.QR_CODE_UNKNOWN);
-            }
-        });
-    }
+    //region Attendee - Invites
 
     /**
      * Must supply Access Token
@@ -253,8 +222,8 @@ public class RequestBuilder {
 
                 } else {
                     Log.i("RequestBuilder",
-                            String.format("attendeeGetCodeWords:onResponse - Code: %d\nMsg: %s",
-                                    response.code(), extract(response.errorBody(), response.message())));
+                          String.format("attendeeGetCodeWords:onResponse - Code: %d\nMsg: %s",
+                                        response.code(), extract(response.errorBody(), response.message())));
 
                     if (response.code() == HttpURLConnection.HTTP_CONFLICT) {
                         getCallback().onFailure(Constants.RQM_EC.CODE_WORDS_USER_NOT_FOUND);
@@ -285,8 +254,8 @@ public class RequestBuilder {
 
                 } else {
                     Log.i("RequestBuilder",
-                            String.format("attendeeSetCodeWords:onResponse - Code: %d\nMsg: %s",
-                                    response.code(), extract(response.errorBody(), response.message())));
+                          String.format("attendeeSetCodeWords:onResponse - Code: %d\nMsg: %s",
+                                        response.code(), extract(response.errorBody(), response.message())));
 
                     if (response.code() == HttpURLConnection.HTTP_CONFLICT) {
                         getCallback().onFailure(Constants.RQM_EC.CODE_WORDS_USER_NOT_FOUND);
@@ -308,17 +277,17 @@ public class RequestBuilder {
      * Must supply Access Token
      */
     public void attendeeRemoveCodeWords(List<String> codeWords) {
-        requestsI.attendeeSetCodeWords(codeWords).enqueue(new Callback<ResponseBody>() {
+        requestsI.attendeeRemoveCodeWords(codeWords).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
-                    Log.i("RequestBuilder", "attendeeSetCodeWords:onResponse - Code: " + response.code());
+                    Log.i("RequestBuilder", "attendeeRemoveCodeWords:onResponse - Code: " + response.code());
                     getCallback().onRemoveCodeWordsSuccess(extract(response.body(), response.message()));
 
                 } else {
                     Log.i("RequestBuilder",
-                            String.format("attendeeSetCodeWords:onResponse - Code: %d\nMsg: %s",
-                                    response.code(), extract(response.errorBody(), response.message())));
+                          String.format("attendeeRemoveCodeWords:onResponse - Code: %d\nMsg: %s",
+                                        response.code(), extract(response.errorBody(), response.message())));
 
                     if (response.code() == HttpURLConnection.HTTP_CONFLICT) {
                         getCallback().onFailure(Constants.RQM_EC.CODE_WORDS_USER_NOT_FOUND);
@@ -330,39 +299,12 @@ public class RequestBuilder {
 
             @Override
             public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
-                Log.i("RequestBuilder", "attendeeSetCodeWords:onFailure - Msg: " + t.getMessage());
+                Log.i("RequestBuilder", "attendeeRemoveCodeWords:onFailure - Msg: " + t.getMessage());
                 getCallback().onFailure(Constants.RQM_EC.CODE_WORDS_UNKNOWN);
             }
         });
     }
 
-
-    /**
-     * Must supply Access Token
-     */
-    public void attendeeFindParty(String codeWord) {
-        requestsI.attendeeFindParty(codeWord).enqueue(new Callback<Set<PartyData>>() {
-            @Override
-            public void onResponse(@NonNull Call<Set<PartyData>> call, @NonNull Response<Set<PartyData>> response) {
-                if (response.isSuccessful()) {
-                    Log.i("RequestBuilder", "attendeeFindParty:onResponse - Code: " + response.code());
-                    getCallback().onFindPartySuccess(response.body());
-
-                } else {
-                    Log.i("RequestBuilder",
-                            String.format("attendeeFindParty:onResponse - Code: %d\nMsg: %s",
-                                    response.code(), extract(response.errorBody(), response.message())));
-                    getCallback().onFailure(Constants.RQM_EC.FIND_BY_CODE_UNKNOWN);
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<Set<PartyData>> call, @NonNull Throwable t) {
-                Log.i("RequestBuilder", "attendeeFindParty:onFailure - Msg: " + t.getMessage());
-                getCallback().onFailure(Constants.RQM_EC.FIND_BY_CODE_UNKNOWN);
-            }
-        });
-    }
     /**
      * Must supply Access Token
      */
@@ -376,8 +318,8 @@ public class RequestBuilder {
 
                 } else {
                     Log.i("RequestBuilder",
-                            String.format("attendeeFindAllParties:onResponse - Code: %d\nMsg: %s",
-                                    response.code(), extract(response.errorBody(), response.message())));
+                          String.format("attendeeFindAllParties:onResponse - Code: %d\nMsg: %s",
+                                        response.code(), extract(response.errorBody(), response.message())));
 
                     if (response.code() == HttpURLConnection.HTTP_CONFLICT) {
                         getCallback().onFailure(Constants.RQM_EC.FIND_BY_CODES_USER_NOT_FOUND);
@@ -394,11 +336,43 @@ public class RequestBuilder {
             }
         });
     }
+
+    //endregion
+
+    //region Attendee - Party
+
     /**
      * Must supply Access Token
      */
-    public void attendeeJoinParty(Integer partyId, String codeWord) {
-        requestsI.attendeeJoinParty(partyId, codeWord).enqueue(new Callback<ResponseBody>() {
+    public void attendeeFindParty(String codeWord) {
+        requestsI.attendeeFindParty(codeWord).enqueue(new Callback<Set<PartyData>>() {
+            @Override
+            public void onResponse(@NonNull Call<Set<PartyData>> call, @NonNull Response<Set<PartyData>> response) {
+                if (response.isSuccessful()) {
+                    Log.i("RequestBuilder", "attendeeFindParty:onResponse - Code: " + response.code());
+                    getCallback().onFindPartySuccess(response.body());
+
+                } else {
+                    Log.i("RequestBuilder",
+                          String.format("attendeeFindParty:onResponse - Code: %d\nMsg: %s",
+                                        response.code(), extract(response.errorBody(), response.message())));
+                    getCallback().onFailure(Constants.RQM_EC.FIND_BY_CODE_UNKNOWN);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Set<PartyData>> call, @NonNull Throwable t) {
+                Log.i("RequestBuilder", "attendeeFindParty:onFailure - Msg: " + t.getMessage());
+                getCallback().onFailure(Constants.RQM_EC.FIND_BY_CODE_UNKNOWN);
+            }
+        });
+    }
+
+    /**
+     * Must supply Access Token
+     */
+    public void attendeeJoinParty(Integer partyId, String codeWord, String deviceToken) {
+        requestsI.attendeeJoinParty(partyId, codeWord, deviceToken).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
@@ -407,13 +381,19 @@ public class RequestBuilder {
 
                 } else {
                     Log.i("RequestBuilder",
-                            String.format("attendeeJoinParty:onResponse - Code: %d\nMsg: %s",
-                                    response.code(), extract(response.errorBody(), response.message())));
+                          String.format("attendeeJoinParty:onResponse - Code: %d\nMsg: %s",
+                                        response.code(), extract(response.errorBody(), response.message())));
 
-                    if (response.code() == HttpURLConnection.HTTP_CONFLICT) {
-                        getCallback().onFailure(Constants.RQM_EC.JOIN_USER_NOT_FOUND);
-                    } else {
-                        getCallback().onFailure(Constants.RQM_EC.JOIN_UNKNOWN);
+                    switch (response.code()) {
+                        case HttpURLConnection.HTTP_CONFLICT:
+                            getCallback().onFailure(Constants.RQM_EC.JOIN_USER_NOT_FOUND);
+                            break;
+                        case FAILED_DEPENDENCY:
+                            getCallback().onFailure(Constants.RQM_EC.JOIN_CODE_MISMATCH);
+                            break;
+                        default:
+                            getCallback().onFailure(Constants.RQM_EC.JOIN_UNKNOWN);
+                            break;
                     }
                 }
             }
@@ -425,6 +405,49 @@ public class RequestBuilder {
             }
         });
     }
+
+    /**
+     * Must supply Access Token
+     */
+    public void attendeeLeaveParty(Integer partyId, String deviceToken) {
+        requestsI.attendeeLeaveParty(partyId, deviceToken).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    Log.i("RequestBuilder", "attendeeLeaveParty:onResponse - Code: " + response.code());
+                    getCallback().onLeavePartySuccess(extract(response.body(), response.message()));
+
+                } else {
+                    Log.i("RequestBuilder",
+                          String.format("attendeeLeaveParty:onResponse - Code: %d\nMsg: %s",
+                                        response.code(), extract(response.errorBody(), response.message())));
+
+                    switch (response.code()) {
+                        case HttpURLConnection.HTTP_CONFLICT:
+                            getCallback().onFailure(Constants.RQM_EC.LEAVE_USER_NOT_FOUND);
+                            break;
+                        case FAILED_DEPENDENCY:
+                            getCallback().onFailure(Constants.RQM_EC.LEAVE_PARTY_NOT_FOUND);
+                            break;
+                        default:
+                            getCallback().onFailure(Constants.RQM_EC.LEAVE_UNKNOWN);
+                            break;
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                Log.i("RequestBuilder", "attendeeLeaveParty:onFailure - Msg: " + t.getMessage());
+                getCallback().onFailure(Constants.RQM_EC.LEAVE_UNKNOWN);
+            }
+        });
+    }
+
+    //endregion
+
+    //region Attendee - Queries
+
     /**
      * Must supply Access Token
      */
@@ -438,8 +461,8 @@ public class RequestBuilder {
 
                 } else {
                     Log.i("RequestBuilder",
-                            String.format("attendeePartiesList:onResponse - Code: %d\nMsg: %s",
-                                    response.code(), extract(response.errorBody(), response.message())));
+                          String.format("attendeePartiesList:onResponse - Code: %d\nMsg: %s",
+                                        response.code(), extract(response.errorBody(), response.message())));
 
                     getCallback().onFailure(Constants.RQM_EC.ATTENDEE_GET_PARTIES_UNKNOWN);
                 }
@@ -452,9 +475,155 @@ public class RequestBuilder {
             }
         });
     }
+
+    /**
+     * Must supply Access Token
+     */
+    public void attendeeGetEventsByDate(long date) {
+        requestsI.attendeeGetEventsByDate(date).enqueue(new Callback<Set<SubjectData>>() {
+            @Override
+            public void onResponse(@NonNull Call<Set<SubjectData>> call, @NonNull Response<Set<SubjectData>> response) {
+                if (response.isSuccessful()) {
+                    Log.i("RequestBuilder", "attendeeGetEventsByDate:onResponse - Code: " + response.code());
+                    getCallback().onAttendeeGetEventsByDateSuccess(response.body());
+
+                } else {
+                    Log.i("RequestBuilder",
+                          String.format("attendeeGetEventsByDate:onResponse - Code: %d\nMsg: %s",
+                                        response.code(), extract(response.errorBody(), response.message())));
+
+                    if (response.code() == HttpURLConnection.HTTP_CONFLICT) {
+                        getCallback().onFailure(Constants.RQM_EC.ATTENDEE_GET_EVENTS_BY_DATE_USER_NOT_FOUND);
+                    } else {
+                        getCallback().onFailure(Constants.RQM_EC.ATTENDEE_GET_EVENTS_BY_DATE_UNKNOWN);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Set<SubjectData>> call, @NonNull Throwable t) {
+                Log.i("RequestBuilder", "attendeeGetEventsByDate:onFailure - Msg: " + t.getMessage());
+                getCallback().onFailure(Constants.RQM_EC.ATTENDEE_GET_EVENTS_BY_DATE_UNKNOWN);
+            }
+        });
+    }
+
+    /**
+     * Must supply Access Token
+     */
+    public void attendeeGetVisitsByDate(long date) {
+        requestsI.attendeeGetVisitsByDate(date).enqueue(new Callback<Set<VisitData>>() {
+            @Override
+            public void onResponse(@NonNull Call<Set<VisitData>> call, @NonNull Response<Set<VisitData>> response) {
+                if (response.isSuccessful()) {
+                    Log.i("RequestBuilder", "attendeeGetVisitsByDate:onResponse - Code: " + response.code());
+                    getCallback().onAttendeeGetVisitsByDateSuccess(response.body());
+
+                } else {
+                    Log.i("RequestBuilder",
+                          String.format("attendeeGetVisitsByDate:onResponse - Code: %d\nMsg: %s",
+                                        response.code(), extract(response.errorBody(), response.message())));
+
+                    getCallback().onFailure(Constants.RQM_EC.ATTENDEE_GET_VISITS_BY_DATE_UNKNOWN);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Set<VisitData>> call, @NonNull Throwable t) {
+                Log.i("RequestBuilder", "attendeeGetVisitsByDate:onFailure - Msg: " + t.getMessage());
+                getCallback().onFailure(Constants.RQM_EC.ATTENDEE_GET_VISITS_BY_DATE_UNKNOWN);
+            }
+        });
+    }
+
+    /**
+     * Must supply Access Token
+     */
+    public void attendeeGetUserById(int userId, String userType) {
+        requestsI.attendeeGetUserById(userId, userType).enqueue(new Callback<CredentialData>() {
+            @Override
+            public void onResponse(@NonNull Call<CredentialData> call, @NonNull Response<CredentialData> response) {
+                if (response.isSuccessful()) {
+                    Log.i("RequestBuilder", "attendeeGetUserById:onResponse - Code: " + response.code());
+                    getCallback().onGetUser(response.body());
+
+                } else {
+                    Log.i("RequestBuilder",
+                          String.format("attendeeGetUserById:onResponse - Code: %d\nMsg: %s",
+                                        response.code(), extract(response.errorBody(), response.message())));
+
+                    switch (response.code()) {
+                        case HttpURLConnection.HTTP_CONFLICT:
+                            getCallback().onFailure(Constants.RQM_EC.GET_USER_USER_NOT_FOUND);
+                            break;
+                        case HttpURLConnection.HTTP_BAD_REQUEST:
+                            getCallback().onFailure(Constants.RQM_EC.GET_USER_INVALID);
+                            break;
+                        default:
+                            getCallback().onFailure(Constants.RQM_EC.GET_USER_UNKNOWN);
+                            break;
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<CredentialData> call, @NonNull Throwable t) {
+                Log.i("RequestBuilder", "attendeeGetUserById:onFailure - Msg: " + t.getMessage());
+                getCallback().onFailure(Constants.RQM_EC.GET_USER_UNKNOWN);
+            }
+        });
+    }
+
     //endregion
 
-    // region Host requests:
+    //region Attendee - Actions
+
+    /**
+     * Must supply Access Token
+     */
+    public void attendeeSubmitQRCode(String qrToken) {
+        requestsI.attendeeSubmitQRCode(qrToken).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    Log.i("RequestBuilder", "attendeeSubmitQRCode:onResponse - Code: " + response.code());
+                    getCallback().onQRCodeSuccess(extract(response.body(), response.message()));
+
+                } else {
+                    Log.i("RequestBuilder",
+                          String.format("attendeeSubmitQRCode:onResponse - Code: %d\nMsg: %s",
+                                        response.code(), extract(response.errorBody(), response.message())));
+
+                    switch (response.code()) {
+                        case HttpURLConnection.HTTP_CONFLICT:
+                            getCallback().onFailure(Constants.RQM_EC.QR_CODE_USER_NOT_FOUND);
+                            break;
+
+                        case HttpURLConnection.HTTP_BAD_REQUEST:
+                            getCallback().onFailure(Constants.RQM_EC.QR_CODE_SUBJECT_NOT_FOUND);
+                            break;
+
+                        default:
+                            getCallback().onFailure(Constants.RQM_EC.QR_CODE_UNKNOWN);
+                            break;
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                Log.i("RequestBuilder", "attendeeSubmitQRCode:onFailure - Msg: " + t.getMessage());
+                getCallback().onFailure(Constants.RQM_EC.QR_CODE_UNKNOWN);
+            }
+        });
+    }
+
+    //endregion
+    //endregion
+
+    //region Host
+    //region Host - Credentials
+
     /**
      * Must supply Access Token
      */
@@ -468,8 +637,8 @@ public class RequestBuilder {
 
                 } else {
                     Log.i("RequestBuilder",
-                            String.format("hostGetCredentials:onResponse - Code: %d\nMsg: %s",
-                                    response.code(), extract(response.errorBody(), response.message())));
+                          String.format("hostGetCredentials:onResponse - Code: %d\nMsg: %s",
+                                        response.code(), extract(response.errorBody(), response.message())));
 
                     if (response.code() == HttpURLConnection.HTTP_CONFLICT) {
                         getCallback().onFailure(Constants.RQM_EC.GET_CREDENTIALS_USER_NOT_FOUND);
@@ -499,8 +668,8 @@ public class RequestBuilder {
 
                 } else {
                     Log.i("RequestBuilder",
-                            String.format("hostSetCredentials:onResponse - Code: %d\nMsg: %s",
-                                    response.code(), extract(response.errorBody(), response.message())));
+                          String.format("hostSetCredentials:onResponse - Code: %d\nMsg: %s",
+                                        response.code(), extract(response.errorBody(), response.message())));
 
                     if (response.code() == HttpURLConnection.HTTP_CONFLICT) {
                         getCallback().onFailure(Constants.RQM_EC.SET_CREDENTIALS_USER_NOT_FOUND);
@@ -518,45 +687,9 @@ public class RequestBuilder {
         });
     }
 
-    /**
-     * Must supply Access Token
-     */
-    public void hostCreateQRCode(Integer eventId) {
-        requestsI.hostCreateQRCode(eventId).enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
-                    Log.i("RequestBuilder", "hostCreateQRCode:onResponse - Code: " + response.code());
-                    getCallback().onQRCodeSuccess(extract(response.body(), response.message()));
+    //endregion
 
-                } else {
-                    Log.i("RequestBuilder",
-                            String.format("hostCreateQRCode:onResponse - Code: %d\nMsg: %s",
-                                    response.code(), extract(response.errorBody(), response.message())));
-
-                    switch (response.code()) {
-                        case HttpURLConnection.HTTP_CONFLICT:
-                            getCallback().onFailure(Constants.RQM_EC.QR_CODE_USER_NOT_FOUND);
-                            break;
-
-                        case HttpURLConnection.HTTP_BAD_REQUEST:
-                            getCallback().onFailure(Constants.RQM_EC.QR_CODE_SUBJECT_NOT_FOUND);
-                            break;
-
-                        default:
-                            getCallback().onFailure(Constants.RQM_EC.QR_CODE_UNKNOWN);
-                            break;
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
-                Log.i("RequestBuilder", "hostCreateQRCode:onFailure - Msg: " + t.getMessage());
-                getCallback().onFailure(Constants.RQM_EC.QR_CODE_UNKNOWN);
-            }
-        });
-    }
+    //region Host - Invites
 
     /**
      * Must supply Access Token
@@ -571,8 +704,8 @@ public class RequestBuilder {
 
                 } else {
                     Log.i("RequestBuilder",
-                            String.format("hostGetCodeWords:onResponse - Code: %d\nMsg: %s",
-                                    response.code(), extract(response.errorBody(), response.message())));
+                          String.format("hostGetCodeWords:onResponse - Code: %d\nMsg: %s",
+                                        response.code(), extract(response.errorBody(), response.message())));
 
                     if (response.code() == HttpURLConnection.HTTP_CONFLICT) {
                         getCallback().onFailure(Constants.RQM_EC.CODE_WORDS_USER_NOT_FOUND);
@@ -603,9 +736,9 @@ public class RequestBuilder {
 
                 } else {
                     Log.i("RequestBuilder",
-                            String.format("hostSetCodeWords:onResponse - Code: %d\nMsg: %s",
-                                    response.code(), extract(response.errorBody(), response.message())));
-                    
+                          String.format("hostSetCodeWords:onResponse - Code: %d\nMsg: %s",
+                                        response.code(), extract(response.errorBody(), response.message())));
+
                     if (response.code() == HttpURLConnection.HTTP_CONFLICT) {
                         getCallback().onFailure(Constants.RQM_EC.CODE_WORDS_USER_NOT_FOUND);
                     } else {
@@ -635,8 +768,8 @@ public class RequestBuilder {
 
                 } else {
                     Log.i("RequestBuilder",
-                            String.format("hostRemoveCodeWords:onResponse - Code: %d\nMsg: %s",
-                                    response.code(), extract(response.errorBody(), response.message())));
+                          String.format("hostRemoveCodeWords:onResponse - Code: %d\nMsg: %s",
+                                        response.code(), extract(response.errorBody(), response.message())));
 
                     if (response.code() == HttpURLConnection.HTTP_CONFLICT) {
                         getCallback().onFailure(Constants.RQM_EC.CODE_WORDS_USER_NOT_FOUND);
@@ -654,7 +787,6 @@ public class RequestBuilder {
         });
     }
 
-
     /**
      * Must supply Access Token
      */
@@ -668,8 +800,8 @@ public class RequestBuilder {
 
                 } else {
                     Log.i("RequestBuilder",
-                            String.format("hostFindEvent:onResponse - Code: %d\nMsg: %s",
-                                    response.code(), extract(response.errorBody(), response.message())));
+                          String.format("hostFindEvent:onResponse - Code: %d\nMsg: %s",
+                                        response.code(), extract(response.errorBody(), response.message())));
                     getCallback().onFailure(Constants.RQM_EC.FIND_BY_CODE_UNKNOWN);
                 }
             }
@@ -681,6 +813,151 @@ public class RequestBuilder {
             }
         });
     }
+
+    //endregion
+
+    //region Host - Event
+
+    /**
+     * Must supply Access Token
+     */
+    public void hostEventsList() {
+        requestsI.hostEventsList().enqueue(new Callback<Set<SubjectData>>() {
+            @Override
+            public void onResponse(@NonNull Call<Set<SubjectData>> call, @NonNull Response<Set<SubjectData>> response) {
+                if (response.isSuccessful()) {
+                    Log.i("RequestBuilder", "hostEventsList:onResponse - Code: " + response.code());
+                    getCallback().onHostEventsListSuccess(response.body());
+
+                } else {
+                    Log.i("RequestBuilder",
+                          String.format("hostEventsList:onResponse - Code: %d\nMsg: %s",
+                                        response.code(), extract(response.errorBody(), response.message())));
+
+                    getCallback().onFailure(Constants.RQM_EC.HOST_GET_EVENTS_UNKNOWN);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Set<SubjectData>> call, @NonNull Throwable t) {
+                Log.i("RequestBuilder", "hostEventsList:onFailure - Msg: " + t.getMessage());
+                getCallback().onFailure(Constants.RQM_EC.HOST_GET_EVENTS_UNKNOWN);
+            }
+        });
+    }
+
+    /**
+     * Must supply Access Token
+     */
+    public void hostJoinEvent(Integer eventId, String codeWord) {
+        requestsI.hostJoinEvent(eventId, codeWord).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    Log.i("RequestBuilder", "hostJoinEvent:onResponse - Code: " + response.code());
+                    getCallback().onJoinEventSuccess(extract(response.body(), response.message()));
+
+                } else {
+                    Log.i("RequestBuilder",
+                          String.format("hostJoinEvent:onResponse - Code: %d\nMsg: %s",
+                                        response.code(), extract(response.errorBody(), response.message())));
+
+                    switch (response.code()) {
+                        case HttpURLConnection.HTTP_CONFLICT:
+                            getCallback().onFailure(Constants.RQM_EC.JOIN_USER_NOT_FOUND);
+                            break;
+                        case FAILED_DEPENDENCY:
+                            getCallback().onFailure(Constants.RQM_EC.JOIN_CODE_MISMATCH);
+                            break;
+                        default:
+                            getCallback().onFailure(Constants.RQM_EC.JOIN_UNKNOWN);
+                            break;
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                Log.i("RequestBuilder", "hostJoinEvent:onFailure - Msg: " + t.getMessage());
+                getCallback().onFailure(Constants.RQM_EC.JOIN_UNKNOWN);
+            }
+        });
+    }
+
+    /**
+     * Must supply Access Token
+     */
+    public void hostLeaveEvent(Integer partyId) {
+        requestsI.hostLeaveEvent(partyId).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    Log.i("RequestBuilder", "hostLeaveEvent:onResponse - Code: " + response.code());
+                    getCallback().onLeavePartySuccess(extract(response.body(), response.message()));
+
+                } else {
+                    Log.i("RequestBuilder",
+                          String.format("hostLeaveEvent:onResponse - Code: %d\nMsg: %s",
+                                        response.code(), extract(response.errorBody(), response.message())));
+
+                    switch (response.code()) {
+                        case HttpURLConnection.HTTP_CONFLICT:
+                            getCallback().onFailure(Constants.RQM_EC.LEAVE_USER_NOT_FOUND);
+                            break;
+                        case FAILED_DEPENDENCY:
+                            getCallback().onFailure(Constants.RQM_EC.LEAVE_PARTY_NOT_FOUND);
+                            break;
+                        default:
+                            getCallback().onFailure(Constants.RQM_EC.LEAVE_UNKNOWN);
+                            break;
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                Log.i("RequestBuilder", "hostLeaveEvent:onFailure - Msg: " + t.getMessage());
+                getCallback().onFailure(Constants.RQM_EC.LEAVE_UNKNOWN);
+            }
+        });
+    }
+
+    //endregion
+
+    //region Host - Queries
+
+    /**
+     * Must supply Access Token
+     */
+    public void hostGetPartiesByEventId(Integer eventId) {
+        requestsI.hostGetPartiesByEventId(eventId).enqueue(new Callback<Set<PartyDataExtra>>() {
+            @Override
+            public void onResponse(@NonNull Call<Set<PartyDataExtra>> call, @NonNull Response<Set<PartyDataExtra>> response) {
+                if (response.isSuccessful()) {
+                    Log.i("RequestBuilder", "hostGetPartiesByEventId:onResponse - Code: " + response.code());
+                    getCallback().onHostGetPartiesByEventIdSuccess(response.body());
+
+                } else {
+                    Log.i("RequestBuilder",
+                          String.format("hostGetPartiesByEventId:onResponse - Code: %d\nMsg: %s",
+                                        response.code(), extract(response.errorBody(), response.message())));
+
+                    if (response.code() == HttpURLConnection.HTTP_CONFLICT) {
+                        getCallback().onFailure(Constants.RQM_EC.HOST_GET_PARTIES_BY_EVENT_ID_USER_NOT_FOUND);
+                    } else {
+                        getCallback().onFailure(Constants.RQM_EC.HOST_GET_PARTIES_BY_EVENT_ID_UNKNOWN);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Set<PartyDataExtra>> call, @NonNull Throwable t) {
+                Log.i("RequestBuilder", "hostGetPartiesByEventId:onFailure - Msg: " + t.getMessage());
+                getCallback().onFailure(Constants.RQM_EC.HOST_GET_PARTIES_BY_EVENT_ID_UNKNOWN);
+            }
+        });
+    }
+
     /**
      * Must supply Access Token
      */
@@ -694,8 +971,8 @@ public class RequestBuilder {
 
                 } else {
                     Log.i("RequestBuilder",
-                            String.format("hostFindAllEvents:onResponse - Code: %d\nMsg: %s",
-                                    response.code(), extract(response.errorBody(), response.message())));
+                          String.format("hostFindAllEvents:onResponse - Code: %d\nMsg: %s",
+                                        response.code(), extract(response.errorBody(), response.message())));
 
                     if (response.code() == HttpURLConnection.HTTP_CONFLICT) {
                         getCallback().onFailure(Constants.RQM_EC.FIND_BY_CODES_USER_NOT_FOUND);
@@ -712,61 +989,31 @@ public class RequestBuilder {
             }
         });
     }
+
     /**
      * Must supply Access Token
      */
-    public void hostJoinEvent(Integer eventId, String codeWord) {
-        requestsI.hostJoinEvent(eventId, codeWord).enqueue(new Callback<ResponseBody>() {
+    public void hostPartiesList() {
+        requestsI.hostPartiesList().enqueue(new Callback<Set<PartyData>>() {
             @Override
-            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+            public void onResponse(@NonNull Call<Set<PartyData>> call, @NonNull Response<Set<PartyData>> response) {
                 if (response.isSuccessful()) {
-                    Log.i("RequestBuilder", "hostJoinEvent:onResponse - Code: " + response.code());
-                    getCallback().onJoinEventSuccess(extract(response.body(), response.message()));
+                    Log.i("RequestBuilder", "hostPartiesList:onResponse - Code: " + response.code());
+                    getCallback().onHostPartiesListSuccess(response.body());
 
                 } else {
                     Log.i("RequestBuilder",
-                            String.format("hostJoinEvent:onResponse - Code: %d\nMsg: %s",
-                                    response.code(), extract(response.errorBody(), response.message())));
+                          String.format("hostPartiesList:onResponse - Code: %d\nMsg: %s",
+                                        response.code(), extract(response.errorBody(), response.message())));
 
-                    if (response.code() == HttpURLConnection.HTTP_CONFLICT) {
-                        getCallback().onFailure(Constants.RQM_EC.JOIN_USER_NOT_FOUND);
-                    } else {
-                        getCallback().onFailure(Constants.RQM_EC.JOIN_UNKNOWN);
-                    }
+                    getCallback().onFailure(Constants.RQM_EC.HOST_GET_PARTIES_UNKNOWN);
                 }
             }
 
             @Override
-            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
-                Log.i("RequestBuilder", "hostJoinEvent:onFailure - Msg: " + t.getMessage());
-                getCallback().onFailure(Constants.RQM_EC.JOIN_UNKNOWN);
-            }
-        });
-    }
-    /**
-     * Must supply Access Token
-     */
-    public void hostEventsList() {
-        requestsI.hostEventsList().enqueue(new Callback<Set<SubjectData>>() {
-            @Override
-            public void onResponse(@NonNull Call<Set<SubjectData>> call, @NonNull Response<Set<SubjectData>> response) {
-                if (response.isSuccessful()) {
-                    Log.i("RequestBuilder", "hostEventsList:onResponse - Code: " + response.code());
-                    getCallback().onHostEventsListSuccess(response.body());
-
-                } else {
-                    Log.i("RequestBuilder",
-                            String.format("hostEventsList:onResponse - Code: %d\nMsg: %s",
-                                    response.code(), extract(response.errorBody(), response.message())));
-
-                    getCallback().onFailure(Constants.RQM_EC.HOST_GET_EVENTS_UNKNOWN);
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<Set<SubjectData>> call, @NonNull Throwable t) {
-                Log.i("RequestBuilder", "hostEventsList:onFailure - Msg: " + t.getMessage());
-                getCallback().onFailure(Constants.RQM_EC.HOST_GET_EVENTS_UNKNOWN);
+            public void onFailure(@NonNull Call<Set<PartyData>> call, @NonNull Throwable t) {
+                Log.i("RequestBuilder", "hostPartiesList:onFailure - Msg: " + t.getMessage());
+                getCallback().onFailure(Constants.RQM_EC.HOST_GET_PARTIES_UNKNOWN);
             }
         });
     }
@@ -784,8 +1031,8 @@ public class RequestBuilder {
 
                 } else {
                     Log.i("RequestBuilder",
-                            String.format("hostGetEventsByDate:onResponse - Code: %d\nMsg: %s",
-                                    response.code(), extract(response.errorBody(), response.message())));
+                          String.format("hostGetEventsByDate:onResponse - Code: %d\nMsg: %s",
+                                        response.code(), extract(response.errorBody(), response.message())));
 
                     if (response.code() == HttpURLConnection.HTTP_CONFLICT) {
                         getCallback().onFailure(Constants.RQM_EC.HOST_GET_EVENTS_BY_DATE_USER_NOT_FOUND);
@@ -802,92 +1049,213 @@ public class RequestBuilder {
             }
         });
     }
+
     /**
      * Must supply Access Token
      */
-    public void hostGetPartiesByEventId(Integer eventId) {
-        requestsI.hostGetPartiesByEventId(eventId).enqueue(new Callback<Set<PartyData>>() {
+    public void hostGetEventById(Integer eventId) {
+        requestsI.hostGetEventById(eventId).enqueue(new Callback<SubjectData>() {
             @Override
-            public void onResponse(@NonNull Call<Set<PartyData>> call, @NonNull Response<Set<PartyData>> response) {
+            public void onResponse(@NonNull Call<SubjectData> call, @NonNull Response<SubjectData> response) {
                 if (response.isSuccessful()) {
-                    Log.i("RequestBuilder", "hostGetPartiesByEventId:onResponse - Code: " + response.code());
-                    getCallback().onHostGetPartiesByEventIdSuccess(response.body());
+                    Log.i("RequestBuilder", "hostGetEventById:onResponse - Code: " + response.code());
+                    getCallback().onHostGetEventSuccess(response.body());
 
                 } else {
                     Log.i("RequestBuilder",
-                            String.format("hostGetPartiesByEventId:onResponse - Code: %d\nMsg: %s",
-                                    response.code(), extract(response.errorBody(), response.message())));
+                          String.format("hostGetEventById:onResponse - Code: %d\nMsg: %s",
+                                        response.code(), extract(response.errorBody(), response.message())));
 
-                    if (response.code() == HttpURLConnection.HTTP_CONFLICT) {
-                        getCallback().onFailure(Constants.RQM_EC.HOST_GET_PARTIES_BY_EVENT_ID_USER_NOT_FOUND);
-                    } else {
-                        getCallback().onFailure(Constants.RQM_EC.HOST_GET_PARTIES_BY_EVENT_ID_UNKNOWN);
-                    }
+                    getCallback().onFailure(Constants.RQM_EC.HOST_GET_EVENT_UNKNOWN);
                 }
             }
 
             @Override
-            public void onFailure(@NonNull Call<Set<PartyData>> call, @NonNull Throwable t) {
-                Log.i("RequestBuilder", "hostGetPartiesByEventId:onFailure - Msg: " + t.getMessage());
-                getCallback().onFailure(Constants.RQM_EC.HOST_GET_PARTIES_BY_EVENT_ID_UNKNOWN);
+            public void onFailure(@NonNull Call<SubjectData> call, @NonNull Throwable t) {
+                Log.i("RequestBuilder", "hostGetEventById:onFailure - Msg: " + t.getMessage());
+                getCallback().onFailure(Constants.RQM_EC.HOST_GET_EVENT_UNKNOWN);
             }
         });
     }
-    /**
-     * Must supply Access Token
-     */
-    public void hostPartiesList() {
-        requestsI.hostPartiesList().enqueue(new Callback<Set<PartyData>>() {
-            @Override
-            public void onResponse(@NonNull Call<Set<PartyData>> call, @NonNull Response<Set<PartyData>> response) {
-                if (response.isSuccessful()) {
-                    Log.i("RequestBuilder", "hostPartiesList:onResponse - Code: " + response.code());
-                    getCallback().onHostPartiesListSuccess(response.body());
 
-                } else {
-                    Log.i("RequestBuilder",
-                            String.format("hostPartiesList:onResponse - Code: %d\nMsg: %s",
-                                    response.code(), extract(response.errorBody(), response.message())));
-
-                    getCallback().onFailure(Constants.RQM_EC.HOST_GET_PARTIES_UNKNOWN);
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<Set<PartyData>> call, @NonNull Throwable t) {
-                Log.i("RequestBuilder", "hostPartiesList:onFailure - Msg: " + t.getMessage());
-                getCallback().onFailure(Constants.RQM_EC.HOST_GET_PARTIES_UNKNOWN);
-            }
-        });
-    }
     /**
      * Must supply Access Token
      */
     public void hostGetAttendance(Integer eventId, long timestamp, ArrayList<Integer> partyIds) {
-        requestsI.hostGetAttendance(eventId, timestamp, partyIds).enqueue(new Callback<Set<VisitData>>() {
+        requestsI.hostGetAttendance(eventId, timestamp, partyIds).enqueue(new Callback<Set<PartyBrief>>() {
             @Override
-            public void onResponse(@NonNull Call<Set<VisitData>> call, @NonNull Response<Set<VisitData>> response) {
+            public void onResponse(@NonNull Call<Set<PartyBrief>> call, @NonNull Response<Set<PartyBrief>> response) {
                 if (response.isSuccessful()) {
                     Log.i("RequestBuilder", "hostGetAttendance:onResponse - Code: " + response.code());
                     getCallback().onHostGetAttendanceSuccess(response.body());
 
                 } else {
                     Log.i("RequestBuilder",
-                            String.format("hostGetAttendance:onResponse - Code: %d\nMsg: %s",
-                                    response.code(), extract(response.errorBody(), response.message())));
+                          String.format("hostGetAttendance:onResponse - Code: %d\nMsg: %s",
+                                        response.code(), extract(response.errorBody(), response.message())));
 
                     getCallback().onFailure(Constants.RQM_EC.HOST_GET_ATTENDANCE_UNKNOWN);
                 }
             }
 
             @Override
-            public void onFailure(@NonNull Call<Set<VisitData>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<Set<PartyBrief>> call, @NonNull Throwable t) {
                 Log.i("RequestBuilder", "hostGetAttendance:onFailure - Msg: " + t.getMessage());
                 getCallback().onFailure(Constants.RQM_EC.HOST_GET_ATTENDANCE_UNKNOWN);
             }
         });
     }
 
+    /**
+     * Must supply Access Token
+     */
+    public void hostGetPartyById(Integer partyId) {
+        requestsI.hostGetPartyById(partyId).enqueue(new Callback<PartyDataExtra>() {
+            @Override
+            public void onResponse(@NonNull Call<PartyDataExtra> call, @NonNull Response<PartyDataExtra> response) {
+                if (response.isSuccessful()) {
+                    Log.i("RequestBuilder", "hostGetPartyById:onResponse - Code: " + response.code());
+                    getCallback().onHostGetPartySuccess(response.body());
 
+                } else {
+                    Log.i("RequestBuilder",
+                          String.format("hostGetPartyById:onResponse - Code: %d\nMsg: %s",
+                                        response.code(), extract(response.errorBody(), response.message())));
+
+                    getCallback().onFailure(Constants.RQM_EC.HOST_GET_PARTY_UNKNOWN);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<PartyDataExtra> call, @NonNull Throwable t) {
+                Log.i("RequestBuilder", "hostGetPartyById:onFailure - Msg: " + t.getMessage());
+                getCallback().onFailure(Constants.RQM_EC.HOST_GET_PARTY_UNKNOWN);
+            }
+        });
+    }
+
+    /**
+     * Must supply Access Token
+     */
+    public void hostGetUserById(int userId, String userType) {
+        requestsI.hostGetUserById(userId, userType).enqueue(new Callback<CredentialData>() {
+            @Override
+            public void onResponse(@NonNull Call<CredentialData> call, @NonNull Response<CredentialData> response) {
+                if (response.isSuccessful()) {
+                    Log.i("RequestBuilder", "hostGetUserById:onResponse - Code: " + response.code());
+                    getCallback().onGetUser(response.body());
+
+                } else {
+                    Log.i("RequestBuilder",
+                          String.format("hostGetUserById:onResponse - Code: %d\nMsg: %s",
+                                        response.code(), extract(response.errorBody(), response.message())));
+
+                    switch (response.code()) {
+                        case HttpURLConnection.HTTP_CONFLICT:
+                            getCallback().onFailure(Constants.RQM_EC.GET_USER_USER_NOT_FOUND);
+                            break;
+                        case HttpURLConnection.HTTP_BAD_REQUEST:
+                            getCallback().onFailure(Constants.RQM_EC.GET_USER_INVALID);
+                            break;
+                        default:
+                            getCallback().onFailure(Constants.RQM_EC.GET_USER_UNKNOWN);
+                            break;
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<CredentialData> call, @NonNull Throwable t) {
+                Log.i("RequestBuilder", "hostGetUserById:onFailure - Msg: " + t.getMessage());
+                getCallback().onFailure(Constants.RQM_EC.GET_USER_UNKNOWN);
+            }
+        });
+    }
+
+    //endregion
+
+    //region Host - Actions
+
+    /**
+     * Must supply Access Token
+     */
+    public void hostCreateQRCode(Integer eventId) {
+        requestsI.hostCreateQRCode(eventId).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    Log.i("RequestBuilder", "hostCreateQRCode:onResponse - Code: " + response.code());
+                    getCallback().onQRCodeSuccess(extract(response.body(), response.message()));
+
+                } else {
+                    Log.i("RequestBuilder",
+                          String.format("hostCreateQRCode:onResponse - Code: %d\nMsg: %s",
+                                        response.code(), extract(response.errorBody(), response.message())));
+
+                    switch (response.code()) {
+                        case HttpURLConnection.HTTP_CONFLICT:
+                            getCallback().onFailure(Constants.RQM_EC.QR_CODE_USER_NOT_FOUND);
+                            break;
+
+                        case HttpURLConnection.HTTP_BAD_REQUEST:
+                            getCallback().onFailure(Constants.RQM_EC.QR_CODE_SUBJECT_NOT_FOUND);
+                            break;
+
+                        default:
+                            getCallback().onFailure(Constants.RQM_EC.QR_CODE_UNKNOWN);
+                            break;
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                Log.i("RequestBuilder", "hostCreateQRCode:onFailure - Msg: " + t.getMessage());
+                getCallback().onFailure(Constants.RQM_EC.QR_CODE_UNKNOWN);
+            }
+        });
+    }
+
+    /**
+     * Must supply Access Token
+     */
+    public void hostSendAnnouncement(Integer eventId, String messageBody) {
+        requestsI.hostSendAnnouncement(eventId, messageBody).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    Log.i("RequestBuilder", "hostSendAnnouncement:onResponse - Code: " + response.code());
+                    getCallback().onHostSendAnnouncementSuccess(extract(response.body(), response.message()));
+
+                } else {
+                    Log.i("RequestBuilder",
+                          String.format("hostSendAnnouncement:onResponse - Code: %d\nMsg: %s",
+                                        response.code(), extract(response.errorBody(), response.message())));
+
+                    switch (response.code()) {
+                        case HttpURLConnection.HTTP_CONFLICT:
+                            getCallback().onFailure(Constants.RQM_EC.HOST_SEND_ANNOUNCEMENT_USER_NOT_FOUND);
+                            break;
+
+                        case FAILED_DEPENDENCY:
+                            getCallback().onFailure(Constants.RQM_EC.HOST_SEND_ANNOUNCEMENT_SUBJECT_NOT_FOUND);
+                            break;
+
+                        default:
+                            getCallback().onFailure(Constants.RQM_EC.HOST_SEND_ANNOUNCEMENT_UNKNOWN);
+                            break;
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                Log.i("RequestBuilder", "hostSendAnnouncement:onFailure - Msg: " + t.getMessage());
+                getCallback().onFailure(Constants.RQM_EC.HOST_SEND_ANNOUNCEMENT_UNKNOWN);
+            }
+        });
+    }
+
+    //endregion
     //endregion
 }

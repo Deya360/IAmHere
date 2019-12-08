@@ -22,7 +22,7 @@
 
             android:background="@drawable/border_white_back_b">
 
-            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            <com.sse.iamhere.Subclasses.CustomSwipeToRefresh
                 android:id="@+id/invite_code_swipe_refreshLy"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
@@ -80,12 +80,15 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="20dp"
                             android:layout_marginBottom="20dp"
+                            android:padding="14dp"
                             android:visibility="gone"
 
                             android:fontFamily="@font/bree_serif"
                             android:text="@string/invite_code_empty_view_label"
                             android:textAlignment="center"
-                            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                            android:textSize="20sp"
+                            android:textColor="#5B000000"
+
                             tools:visibility="visible"/>
 
                         <com.sse.iamhere.Subclasses.EmptySupportedRecyclerView
@@ -99,7 +102,7 @@
 
                 </FrameLayout>
 
-            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+            </com.sse.iamhere.Subclasses.CustomSwipeToRefresh>
 
             <Button
                 android:id="@+id/invite_code_addBtn"

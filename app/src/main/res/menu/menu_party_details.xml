@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".EventDetailsActivity">
+
+    <item
+        android:icon="@drawable/ic_more_vert_white_24dp"
+        android:title="@string/action_actions_label"
+        app:showAsAction="ifRoom">
+        <menu>
+            <item
+                android:id="@+id/action_leave_party"
+                android:icon="@drawable/ic_remove_user_group_dark_red_24dp"
+                android:title="@string/action_leave_party_label"
+                app:showAsAction="always" />
+        </menu>
+    </item>
+
+</menu>

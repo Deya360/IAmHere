@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.os.ConfigurationCompat;
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.dd.processbutton.iml.ActionProcessButton;
@@ -36,7 +37,6 @@ import com.sse.iamhere.Utils.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -158,7 +158,6 @@ public class VerificationAdapter extends PagerAdapter {
         });
     }
     private void setupOTPInput(View view) {
-//        Button continueBtn2 = view.findViewById(R.id.verifi_code_continueBtn);
         ActionProcessButton continueBtn2 = view.findViewById(R.id.verifi_code_continueBtn);
         continueBtn2.setMode(ActionProcessButton.Mode.ENDLESS);
 
@@ -188,7 +187,8 @@ public class VerificationAdapter extends PagerAdapter {
                     public void run() {
                         context.runOnUiThread(() -> {
                             if (counter >= 0) {
-                                resendBtn.setText(String.format(Locale.getDefault(),"%s%d%s",
+                                resendBtn.setText(String.format(ConfigurationCompat.getLocales(context.getResources().getConfiguration()).get(0),
+                                        "%s%d%s",
                                         context.getString(R.string.verifi_phone_resendBtn_label_inactive_prefix), counter,
                                         context.getString(R.string.verifi_phone_resendBtn_label_inactive_suffix)));
                                 if (counter == OTP_TIMEOUT-10) {

@@ -18,15 +18,17 @@ import com.sse.iamhere.Server.Body.PartyData;
 import com.sse.iamhere.Subclasses.OnSingleClickListener;
 import com.sse.iamhere.Utils.MaterialColors700;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.sse.iamhere.Utils.TextFormatter.prettyCount;
 
 public class PartyAdapter extends RecyclerView.Adapter<PartyAdapter.PartyHolder> {
     private List<PartyData> parties = new ArrayList<>();
 
     public interface PartyAdapterListener {
-        void onClick(int subjectId);
+        void onClick(int partyId, PartyData partyData, int pos,
+            View itemLayout, ImageView memberCountIv, TextView memberCountTv, TextView nameTv, TextView descTv);
     }
 
     private PartyAdapterListener partyAdapterListener;
@@ -55,7 +57,10 @@ public class PartyAdapter extends RecyclerView.Adapter<PartyAdapter.PartyHolder>
             itemView.setOnClickListener(new OnSingleClickListener() {
                 @Override
                 public void onSingleClick(View v) {
-                partyAdapterListener.onClick(Integer.parseInt(parties.get(getAdapterPosition()).getPartyId()));
+                partyAdapterListener.onClick(
+                        Integer.parseInt(parties.get(getAdapterPosition()).getPartyId()),
+                        parties.get(getAdapterPosition()), getAdapterPosition(),
+                        itemView, memberCountIv, memberCountTv, nameTv, descTv);
                 }
             });
         }
@@ -95,19 +100,6 @@ public class PartyAdapter extends RecyclerView.Adapter<PartyAdapter.PartyHolder>
             holder.descTv.setText(description);
         } else {
             holder.descTv.setVisibility(View.GONE);
-        }
-    }
-
-    private String prettyCount(String count) {
-        Number number = Integer.valueOf(count);
-        char[] suffix = {' ', 'k', 'M', 'B', 'T', 'P', 'E'};
-        long numValue = number.longValue();
-        int value = (int) Math.floor(Math.log10(numValue));
-        int base = value / 3;
-        if (value >= 3 && base < suffix.length) {
-            return new DecimalFormat("#0.0").format(numValue / Math.pow(10, base * 3)) + suffix[base];
-        } else {
-            return new DecimalFormat("#,##0").format(numValue);
         }
     }
 

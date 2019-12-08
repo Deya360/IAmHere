@@ -92,10 +92,8 @@
         android:padding="12dp"
         android:layout_gravity="end"
 
-
         android:text="@string/verifi_code_continueBtn_label_normal"
         android:textSize="15sp"
-
 
         custom:pb_colorNormal="@color/colorGeneralAccent"
         custom:pb_colorPressed="@color/colorGeneralAccentDark"

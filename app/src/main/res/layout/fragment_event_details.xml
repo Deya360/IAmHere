@@ -1,66 +1,139 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/event_details_startDateTv"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="15dp"
+        android:orientation="vertical">
 
-        android:textColor="@android:color/black"
-        android:textSize="20sp"
-        android:fontFamily="@font/roboto_slab_light"
-        android:textStyle="bold"
+        <TextView
+            android:id="@+id/event_details_startDateTv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
 
-        tools:visibility="visible"
-        android:text="Start Date: "
-        android:background="@drawable/border_light_grey_back_bt"/>
+            android:textColor="@android:color/black"
+            android:textSize="19sp"
+            android:fontFamily="@font/pt_serif"
 
-    <TextView
-        android:id="@+id/event_details_finishDateTv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="15dp"
+            tools:text="Start Date: "
+            tools:textStyle="bold"
+            android:background="@drawable/border_light_grey_back_bt"
 
-        android:textColor="@android:color/black"
-        android:textSize="20sp"
-        android:fontFamily="@font/roboto_slab_light"
-        android:textStyle="bold"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"/>
 
-        tools:visibility="visible"
-        android:text="Finish Date: "
-        android:background="@drawable/border_light_grey_back_bt"/>
+        <TextView
+            android:id="@+id/event_details_finishDateTv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
 
-    <TextView
-        android:id="@+id/event_details_inviteCodeTv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="15dp"
+            android:textColor="@android:color/black"
+            android:textSize="19sp"
+            android:fontFamily="@font/pt_serif"
 
-        android:textColor="@android:color/black"
-        android:textSize="20sp"
-        android:fontFamily="@font/roboto_slab_light"
-        android:textStyle="bold"
+            tools:text="Finish Date: "
+            tools:textStyle="bold"
+            android:background="@drawable/border_light_grey_back_bt"
 
-        tools:visibility="visible"
-        android:text="Invite Code: "
-        android:background="@drawable/border_light_grey_back_bt"/>
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"/>
 
-    <TextView
-        android:id="@+id/event_details_hostsTv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="15dp"
+        <TextView
+            android:id="@+id/event_details_hostsTv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:paddingTop="7dp"
+            android:paddingBottom="7dp"
 
-        android:textColor="@android:color/black"
-        android:textSize="20sp"
-        android:fontFamily="@font/roboto_slab_light"
-        android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:textSize="19sp"
+            android:fontFamily="@font/pt_serif"
+            android:textStyle="bold"
 
-        tools:visibility="visible"
-        android:text="Hosts: "
-        android:background="@drawable/border_light_grey_back_bt"/>
-</LinearLayout>
+            tools:text="Hosts: "
+            android:background="@drawable/border_light_grey_back_bt"
+            android:drawableEnd="@drawable/anim_arrow_rotate"
+
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/event_details_hostsRv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:scrollbars="vertical"
+            tools:listitem="@layout/item_host_slim"
+            tools:itemCount="2"/>
+
+        <TextView
+            android:id="@+id/event_details_partiesTv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:paddingTop="7dp"
+            android:paddingBottom="7dp"
+
+            android:textColor="@android:color/black"
+            android:textSize="19sp"
+            android:fontFamily="@font/pt_serif"
+            android:textStyle="bold"
+
+            tools:text="Parties: "
+            android:background="@drawable/border_light_grey_back_bt"
+            android:drawableEnd="@drawable/anim_arrow_rotate2"
+
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/event_details_partiesRv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:scrollbars="vertical"
+            tools:listitem="@layout/item_party_slim"
+            tools:itemCount="2"/>
+
+        <TextView
+            android:id="@+id/event_details_inviteCodeTv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+
+            android:textColor="@android:color/black"
+            android:textSize="19sp"
+            android:fontFamily="@font/pt_serif"
+
+            tools:text="Invite Code: "
+            tools:textStyle="bold"
+            android:background="@drawable/border_light_grey_back_bt"
+
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"/>
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

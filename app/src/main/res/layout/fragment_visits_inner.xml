@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+
+            android:weightSum="1"
+            android:background="@drawable/border_white_back_thick_b">
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.9"
+                android:padding="4dp">
+
+                <TextView
+                    android:id="@+id/visitsI_last_update_prefixTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:text="@string/visitsI_last_update_prefixTv_label"
+                    android:textColor="@android:color/black"
+                    android:textSize="19sp"
+                    android:fontFamily="@font/pt_serif"
+                    android:textStyle="bold"/>
+
+                <com.github.curioustechizen.ago.RelativeTimeTextView
+                    android:id="@+id/visitsI_last_updateTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/visitsI_last_update_prefixTv"
+
+                    android:textColor="@android:color/black"
+                    android:textSize="19sp"
+                    android:fontFamily="@font/pt_serif"
+                    tools:text="1 minute ago"/>
+
+            </RelativeLayout>
+
+
+            <ImageView
+                android:id="@+id/visitsI_updateIv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1"
+                android:padding="7.5dp"
+                android:src="@drawable/ic_refresh_black_24dp"
+
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:contentDescription="@string/visitsI_updateIv_desc" />
+
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/visitsI_empty_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="70dp"
+                android:padding="14dp"
+
+                android:fontFamily="@font/bree_serif"
+                android:text="@string/visitsI_empty_view_label"
+                android:textAlignment="center"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+
+                tools:visibility="visible"
+                android:visibility="gone" />
+
+            <ProgressBar
+                android:id="@+id/visitsI_progress_view"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="70dp"
+
+                android:visibility="visible" />
+
+            <com.sse.iamhere.Subclasses.EmptySupportedRecyclerView
+                android:id="@+id/visitsI_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:scrollbars="vertical"
+
+                tools:listitem="@layout/item_event">
+
+            </com.sse.iamhere.Subclasses.EmptySupportedRecyclerView>
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

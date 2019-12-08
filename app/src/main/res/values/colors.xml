@@ -9,23 +9,21 @@
     <color name="colorGeneralAccent">#FF5722</color>
     <color name="colorGeneralAccentDark">#c75b24</color>
 
-    <color name="colorManagerPrimary">#607d8b</color>
-    <color name="colorManagerPrimaryDark">#34515e</color>
-    <color name="colorManagerPrimaryLight">#8eacbb</color>
+    <color name="colorAttendeePrimary">#607d8b</color>
+    <color name="colorAttendeePrimaryDark">#34515e</color>
+    <color name="colorAttendeePrimaryLight">#8eacbb</color>
 
     <color name="colorHostPrimary">#00acc1</color>
     <color name="colorHostPrimaryDark">#007c91</color>
     <color name="colorHostPrimaryLight">#5ddef4</color>
 
-    <color name="colorAttendeePrimary">#7cb342</color>
-    <color name="colorAttendeePrimaryDark">#4b830d</color>
-    <color name="colorAttendeePrimaryLight">#aee571</color>
+    <color name="colorManagerPrimary">#7cb342</color>
+    <color name="colorManagerPrimaryDark">#4b830d</color>
+    <color name="colorManagerPrimaryLight">#aee571</color>
 
-
-    <color name="colorBackground">#FFFFFF</color>
     <color name="colorSplashBackground">#E6E7E9</color>
     <color name="colorSplashBackgroundDark">#CFCCCC</color>
 
-    <color name="temp">#A1000000</color>
+    <color name="colorError">#C20000</color>
 
 </resources>

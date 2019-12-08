@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Credits to Author: Creative_hat - www.freepik.com for image: backg_collapsable_toolbar
+https://www.freepik.com/free-vector/geometric-grey-background_1255865.htm
+-->
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".EventDetailsActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@drawable/backg_collapsable_toolbar"
+        app:elevation="0dp"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/aevent_details_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#80587381"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <com.sse.iamhere.Subclasses.CustomSwipeToRefresh
+        android:id="@+id/aevent_details_swipe_refreshLy"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:weightSum="1">
+
+            <androidx.coordinatorlayout.widget.CoordinatorLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <com.google.android.material.appbar.AppBarLayout
+                    android:id="@+id/aevent_details_appbarLy"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:background="@drawable/backg_collapsable_toolbar"
+                    app:elevation="0dp"
+                    android:theme="@style/AppTheme.AppBarOverlay">
+
+                    <com.google.android.material.appbar.CollapsingToolbarLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+
+                        app:titleEnabled="false"
+                        app:contentScrim="#80ECECEC"
+                        app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed|snap">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:weightSum="1"
+                            android:layout_margin="10dp"
+
+                            android:paddingTop="20dp"
+                            android:paddingBottom="16dp"
+                            android:paddingStart="20dp"
+                            android:paddingEnd="20dp"
+
+                            android:background="@drawable/projector_screen"
+                            android:elevation="10dp">
+
+                            <TextView
+                                android:id="@+id/aevent_details_nameTv"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_above="@+id/aevent_details_descTv"
+                                android:layout_alignTop="@id/aevent_details_descTv"
+                                android:layout_alignParentTop="true"
+
+                                android:fontFamily="@font/bree_serif"
+                                android:includeFontPadding="false"
+                                android:textAlignment="center"
+                                android:textColor="@color/black"
+                                app:autoSizeMaxTextSize="40sp"
+                                app:autoSizeMinTextSize="20sp"
+                                app:autoSizeStepGranularity="2sp"
+                                app:autoSizeTextType="uniform"
+                                tools:text="Information" />
+
+                            <TextView
+                                android:id="@+id/aevent_details_descTv"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="5dp"
+                                android:layout_above="@id/aevent_details_dateTv"
+                                android:gravity="bottom"
+                                tools:text="Some long text"
+
+                                android:fontFamily="@font/pt_serif"
+                                android:textAlignment="center"
+                                android:textColor="@color/black"
+                                android:textSize="18sp"
+                                android:includeFontPadding="false"
+                                android:maxLines="2"
+                                android:ellipsize="end"/>
+
+                            <TextView
+                                android:id="@+id/aevent_details_dateTv"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentBottom="true"
+                                android:ellipsize="end"
+
+                                android:fontFamily="@font/boogaloo"
+                                android:maxLines="2"
+                                android:textAlignment="center"
+                                android:textColor="@color/black"
+                                android:textSize="18sp"
+
+                                tools:text="12-10-2019" />
+
+                        </RelativeLayout>
+
+                    </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+                </com.google.android.material.appbar.AppBarLayout>
+
+                <androidx.core.widget.NestedScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+
+                    android:background="@color/grey_200"
+                    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <com.google.android.material.tabs.TabLayout
+                            android:id="@+id/aevent_details_tabLy"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:minHeight="?attr/actionBarSize"
+                            android:background="@drawable/border_white_back_b"
+                            app:tabTextAppearance="@style/CustomTabLayoutTextAppearance">
+
+                            <com.google.android.material.tabs.TabItem
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/event_details_tabLy_info"/>
+
+                        </com.google.android.material.tabs.TabLayout>
+
+                        <androidx.coordinatorlayout.widget.CoordinatorLayout
+                            android:id="@+id/aevent_details_contentLy"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="70dp"/>
+
+                    </LinearLayout>
+
+                </androidx.core.widget.NestedScrollView>
+
+            </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+            <androidx.coordinatorlayout.widget.CoordinatorLayout
+                android:id="@+id/aevent_details_snackbarLy"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+    </com.sse.iamhere.Subclasses.CustomSwipeToRefresh>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

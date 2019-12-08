@@ -21,6 +21,7 @@ import com.sse.iamhere.Server.RequestBuilder;
 import com.sse.iamhere.Server.RequestsCallback;
 import com.sse.iamhere.Subclasses.EmptySupportedRecyclerView;
 import com.sse.iamhere.Utils.Constants;
+import com.sse.iamhere.Utils.LocaleUtil;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -38,6 +39,7 @@ public class AllEventsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        LocaleUtil.setConfigLang(this);
         setContentView(R.layout.activity_all_events);
         overridePendingTransition(R.anim.push_up_in, R.anim.none);
 
@@ -90,9 +92,7 @@ public class AllEventsActivity extends AppCompatActivity {
                 @Override
                 public void onHostEventsListSuccess(Set<SubjectData> subjectData) {
                     super.onHostEventsListSuccess(subjectData);
-                    adapter.setSubjects(new ArrayList<>(subjectData));
-                    isDataRefreshing = false;
-                    mSwipeRefreshLayout.setRefreshing(false);
+                    adapter.setEvents(new ArrayList<>(subjectData));
                     if (recyclerView.getLayoutManager() != null && savedRecyclerLayoutState != null)
                         recyclerView.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
                     if (subjectData.isEmpty()) {
@@ -101,13 +101,17 @@ public class AllEventsActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onFailure(int errorCode) {
-                    super.onFailure(errorCode);
-                    if (errorCode == Constants.RQM_EC.NO_INTERNET_CONNECTION) {
-                        showInfoSnackbar(getString(R.string.splash_connectionTv_label), Snackbar.LENGTH_LONG);
+                public void onComplete(boolean failed, Integer failCode) {
+                    isDataRefreshing = false;
+                    mSwipeRefreshLayout.setRefreshing(false);
 
-                    } else {
-                        showInfoSnackbar(getString(R.string.msg_server_error), Snackbar.LENGTH_LONG);
+                    if (failed) {
+                        if (failCode == Constants.RQM_EC.NO_INTERNET_CONNECTION) {
+                            showInfoSnackbar(getString(R.string.splash_connectionTv_label), 5000);
+
+                        } else {
+                            showInfoSnackbar(getString(R.string.msg_server_error), 5000);
+                        }
                     }
                 }
             });
@@ -123,10 +127,10 @@ public class AllEventsActivity extends AppCompatActivity {
         }
     }
 
-    private void startEventDetailActivity(SubjectData subjectData, int eventId) {
+    private void startEventDetailActivity(SubjectData eventData, int eventId) {
         Bundle bundle = new Bundle();
         bundle.putInt("eventId", eventId);
-        bundle.putParcelable("subjectData", subjectData);
+        bundle.putParcelable("eventData", eventData);
         Intent intent = new Intent(this, EventDetailsActivity.class);
         intent.putExtras(bundle);
         startActivity(intent);

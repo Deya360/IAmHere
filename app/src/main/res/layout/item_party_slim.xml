@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:padding="7dp"
+
+    android:orientation="horizontal"
+
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    android:background="@drawable/border_grey_back_b">
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="17dp">
+
+        <ImageView
+            android:id="@+id/party_slim_member_countIv"
+            android:layout_width="50dp"
+            android:layout_height="26dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:layout_gravity="center"
+            android:background="@drawable/backg_rounded_rect_trans"
+            tools:backgroundTint="#00796B"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/party_slim_member_countTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="1dp"
+            android:layout_gravity="center"
+
+            android:textSize="16sp"
+            android:includeFontPadding="false"
+            android:fontFamily="@font/pt_serif_bold"
+            android:textColor="@color/white"
+
+            tools:text="240K"/>
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:layout_gravity="center_vertical"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/party_slim_nameTv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:fontFamily="@font/pt_serif"
+            android:textSize="20sp"
+            android:textColor="@color/black"
+            android:maxLines="2"
+            android:ellipsize="end"
+
+            tools:text="IKBO-02-17"/>
+
+    </LinearLayout>
+
+</LinearLayout>

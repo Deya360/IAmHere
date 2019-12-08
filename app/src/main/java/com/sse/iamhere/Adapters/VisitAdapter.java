@@ -11,18 +11,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.sse.iamhere.R;
 import com.sse.iamhere.Server.Body.VisitData;
 import com.sse.iamhere.Subclasses.OnSingleClickListener;
+import com.sse.iamhere.Utils.CalendarUtil;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 
-public class VisitAdapter extends RecyclerView.Adapter<VisitAdapter.EventHolder> {
+public class VisitAdapter extends RecyclerView.Adapter<VisitAdapter.VisitHolder> {
     private List<VisitData> visits = new ArrayList<>();
 
     public interface VisitAdapterListener {
-        void onClick(int attendeeId);
+        void onClick(int eventId);
     }
 
     private VisitAdapterListener visitAdapterListener;
@@ -35,19 +34,19 @@ public class VisitAdapter extends RecyclerView.Adapter<VisitAdapter.EventHolder>
         notifyDataSetChanged();
     }
 
-    class EventHolder extends RecyclerView.ViewHolder {
-        private TextView nameTv;
-        private TextView timesTv;
+    class VisitHolder extends RecyclerView.ViewHolder {
+        private TextView dateTv;
+        private TextView eventNameTv;
 
-        EventHolder(View itemView) {
+        VisitHolder(View itemView) {
             super(itemView);
-            this.nameTv = itemView.findViewById(R.id.visit_nameTv);
-            this.timesTv = itemView.findViewById(R.id.visit_timesTv);
+            this.dateTv = itemView.findViewById(R.id.visit_dateTv);
+            this.eventNameTv = itemView.findViewById(R.id.visit_eventNameTv);
 
             itemView.setOnClickListener(new OnSingleClickListener() {
                 @Override
                 public void onSingleClick(View v) {
-                visitAdapterListener.onClick(visits.get(getAdapterPosition()).getId());
+                    visitAdapterListener.onClick(visits.get(getAdapterPosition()).getId());
                 }
             });
         }
@@ -55,31 +54,23 @@ public class VisitAdapter extends RecyclerView.Adapter<VisitAdapter.EventHolder>
 
     @NonNull
     @Override
-    public EventHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public VisitHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_visit, parent, false);
 
-        return new EventHolder(itemView);
+        return new VisitHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull EventHolder holder, int pos) {
+    public void onBindViewHolder(@NonNull VisitHolder holder, int pos) {
         final VisitData currentVisit = visits.get(pos);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(currentVisit.getDate());
 
-        holder.nameTv.setText(currentVisit.getName());
-        holder.timesTv.setText(formatTimesList(currentVisit.getVisits()));
-    }
+        String date = CalendarUtil.getStringDate(calendar, holder.dateTv.getContext());
+        holder.dateTv.setText(date);
 
-    private String formatTimesList(ArrayList<Long> list) {
-        String returnStr = "";
-        if (list==null || list.isEmpty()) return returnStr;
-
-        for (Long l : list) {
-            SimpleDateFormat sdf = new SimpleDateFormat("hh:mm", Locale.getDefault());
-
-            returnStr += sdf.format(new Date(l)) + ", ";
-        }
-        return returnStr.substring(0, returnStr.length()-2);
+        holder.eventNameTv.setText(currentVisit.getEventName());
     }
 
     @Override
